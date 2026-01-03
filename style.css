@@ -215,14 +215,17 @@ body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter'
 }
 
 /* Estilo para o item que estĆ� sendo movido */
-.folha .bloco-item-no-canvas {
-    position: absolute; /* Permite mover para qualquer X e Y */
-    cursor: move;
-    user-select: none;
+.folha .bloco-item-no-canvas, .elemento {
+    position: absolute !important; 
+    cursor: move !important;
+    user-select: none !important;
     padding: 10px;
+    /* ADICIONE ESTA LINHA ABAIXO */
+    color: #000000 !important; 
     border: 1px transparent dashed;
 }
 
 .folha .bloco-item-no-canvas:hover {
     border-color: #a29bfe; /* Mostra uma borda roxa ao passar o mouse */
 }
+
