@@ -224,8 +224,13 @@ body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter'
     color: #000000 !important; 
     border: 1px transparent dashed;
 }
-
+/* Adicione isso logo abaixo do código acima */
+.bloco-item-no-canvas *, .elemento * {
+    pointer-events: none !important;
+    color: inherit; /* Faz o h2 e o p usarem o preto que definimos acima */
+}
 .folha .bloco-item-no-canvas:hover {
     border-color: #a29bfe; /* Mostra uma borda roxa ao passar o mouse */
 }
+
 
