@@ -9,18 +9,9 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-body { 
-    background: var(--bg-dark); 
-    color: var(--text-main); 
-    font-family: 'Inter', sans-serif; 
-    height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    overflow: hidden; 
-}
-
-/* TELA DE BOAS VINDAS */
+/* TELA DE BOAS VINDAS PROFISSIONAL */
 .welcome-overlay {
   position: fixed; inset: 0; background: rgba(9, 9, 11, 0.98); z-index: 9999;
   display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px);
@@ -28,77 +19,210 @@ body {
 .welcome-content { text-align: center; width: 90%; max-width: 1000px; animation: fadeIn 0.5s ease; }
 .welcome-header i { font-size: 3.5rem; color: var(--accent); margin-bottom: 20px; }
 .welcome-header h1 { font-size: 2.8rem; margin-bottom: 10px; font-weight: 700; }
+.welcome-header p { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 40px; }
+
+/* CARROSSEL DE MODELOS */
+.templates-carousel { display: flex; gap: 20px; overflow-x: auto; padding: 20px; justify-content: center; margin-bottom: 30px; }
+.template-card-ready {
+  flex: 0 0 240px; background: var(--bg-panel); border-radius: 16px; padding: 15px;
+  cursor: pointer; transition: 0.3s; border: 2px solid transparent; text-align: center;
+}
+.template-card-ready:hover { border-color: var(--accent); transform: translateY(-10px); background: #24242b; }
+.preview-box { height: 150px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; margin-bottom: 12px; }
+.sales-bg { background: linear-gradient(135deg, #8b5cf6, #d946ef); }
+.blog-bg { background: linear-gradient(135deg, #3b82f6, #2dd4bf); }
+.bio-bg { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+
+.btn-clean { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 12px 30px; border-radius: 30px; cursor: pointer; transition: 0.2s; }
+.btn-clean:hover { color: white; border-color: white; }
 
 /* EDITOR UI */
 .top-bar { height: 65px; background: var(--bg-panel); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
-.logo { font-weight: 800; letter-spacing: -1px; }
-.logo span { color: #a29bfe; text-shadow: 0 0 10px rgba(162, 155, 254, 0.3); }
+.logo-area { display: flex; align-items: center; gap: 15px; }
+.btn-back { background: #27272a; border: none; color: white; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+.btn-back:hover { background: var(--accent); }
+.logo span { color: var(--accent); }
 
 .app-container { display: flex; flex: 1; overflow: hidden; }
 .sidebar { width: 280px; background: var(--bg-panel); border-right: 1px solid var(--border); overflow-y: auto; }
 .right-sidebar { border-left: 1px solid var(--border); width: 320px; }
-
 .blocos-grid { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 .bloco-item { background: #27272a; padding: 16px; border-radius: 10px; cursor: grab; display: flex; align-items: center; gap: 12px; border: 1px solid transparent; }
 .bloco-item:hover { border-color: var(--accent); background: #2f2f36; }
 .bloco-item i { color: var(--accent); }
 
-/* ÁREA DO CANVAS */
 .canvas-area { flex: 1; background: var(--bg-canvas); padding: 50px; overflow: auto; display: flex; justify-content: center; }
+.folha { background: #fff; width: 100%; max-width: 850px; min-height: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
 
-#canvas { 
-    position: relative; 
-    background: #fff; 
-    width: 100%; 
-    max-width: 850px; 
-    min-height: 1000px; 
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6); 
-    overflow: hidden; 
-}
+/* BOTĆ•ES E INPUTS */
+.btn-gerar { background: var(--accent); color: white; font-weight: 700; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; }
+.btn-view { background: transparent; border: none; color: var(--text-muted); padding: 10px 15px; cursor: pointer; }
+.btn-view.active { color: var(--accent); background: #27272a; border-radius: 6px; }
 
-/* --- LOGICA DE MOVIMENTAÇÃO (A CORREÇÃO ESTÁ AQUI) --- */
-.elemento {
-    position: absolute !important;
-    cursor: move !important;
-    user-select: none !important;
-    -webkit-user-select: none;
-    z-index: 10;
-    padding: 5px;
-}
-
-/* Isso faz o clique "atravessar" o texto/imagem e bater no container que move */
-.elemento > * {
-    pointer-events: none !important; 
-    user-drag: none !important;
-    -webkit-user-drag: none;
-}
-
-.elemento.selecionado {
-    outline: 2px solid var(--accent);
-    outline-offset: 4px;
-}
-
-/* PAINEL DE PROPRIEDADES */
-#properties-panel { padding: 20px; background: #1a1a1a; color: #ffffff; }
-#properties-panel h3 { font-size: 14px; text-transform: uppercase; color: #a29bfe; margin-bottom: 20px; }
-.prop-group { margin-bottom: 15px; }
-.prop-group label { display: block; margin-bottom: 8px; font-size: 13px; color: #cccccc; }
-.prop-group input, .prop-group select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #2d2d2d; color: white; outline: none; }
-
-.btn-delete { background: #ff7675; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-
-/* BOTÃO DE DOWNLOAD */
-.btn-gerar {
-    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-    color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer;
-}
-
-/* MOBILE */
-@media (max-width: 900px) {
-    .app-container { flex-direction: column; height: auto; }
-    .sidebar { width: 100% !important; height: auto; border: none; }
-    .canvas-area { padding: 10px; }
-    .blocos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-}
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- OTIMIZAĆ‡ĆO PARA MOBILE --- */
+@media (max-width: 900px) {
+    /* 1. Ajuste da Barra Superior */
+    .top-bar {
+        padding: 0 10px;
+        height: 60px;
+    }
+    
+    .logo {
+        font-size: 1.1rem;
+    }
+
+    /* 2. Transformar o layout em coluna */
+    .app-container {
+        flex-direction: column;
+        height: auto; /* Permite rolar a pĆ�gina para baixo */
+    }
+
+    /* 3. Ajuste das Sidebars (Lados) */
+    .left-sidebar, .right-sidebar {
+        width: 100% !important; /* Ocupa a largura toda */
+        height: auto;
+        border: none;
+        padding: 15px;
+    }
+
+    /* 4. Grid de Elementos em linha no mobile */
+    .blocos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+
+    /* 5. A Ćrea de Desenho (Canvas) */
+    .canvas-area {
+        padding: 10px;
+        background: #f0f0f0;
+        min-height: 400px;
+    }
+
+    .folha {
+        width: 100% !important; /* Ocupa a largura do celular */
+        margin: 0 auto;
+        min-height: 300px;
+    }
+
+    /* 6. Ajuste da Tela de Boas-Vindas */
+    .welcome-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .templates-carousel {
+        flex-direction: column; /* Cards um embaixo do outro no celular */
+        align-items: center;
+    }
+
+    .template-card-ready {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+/* Painel de Propriedades Profissional */
+#properties-panel {
+    padding: 20px;
+    background: #1a1a1a; /* Fundo escuro elegante */
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+}
+
+#properties-panel h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #a29bfe; /* Roxo suave */
+    margin-bottom: 20px;
+}
+
+/* EstilizaĆ§Ć£o dos Inputs */
+#properties-panel label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #cccccc;
+}
+
+#properties-panel input, 
+#properties-panel select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #2d2d2d;
+    color: white;
+    outline: none;
+    transition: border 0.3s;
+}
+
+#properties-panel input:focus {
+    border-color: #a29bfe; /* Brilho roxo ao focar */
+}
+
+/* BotĆ£o de Apagar Item */
+.btn-delete {
+    background: #ff7675;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Logo com brilho sutil */
+.logo {
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.logo span {
+    color: #a29bfe;
+    text-shadow: 0 0 10px rgba(162, 155, 254, 0.3);
+}
+
+/* BotĆ£o Baixar ZIP */
+.btn-gerar {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-gerar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+}
+/* Permite que o canvas seja uma Ć�rea de posicionamento livre */
+#canvas {
+    position: relative; /* Essencial para os itens ficarem presos dentro dele */
+    overflow: hidden;
+}
+
+/* Estilo para o item que estĆ� sendo movido */
+.folha .bloco-item-no-canvas {
+    position: absolute; /* Permite mover para qualquer X e Y */
+    cursor: move;
+    user-select: none;
+    padding: 10px;
+    border: 1px transparent dashed;
+}
+
+.folha .bloco-item-no-canvas:hover {
+    border-color: #a29bfe; /* Mostra uma borda roxa ao passar o mouse */
+}
