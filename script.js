@@ -91,9 +91,12 @@ function criarTexto(top, left) {
 }
 
 function criarImagem(top, left) {
-    const el = criarBase("img", "comp-img", top, left);
-    el.src = "https://via.placeholder.com/150";
-    el.style.width = "150px";
+    const el = criarBase("comp-img", top, left);
+    // Criamos um span de ajuda e a tag img vazia
+    el.innerHTML = `
+        <span style="color: #999; font-size: 12px;">Clique para configurar imagem</span>
+        <img src="" style="display:none; width:150px;">
+    `;
     return el;
 }
 
@@ -179,3 +182,4 @@ function addInput(label, val, cb, type = "text") {
     d.appendChild(i);
     propPanel.appendChild(d);
 }
+
