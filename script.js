@@ -150,35 +150,57 @@ function selecionar(el) {
 function renderProps() {
     propPanel.innerHTML = "<h3>Configurações</h3>";
     const el = elSelected;
+
+    // BOTÃO PARA MUDAR O FUNDO DO SITE TODO (Aparece se nada estiver selecionado ou sempre no topo)
+    addInput("Fundo da Página", "#ffffff", v => {
+        document.getElementById('canvas').style.background = v;
+    }, "color");
+    
+    document.createElement("hr"); // Linha divisória
+
     if (!el) return;
 
-    // 1. CONFIGURAÇÃO PARA TEXTOS E TÍTULOS
+    // --- CONFIGURAÇÃO DE TEXTOS ---
     if (el.tagName === "H2" || el.tagName === "P") {
         addInput("Texto", el.innerText, v => el.innerText = v);
         addInput("Tamanho (px)", parseInt(el.style.fontSize) || 16, v => el.style.fontSize = v + "px", "number");
         addInput("Cor", el.style.color || "#000000", v => el.style.color = v, "color");
     }
 
-    // 2. CONFIGURAÇÃO PARA BOTÕES
+    // --- CONFIGURAÇÃO DE BOTÕES ---
     if (el.classList.contains("comp-wrapper-btn")) {
         const a = el.querySelector("a");
         addInput("Texto do Botão", a.innerText, v => a.innerText = v);
-        addInput("Link", a.href, v => a.href = v);
+        addInput("Link (URL)", a.href, v => a.href = v);
         addInput("Cor do Botão", "#8b5cf6", v => a.style.backgroundColor = v, "color");
+        addInput("Cor do Texto", "#ffffff", v => a.style.color = v, "color");
+        // Novo: Arredondamento do botão
+        addInput("Arredondamento", 50, v => a.style.borderRadius = v + "px", "range");
     }
 
-    // 3. CONFIGURAÇÃO PARA IMAGENS (Agora dentro da função!)
-    if (el.classList.contains("comp-img") || el.classList.contains("bloco-item-no-canvas") && el.querySelector("img")) {
-        const imgTag = el.querySelector('img');
-        const spanHelp = el.querySelector('span');
+    // --- CONFIGURAÇÃO DE IMAGENS ---
+    if (el.classList.contains("comp-img") || el.querySelector("img")) {
+        const img = el.querySelector("img");
+        
+        // Botão de Upload (já criamos antes)
+        const btnUpload = document.createElement("button");
+        btnUpload.innerText = "Trocar Imagem";
+        btnUpload.className = "btn-gerar";
+        btnUpload.style.width = "100%";
+        btnUpload.onclick = () => { /* ... lógica de upload que já temos ... */ };
+        propPanel.appendChild(btnUpload);
 
-        // Link da Web
-        addInput("Link da Imagem (URL)", imgTag.src, v => {
-            imgTag.src = v;
-            imgTag.style.display = 'block';
-            if(spanHelp) spanHelp.style.display = 'none';
-        });
+        // Novo: Transformar foto em Redonda (igual ao perfil do site exemplo)
+        addInput("Arredondamento (Foto)", 0, v => img.style.borderRadius = v + "%", "range");
+    }
 
+    // BOTÃO APAGAR
+    const del = document.createElement("button");
+    del.innerText = "Apagar Item";
+    del.className = "btn-delete";
+    del.onclick = () => { el.remove(); propPanel.innerHTML = ""; };
+    propPanel.appendChild(del);
+}
         // Upload do PC
         const btnUpload = document.createElement("button");
         btnUpload.innerText = "Upload do Computador";
@@ -212,4 +234,42 @@ function renderProps() {
     del.className = "btn-delete";
     del.onclick = () => { el.remove(); propPanel.innerHTML = ""; };
     propPanel.appendChild(del);
+}
+/* 1. Transformar o Canvas em um "Celular" */
+#canvas {
+    position: relative;
+    width: 375px;           /* Largura de um iPhone */
+    min-height: 667px;      /* Altura de um iPhone */
+    margin: 20px auto;
+    background: #ffffff;    /* Cor padrão inicial */
+    border: 12px solid #27272a; /* Moldura do celular */
+    border-radius: 40px;    /* Cantos arredondados do aparelho */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;       /* Permite rolar se o site for longo */
+    transition: background 0.3s ease;
+}
+
+/* 2. Estilo dos Botões (Efeito Cápsula) */
+.comp-wrapper-btn {
+    width: 90%;
+    margin: 10px auto;
+}
+
+.comp-wrapper-btn a {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 50px;    /* Botão estilo pílula */
+    transition: 0.2s;
+}
+
+/* 3. Imagens Flexíveis */
+.comp-img img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    transition: border-radius 0.2s;
 }
