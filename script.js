@@ -182,4 +182,43 @@ function addInput(label, val, cb, type = "text") {
     d.appendChild(i);
     propPanel.appendChild(d);
 }
+// --- COPIE A PARTIR DAQUI ---
+if (elSelected.classList.contains("comp-img")) {
+    const imgTag = elSelected.querySelector('img');
+    const spanHelp = elSelected.querySelector('span');
+
+    // Campo para Link da Web
+    addInput("Link da Imagem (URL)", imgTag.src, v => {
+        imgTag.src = v;
+        imgTag.style.display = 'block';
+        if(spanHelp) spanHelp.style.display = 'none';
+    });
+
+    // Botão para carregar do Computador
+    const btnUpload = document.createElement("button");
+    btnUpload.innerText = "Upload do Computador";
+    btnUpload.className = "btn-gerar"; // Usa a classe roxa que você já tem no CSS
+    btnUpload.style.width = "100%";
+    btnUpload.style.marginTop = "10px";
+    btnUpload.style.marginBottom = "10px";
+    
+    btnUpload.onclick = () => {
+        const fileInput = document.getElementById('image-upload-hidden');
+        fileInput.click();
+        
+        fileInput.onchange = e => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imgTag.src = event.target.result;
+                    imgTag.style.display = 'block';
+                    if(spanHelp) spanHelp.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+    };
+    propPanel.appendChild(btnUpload);
+}
 
