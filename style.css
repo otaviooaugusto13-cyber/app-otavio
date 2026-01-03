@@ -208,3 +208,21 @@ body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter'
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
 }
+/* Permite que o canvas seja uma área de posicionamento livre */
+#canvas {
+    position: relative; /* Essencial para os itens ficarem presos dentro dele */
+    overflow: hidden;
+}
+
+/* Estilo para o item que está sendo movido */
+.folha .bloco-item-no-canvas {
+    position: absolute; /* Permite mover para qualquer X e Y */
+    cursor: move;
+    user-select: none;
+    padding: 10px;
+    border: 1px transparent dashed;
+}
+
+.folha .bloco-item-no-canvas:hover {
+    border-color: #a29bfe; /* Mostra uma borda roxa ao passar o mouse */
+}
