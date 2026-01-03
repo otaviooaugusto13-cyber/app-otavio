@@ -150,13 +150,16 @@ function selecionar(el) {
 function renderProps() {
     propPanel.innerHTML = "<h3>Configurações</h3>";
     const el = elSelected;
+    if (!el) return;
 
+    // 1. CONFIGURAÇÃO PARA TEXTOS E TÍTULOS
     if (el.tagName === "H2" || el.tagName === "P") {
         addInput("Texto", el.innerText, v => el.innerText = v);
-        addInput("Tamanho (px)", parseInt(el.style.fontSize), v => el.style.fontSize = v + "px", "number");
-        addInput("Cor", el.style.color, v => el.style.color = v, "color");
+        addInput("Tamanho (px)", parseInt(el.style.fontSize) || 16, v => el.style.fontSize = v + "px", "number");
+        addInput("Cor", el.style.color || "#000000", v => el.style.color = v, "color");
     }
 
+    // 2. CONFIGURAÇÃO PARA BOTÕES
     if (el.classList.contains("comp-wrapper-btn")) {
         const a = el.querySelector("a");
         addInput("Texto do Botão", a.innerText, v => a.innerText = v);
@@ -164,61 +167,49 @@ function renderProps() {
         addInput("Cor do Botão", "#8b5cf6", v => a.style.backgroundColor = v, "color");
     }
 
+    // 3. CONFIGURAÇÃO PARA IMAGENS (Agora dentro da função!)
+    if (el.classList.contains("comp-img") || el.classList.contains("bloco-item-no-canvas") && el.querySelector("img")) {
+        const imgTag = el.querySelector('img');
+        const spanHelp = el.querySelector('span');
+
+        // Link da Web
+        addInput("Link da Imagem (URL)", imgTag.src, v => {
+            imgTag.src = v;
+            imgTag.style.display = 'block';
+            if(spanHelp) spanHelp.style.display = 'none';
+        });
+
+        // Upload do PC
+        const btnUpload = document.createElement("button");
+        btnUpload.innerText = "Upload do Computador";
+        btnUpload.className = "btn-gerar"; 
+        btnUpload.style.width = "100%";
+        btnUpload.style.marginTop = "10px";
+        btnUpload.style.marginBottom = "10px";
+        
+        btnUpload.onclick = () => {
+            const fileInput = document.getElementById('image-upload-hidden');
+            fileInput.click();
+            fileInput.onchange = e => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        imgTag.src = ev.target.result;
+                        imgTag.style.display = 'block';
+                        if(spanHelp) spanHelp.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+        };
+        propPanel.appendChild(btnUpload);
+    }
+
+    // 4. BOTÃO APAGAR (Sempre visível para qualquer item)
     const del = document.createElement("button");
     del.innerText = "Apagar Item";
     del.className = "btn-delete";
     del.onclick = () => { el.remove(); propPanel.innerHTML = ""; };
     propPanel.appendChild(del);
 }
-
-function addInput(label, val, cb, type = "text") {
-    const d = document.createElement("div");
-    d.className = "prop-group";
-    d.innerHTML = `<label>${label}</label>`;
-    const i = document.createElement("input");
-    i.type = type;
-    i.value = val;
-    i.oninput = (e) => cb(e.target.value);
-    d.appendChild(i);
-    propPanel.appendChild(d);
-}
-// --- COPIE A PARTIR DAQUI ---
-if (elSelected.classList.contains("comp-img")) {
-    const imgTag = elSelected.querySelector('img');
-    const spanHelp = elSelected.querySelector('span');
-
-    // Campo para Link da Web
-    addInput("Link da Imagem (URL)", imgTag.src, v => {
-        imgTag.src = v;
-        imgTag.style.display = 'block';
-        if(spanHelp) spanHelp.style.display = 'none';
-    });
-
-    // Botão para carregar do Computador
-    const btnUpload = document.createElement("button");
-    btnUpload.innerText = "Upload do Computador";
-    btnUpload.className = "btn-gerar"; // Usa a classe roxa que você já tem no CSS
-    btnUpload.style.width = "100%";
-    btnUpload.style.marginTop = "10px";
-    btnUpload.style.marginBottom = "10px";
-    
-    btnUpload.onclick = () => {
-        const fileInput = document.getElementById('image-upload-hidden');
-        fileInput.click();
-        
-        fileInput.onchange = e => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    imgTag.src = event.target.result;
-                    imgTag.style.display = 'block';
-                    if(spanHelp) spanHelp.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-    };
-    propPanel.appendChild(btnUpload);
-}
-
