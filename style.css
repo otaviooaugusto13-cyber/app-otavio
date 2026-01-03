@@ -234,3 +234,24 @@ body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter'
 }
 
 
+/* Estilo para o container da imagem no canvas */
+.comp-img {
+    min-width: 150px;
+    min-height: 100px;
+    background: #f0f0f0;
+    border: 2px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.comp-img img {
+    max-width: 100%;
+    display: block;
+}
+
+/* Esconde o texto de ajuda se já houver uma imagem carregada */
+.comp-img.tem-imagem span {
+    display: none;
+}
