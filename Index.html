@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrieSite Studio — Editor Roxo</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="welcome-screen" class="welcome-overlay">
+    <div class="welcome-content">
+      <div class="welcome-header">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <h1>O que vamos criar hoje?</h1>
+      </div>
+      <div class="templates-carousel">
+        <div class="template-card-ready" onclick="startEditor('vendas_premium')">
+          <div class="preview-box sales-bg">PÁGINA DE VENDAS</div>
+          <span>Vendas Premium</span>
+        </div>
+        <div class="template-card-ready" onclick="startEditor('link_bio')">
+          <div class="preview-box bio-bg">LINKS DE BIO</div>
+          <span>Instagram Bio</span>
+        </div>
+      </div>
+      <button class="btn-clean" onclick="startEditor('limpo')">Começar em Branco</button>
+    </div>
+  </div>
+
+  <input type="file" id="image-upload-hidden" accept="image/*" style="display: none;">
+
+  <header class="top-bar">
+    <div class="logo-area">
+      <button class="btn-back" onclick="voltarAoInicio()"><i class="fa-solid fa-chevron-left"></i></button>
+      <h2 class="logo">CrieSite <span>Studio</span></h2>
+    </div>
+    <button class="btn-gerar" onclick="gerarSite()"><i class="fa-solid fa-download"></i> Baixar ZIP</button>
+  </header>
+
+  <div class="app-container">
+    <aside class="sidebar left-sidebar">
+      <div class="sidebar-header"><h3>Elementos</h3></div>
+      <div class="blocos-grid">
+        <div class="bloco-item" draggable="true" ondragstart="drag(event)" data-tipo="titulo">Título</div>
+        <div class="bloco-item" draggable="true" ondragstart="drag(event)" data-tipo="texto">Texto</div>
+        <div class="bloco-item" draggable="true" ondragstart="drag(event)" data-tipo="botao">Botão</div>
+        <div class="bloco-item" draggable="true" ondragstart="drag(event)" data-tipo="imagem">Imagem</div>
+        <div class="bloco-item" draggable="true" ondragstart="drag(event)" data-tipo="espaco">Espaçamento</div>
+      </div>
+    </aside>
+
+    <main class="canvas-area">
+      <div id="canvas" class="folha" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div class="canvas-placeholder"><p>Arraste aqui</p></div>
+      </div>
+    </main>
+
+    <aside class="sidebar right-sidebar">
+      <div class="sidebar-header"><h3>Configurações</h3></div>
+      <div id="properties-panel" class="properties-content"></div>
+    </aside>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
