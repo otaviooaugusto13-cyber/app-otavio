@@ -59,4 +59,68 @@ body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter'
 .btn-view { background: transparent; border: none; color: var(--text-muted); padding: 10px 15px; cursor: pointer; }
 .btn-view.active { color: var(--accent); background: #27272a; border-radius: 6px; }
 
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- OTIMIZAÇÃO PARA MOBILE --- */
+@media (max-width: 900px) {
+    /* 1. Ajuste da Barra Superior */
+    .top-bar {
+        padding: 0 10px;
+        height: 60px;
+    }
+    
+    .logo {
+        font-size: 1.1rem;
+    }
+
+    /* 2. Transformar o layout em coluna */
+    .app-container {
+        flex-direction: column;
+        height: auto; /* Permite rolar a página para baixo */
+    }
+
+    /* 3. Ajuste das Sidebars (Lados) */
+    .left-sidebar, .right-sidebar {
+        width: 100% !important; /* Ocupa a largura toda */
+        height: auto;
+        border: none;
+        padding: 15px;
+    }
+
+    /* 4. Grid de Elementos em linha no mobile */
+    .blocos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+
+    /* 5. A Área de Desenho (Canvas) */
+    .canvas-area {
+        padding: 10px;
+        background: #f0f0f0;
+        min-height: 400px;
+    }
+
+    .folha {
+        width: 100% !important; /* Ocupa a largura do celular */
+        margin: 0 auto;
+        min-height: 300px;
+    }
+
+    /* 6. Ajuste da Tela de Boas-Vindas */
+    .welcome-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .templates-carousel {
+        flex-direction: column; /* Cards um embaixo do outro no celular */
+        align-items: center;
+    }
+
+    .template-card-ready {
+        width: 100%;
+        max-width: 250px;
+    }
+}
