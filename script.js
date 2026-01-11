@@ -1,4 +1,4 @@
-/* ================= BANCO DE DADOS COMPLETO (EXERCÍCIOS) ================= */
+/* ================= BANCO DE DADOS COMPLETO ================= */
 const todosExercicios = [
   // PERNA
   { id: 1, nome: "Agachamento Livre", grupo: "Perna" },
@@ -36,7 +36,7 @@ const todosExercicios = [
   { id: 40, nome: "Puxada Alta (Frente)", grupo: "Costas" },
   { id: 41, nome: "Puxada Alta (Triângulo)", grupo: "Costas" },
   { id: 42, nome: "Puxada Alta (Costas)", grupo: "Costas" },
-  { id: 43, nome: "Remada Baixa (Triângulo)", grupo: "Costas" },
+  { id: 43, nome: "Remada Baixa", grupo: "Costas" },
   { id: 44, nome: "Remada Curvada", grupo: "Costas" },
   { id: 45, nome: "Remada Cavalinho", grupo: "Costas" },
   { id: 46, nome: "Remada Serrote", grupo: "Costas" },
@@ -70,7 +70,7 @@ const todosExercicios = [
   { id: 84, nome: "Tríceps Banco", grupo: "Tríceps" },
   { id: 85, nome: "Tríceps Coice", grupo: "Tríceps" },
 
-  // OUTROS
+  // ABDÔMEN & CARDIO
   { id: 90, nome: "Abdominal Supra", grupo: "Abs" },
   { id: 91, nome: "Abdominal Infra", grupo: "Abs" },
   { id: 92, nome: "Prancha", grupo: "Abs" },
@@ -99,7 +99,6 @@ async function carregarDadosDaNuvem() {
         const snap = await window.f_getDocs(window.f_collection(window.db, "alunos"));
         listaDeAlunos = [];
         snap.forEach(doc => listaDeAlunos.push(doc.data()));
-        // Atualiza tela se estiver no admin
         if (document.getElementById('dashProfessor').classList.contains('active')) renderizarListaAlunosAdmin();
     } catch (e) { console.error(e); }
 }
@@ -169,12 +168,9 @@ function renderizarListaAlunosAdmin(filtro="") {
 function abrirEditorTreino(tel) {
   alunoEmEdicaoId = tel;
   document.getElementById('alunoSendoEditado').innerText = listaDeAlunos.find(a => a.telefone === tel).nome;
-  
   const btns = document.getElementById('botoesModulosAdmin');
   btns.innerHTML = "";
-  MODULOS_DISPONIVEIS.forEach(m => {
-      btns.innerHTML += `<button onclick="trocarModuloEdicao('${m}')" id="btnModulo${m}" class="mod-btn">${m}</button>`;
-  });
+  MODULOS_DISPONIVEIS.forEach(m => btns.innerHTML += `<button onclick="trocarModuloEdicao('${m}')" id="btnModulo${m}" class="mod-btn">${m}</button>`);
   trocarModuloEdicao('A');
   mostrarTela('painelPersonal');
 }
@@ -187,7 +183,7 @@ function trocarModuloEdicao(mod) {
   renderizarCheckboxesExercicios();
 }
 
-// === RENDERIZAÇÃO NOVA (COMPACTA) ===
+// === RENDERIZAÇÃO PROFISSIONAL (3 CAMPOS NA DIREITA) ===
 function renderizarCheckboxesExercicios() {
   const container = document.getElementById('listaSelecao');
   container.innerHTML = "";
@@ -204,43 +200,46 @@ function renderizarCheckboxesExercicios() {
   });
 
   Object.keys(grupos).forEach(grupo => {
-    // Cabeçalho
     container.innerHTML += `<div class="group-header"><span>${obterIcone(grupo)}</span> ${grupo}</div>`;
     
-    // Lista
     grupos[grupo].forEach(ex => {
       const salvo = exerciciosSalvos.find(s => s.id === ex.id);
       const isChecked = salvo ? "checked" : "";
       
       const valDescanso = salvo && salvo.descanso ? salvo.descanso : "Descanso"; 
       const valMetodo = salvo && salvo.metodo ? salvo.metodo : "Normal"; 
+      const valSeries = salvo && salvo.series ? salvo.series : ""; // Texto livre
 
       container.innerHTML += `
         <div class="admin-exercise-row">
           
           <div class="admin-row-left">
             <input type="checkbox" id="check_${ex.id}" value="${ex.id}" ${isChecked}>
-            <label for="check_${ex.id}" style="color:white; font-size: 0.9rem; cursor:pointer; margin-left:8px;">${ex.nome}</label>
+            <label for="check_${ex.id}" style="color:white; font-size: 0.9rem; cursor:pointer;">${ex.nome}</label>
           </div>
 
-          <div class="admin-row-options">
-            <select id="descanso_${ex.id}" class="admin-select">
+          <div class="admin-row-right">
+            
+            <select id="descanso_${ex.id}" class="admin-input-mini w-time">
               <option value="Descanso" disabled ${valDescanso === "Descanso" ? "selected" : ""}>⏱️</option>
               <option value="30s" ${valDescanso === "30s" ? "selected" : ""}>30s</option>
               <option value="45s" ${valDescanso === "45s" ? "selected" : ""}>45s</option>
-              <option value="1m" ${valDescanso === "1m" ? "selected" : ""}>1min</option>
-              <option value="1m30s" ${valDescanso === "1m30s" ? "selected" : ""}>1:30</option>
-              <option value="2m" ${valDescanso === "2m" ? "selected" : ""}>2min</option>
+              <option value="1min" ${valDescanso === "1min" ? "selected" : ""}>1min</option>
+              <option value="1:30" ${valDescanso === "1:30" ? "selected" : ""}>1:30</option>
+              <option value="2min" ${valDescanso === "2min" ? "selected" : ""}>2min</option>
             </select>
 
-            <select id="metodo_${ex.id}" class="admin-select">
+            <select id="metodo_${ex.id}" class="admin-input-mini w-method">
               <option value="Normal" ${valMetodo === "Normal" ? "selected" : ""}>Normal</option>
               <option value="Falha" ${valMetodo === "Falha" ? "selected" : ""}>Falha</option>
-              <option value="Drop-set" ${valMetodo === "Drop-set" ? "selected" : ""}>Drop</option>
+              <option value="Drop" ${valMetodo === "Drop" ? "selected" : ""}>Drop</option>
               <option value="Bi-set" ${valMetodo === "Bi-set" ? "selected" : ""}>Bi-set</option>
               <option value="FST-7" ${valMetodo === "FST-7" ? "selected" : ""}>FST-7</option>
               <option value="Aquec." ${valMetodo === "Aquec." ? "selected" : ""}>Aquec.</option>
             </select>
+
+            <input type="text" id="series_${ex.id}" class="admin-input-mini w-text" placeholder="3x12" value="${valSeries}" maxlength="8">
+
           </div>
         </div>
       `;
@@ -255,13 +254,17 @@ function salvarTreinoPersonal() {
   marcados.forEach(checkbox => {
     const id = parseInt(checkbox.value);
     const exBase = todosExercicios.find(e => e.id === id);
+    
+    // PEGA OS 3 VALORES
     const descanso = document.getElementById(`descanso_${id}`).value;
     const metodo = document.getElementById(`metodo_${id}`).value;
+    const series = document.getElementById(`series_${id}`).value;
 
     listaFinal.push({
       ...exBase,
-      descanso: descanso !== "Descanso" ? descanso : "1m",
-      metodo: metodo
+      descanso: descanso !== "Descanso" ? descanso : "1min",
+      metodo: metodo,
+      series: series || "3x12" // Padrão se deixar vazio
     });
   });
 
@@ -269,7 +272,7 @@ function salvarTreinoPersonal() {
   listaDeAlunos[idx].treinos[moduloEmEdicao].exercicios = listaFinal;
   
   salvarNaNuvem(listaDeAlunos[idx]);
-  alert("Treino salvo na nuvem! 💾");
+  alert("Treino salvo com sucesso! 💾");
 }
 
 /* ================= ÁREA DO ALUNO ================= */
@@ -316,16 +319,17 @@ function abrirTreino(modulo) {
     const keyPeso = `${modulo}_${ex.id}_peso`;
     const pesoSalvo = alunoLogado.registros[keyPeso] || "";
     
-    // BADGES DE INFORMAÇÃO
+    // INFO BADGES (Séries, Descanso, Método)
+    const badgeSeries = ex.series ? `<span class="badge-info badge-series">📋 ${ex.series}</span>` : "";
     const badgeDescanso = ex.descanso ? `<span class="badge-info badge-rest">⏰ ${ex.descanso}</span>` : "";
-    const classeFalha = ex.metodo === "Falha" ? "falha" : "";
-    const badgeMetodo = ex.metodo && ex.metodo !== "Normal" ? `<span class="badge-info badge-method ${classeFalha}">${ex.metodo}</span>` : "";
+    const badgeMetodo = ex.metodo && ex.metodo !== "Normal" ? `<span class="badge-info badge-method">${ex.metodo}</span>` : "";
 
     container.innerHTML += `
       <div class="exercise-item">
         <div class="exercise-header">
             <span class="exercise-name">${ex.nome}</span>
             <div class="exercise-badges">
+                ${badgeSeries}
                 ${badgeDescanso}
                 ${badgeMetodo}
             </div>
@@ -346,7 +350,7 @@ function abrirTreino(modulo) {
   atualizarBarraProgresso();
 }
 
-/* ================= GRÁFICOS E LÓGICA DE DADOS ================= */
+/* ================= GRÁFICOS & AUXILIARES ================= */
 function salvarPeso(exId, v) {
   if(!v) return;
   if(!alunoLogado.registros) alunoLogado.registros={};
@@ -388,7 +392,7 @@ function registrarDiaDeFogo() {
     if(!alunoLogado.historicoFogo.includes(h)) {
         alunoLogado.historicoFogo.push(h);
         salvarNaNuvem(alunoLogado);
-        alert("Parabéns! 🔥");
+        alert("Treino completo! 🔥");
         atualizarDisplayFogo();
     }
 }
@@ -396,8 +400,6 @@ function atualizarDisplayFogo() { document.getElementById('streakCount').innerTe
 
 function carregarEstatisticas() {
     if (!alunoLogado) return;
-    
-    // Gráfico de Peso
     const ctxPeso = document.getElementById('graficoPesoCanvas');
     if(ctxPeso) {
         let labels=[], dados=[];
@@ -411,8 +413,6 @@ function carregarEstatisticas() {
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } }
         });
     }
-
-    // Gráfico de Frequência
     renderizarGraficoFrequenciaReal();
     povoarSelectExercicios();
 }
@@ -486,7 +486,6 @@ function atualizarDisplayVencimentoPerfil() {
     else { st.innerText="Em dia"; st.style.color="#10b981"; st.style.background="rgba(16,185,129,0.2)"; }
 }
 
-// ÚTEIS
 function obterIcone(g){const m={'Perna':'🦵','Peito':'🏋️','Costas':'🦍','Ombro':'🥥','Bíceps':'💪','Tríceps':'💪','Abs':'🔥','Cardio':'🏃'};return m[g]||'📋';}
 function toggleFormulario(){document.getElementById('formCadastroAluno').classList.toggle('hidden');}
 async function cadastrarAluno(){const n=document.getElementById('novoNome').value; const t=document.getElementById('novoTel').value; const d=document.getElementById('novoVencimento').value; if(!n||!t)return alert('Preencha tudo'); const novo={nome:n,telefone:t,vencimento:d,treinos:{A:{exercicios:[]},B:{exercicios:[]},C:{exercicios:[]},D:{exercicios:[]},E:{exercicios:[]}}}; listaDeAlunos.push(novo); await salvarNaNuvem(novo); renderizarListaAlunosAdmin(); toggleFormulario();}
