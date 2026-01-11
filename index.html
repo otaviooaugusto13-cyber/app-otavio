@@ -36,7 +36,7 @@
       </div>
       <div style="text-align: center; margin-bottom: 10px; opacity: 0.4;">
         <p style="font-size: 0.65rem; color: #fff; margin-bottom: 5px;">© 2026 Otávio Augusto • Todos os direitos reservados</p>
-        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">Tecnologia IRON PRO 2.2</p>
+        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">Tecnologia IRON PRO 2.3</p>
       </div>
     </div>
   </section>
@@ -64,10 +64,16 @@
     </div>
 
     <div class="goal-card" style="margin-bottom: 20px; border: 1px solid #334155;">
-      <div class="goal-header"><span class="goal-title">📢 Mural de Avisos</span></div>
+      <div class="goal-header" style="justify-content: space-between;">
+        <span class="goal-title">📢 Mural de Avisos</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="chkAvisoAtivo" style="width:20px; height:20px; accent-color:#10b981; cursor:pointer;">
+            <label for="chkAvisoAtivo" style="color:white; font-size:0.8rem; cursor:pointer;">Exibir no App</label>
+        </div>
+      </div>
       <div style="padding: 10px;">
-        <textarea id="textoAvisoAcademia" placeholder="Digite um aviso para todos os alunos (Ex: Manutenção na esteira...)" style="width:100%; background:#0f172a; border:none; color:white; padding:10px; border-radius:8px; height:60px; font-family:sans-serif;"></textarea>
-        <button onclick="salvarAvisoAcademia()" class="btn-primary" style="margin-top:10px; font-size:0.8rem; height:35px;">Publicar Aviso</button>
+        <textarea id="textoAvisoAcademia" placeholder="Digite um aviso (Ex: Manutenção na esteira...)" style="width:100%; background:#0f172a; border:none; color:white; padding:10px; border-radius:8px; height:60px; font-family:sans-serif; margin-bottom:10px;"></textarea>
+        <button onclick="salvarAvisoAcademia()" class="btn-primary" style="font-size:0.8rem; height:35px;">Atualizar Mural</button>
       </div>
     </div>
 
@@ -104,7 +110,6 @@
 
   <section id="estatisticas" class="screen">
     <div class="header-student"><h1>Minhas Metas</h1><p>Sincronizado ☁️</p></div>
-    
     <div class="goal-card">
       <div class="goal-header"><span class="goal-title">⚖️ Composição Corporal</span></div>
       <div class="chart-container-line" style="position: relative; height: 200px; width:100%;"><canvas id="graficoComposicaoCanvas"></canvas></div>
@@ -113,10 +118,8 @@
         <div class="stat-mini"><span class="stat-label">% Gordura</span><span class="stat-value" id="statGorduraAtual" style="color:#eab308">--%</span></div>
       </div>
     </div>
-
     <h3 class="section-title-small">Frequência Semanal</h3>
     <div class="chart-card"><div class="bar-chart-container" id="graficoSemanal"></div></div>
-
     <h3 class="section-title-small" style="margin-top: 30px;">Evolução de Força</h3>
     <div class="goal-card">
       <div class="goal-header" style="border:none; margin-bottom:5px;"><span class="goal-title">📊 Carga por Exercício</span></div>
@@ -126,7 +129,6 @@
         <div class="stat-mini"><span class="stat-label">Recorde</span><span class="stat-value" id="recordeDisplay" style="color: #10b981;">--</span></div>
       </div>
     </div>
-    
     <div style="height: 100px;"></div>
   </section>
 
@@ -226,5 +228,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
