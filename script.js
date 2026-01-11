@@ -1,3 +1,4 @@
+
 /* ================= BANCO DE DADOS COMPLETO ================= */
 const todosExercicios = [
   // PERNA
@@ -73,25 +74,15 @@ const todosExercicios = [
   { id: 96, nome: "Elíptico", grupo: "Cardio" }
 ];
 
-/* ================= ESTADO GLOBAL ================= */
 let listaDeAlunos = []; 
 let alunoLogado = null; 
 let alunoEmEdicaoId = null; 
 let moduloEmEdicao = 'A'; 
 const MODULOS_DISPONIVEIS = ['A', 'B', 'C', 'D', 'E']; 
-let chartPeso = null;
-let chartCarga = null;
-let timerInterval = null; 
+let chartPeso = null; let chartCarga = null; let timerInterval = null; 
+let cardioInterval = null; let cardioSeconds = 0; let cardioRunning = false;
 
-// Estado do Cardio
-let cardioInterval = null;
-let cardioSeconds = 0;
-let cardioRunning = false;
-
-/* ================= INICIALIZAÇÃO FIREBASE ================= */
-setTimeout(() => {
-    carregarDadosDaNuvem().then(() => { verificarSessao(); });
-}, 1000);
+setTimeout(() => { carregarDadosDaNuvem().then(() => { verificarSessao(); }); }, 1000);
 
 async function carregarDadosDaNuvem() {
     if (!window.db) return console.error("Firebase OFF");
@@ -109,7 +100,6 @@ async function salvarNaNuvem(aluno) {
     catch (e) { console.error(e); }
 }
 
-/* ================= SESSÃO & LOGIN ================= */
 function verificarSessao() {
     const sessao = localStorage.getItem("usuarioLogado");
     if (sessao) {
@@ -117,521 +107,251 @@ function verificarSessao() {
         if (user.tipo === 'admin') autenticarAdmin();
         else {
             const dados = listaDeAlunos.find(a => a.telefone === user.telefone);
-            if(dados) { alunoLogado = dados; carregarInterfaceAluno(); } 
-            else logout();
+            if(dados) { alunoLogado = dados; carregarInterfaceAluno(); } else logout();
         }
     }
 }
 
 function autenticar() {
   const login = document.getElementById('userEmail').value.trim();
-  if (login.toLowerCase() === 'admin') {
-    localStorage.setItem("usuarioLogado", JSON.stringify({ tipo: 'admin' }));
-    autenticarAdmin();
-  } else {
+  if (login.toLowerCase() === 'admin') { localStorage.setItem("usuarioLogado", JSON.stringify({ tipo: 'admin' })); autenticarAdmin(); }
+  else {
     const aluno = listaDeAlunos.find(a => a.telefone === login);
-    if (aluno) {
-      alunoLogado = aluno;
-      localStorage.setItem("usuarioLogado", JSON.stringify({ tipo: 'aluno', telefone: aluno.telefone }));
-      carregarInterfaceAluno();
-    } else alert("Usuário não encontrado.");
+    if (aluno) { alunoLogado = aluno; localStorage.setItem("usuarioLogado", JSON.stringify({ tipo: 'aluno', telefone: aluno.telefone })); carregarInterfaceAluno(); }
+    else alert("Usuário não encontrado.");
   }
 }
+function logout() { localStorage.removeItem("usuarioLogado"); window.location.reload(); }
 
-function logout() {
-  localStorage.removeItem("usuarioLogado");
-  window.location.reload();
-}
-
-/* ================= PAINEL PROFESSOR (ADMIN) ================= */
+/* ADMIN */
 function autenticarAdmin() { mostrarTela('dashProfessor'); renderizarListaAlunosAdmin(); }
-
 function renderizarListaAlunosAdmin(filtro="") {
   const container = document.getElementById('listaAlunosCoach');
-  if(!container) return;
-  document.getElementById('totalAlunos').innerText = listaDeAlunos.length;
-  container.innerHTML = "";
-  
+  if(!container) return; document.getElementById('totalAlunos').innerText = listaDeAlunos.length; container.innerHTML = "";
   const filtrados = listaDeAlunos.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase()) || a.telefone.includes(filtro));
-  
   filtrados.forEach(aluno => {
-    container.innerHTML += `
-      <div class="student-card">
-        <div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div>
-        <div class="student-actions">
-          <button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button>
-        </div>
-      </div>`;
+    container.innerHTML += `<div class="student-card"><div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div><div class="student-actions"><button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button></div></div>`;
   });
 }
-
 function abrirEditorTreino(tel) {
-  alunoEmEdicaoId = tel;
-  document.getElementById('alunoSendoEditado').innerText = listaDeAlunos.find(a => a.telefone === tel).nome;
-  const btns = document.getElementById('botoesModulosAdmin');
-  btns.innerHTML = "";
+  alunoEmEdicaoId = tel; document.getElementById('alunoSendoEditado').innerText = listaDeAlunos.find(a => a.telefone === tel).nome;
+  const btns = document.getElementById('botoesModulosAdmin'); btns.innerHTML = "";
   MODULOS_DISPONIVEIS.forEach(m => btns.innerHTML += `<button onclick="trocarModuloEdicao('${m}')" id="btnModulo${m}" class="mod-btn">${m}</button>`);
-  trocarModuloEdicao('A');
-  mostrarTela('painelPersonal');
+  trocarModuloEdicao('A'); mostrarTela('painelPersonal');
 }
-
 function trocarModuloEdicao(mod) {
-  moduloEmEdicao = mod;
-  document.getElementById('moduloAtualNome').innerText = mod;
-  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('btnModulo' + mod).classList.add('active');
+  moduloEmEdicao = mod; document.getElementById('moduloAtualNome').innerText = mod;
+  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active')); document.getElementById('btnModulo' + mod).classList.add('active');
   renderizarCheckboxesExercicios();
 }
-
 function renderizarCheckboxesExercicios() {
-  const container = document.getElementById('listaSelecao');
-  container.innerHTML = "";
-  const aluno = listaDeAlunos.find(a => a.telefone === alunoEmEdicaoId);
-  if (!aluno) return;
-
+  const container = document.getElementById('listaSelecao'); container.innerHTML = "";
+  const aluno = listaDeAlunos.find(a => a.telefone === alunoEmEdicaoId); if (!aluno) return;
   const exerciciosSalvos = aluno.treinos[moduloEmEdicao].exercicios || [];
-  
   const grupos = {};
-  todosExercicios.forEach(ex => {
-    if (!grupos[ex.grupo]) grupos[ex.grupo] = [];
-    grupos[ex.grupo].push(ex);
-  });
-
+  todosExercicios.forEach(ex => { if (!grupos[ex.grupo]) grupos[ex.grupo] = []; grupos[ex.grupo].push(ex); });
   Object.keys(grupos).forEach(grupo => {
     container.innerHTML += `<div class="group-header"><span>${obterIcone(grupo)}</span> ${grupo}</div>`;
     grupos[grupo].forEach(ex => {
       const salvo = exerciciosSalvos.find(s => s.id === ex.id);
       const isChecked = salvo ? "checked" : "";
-      
-      const valDescanso = salvo && salvo.descanso ? salvo.descanso : "Descanso"; 
-      const valMetodo = salvo && salvo.metodo ? salvo.metodo : "Normal"; 
+      const valDescanso = salvo && salvo.descanso ? salvo.descanso : "Descanso";
+      const valMetodo = salvo && salvo.metodo ? salvo.metodo : "Normal";
       const valSeries = salvo && salvo.series ? salvo.series : "";
-
       container.innerHTML += `
         <div class="admin-exercise-row">
-          <div class="admin-row-left">
-            <input type="checkbox" id="check_${ex.id}" value="${ex.id}" ${isChecked}>
-            <label for="check_${ex.id}" style="color:white; font-size: 0.9rem; cursor:pointer;">${ex.nome}</label>
-          </div>
+          <div class="admin-row-left"><input type="checkbox" id="check_${ex.id}" value="${ex.id}" ${isChecked}><label for="check_${ex.id}" style="color:white; font-size: 0.9rem; cursor:pointer;">${ex.nome}</label></div>
           <div class="admin-row-options">
-            <select id="descanso_${ex.id}" class="admin-input-mini w-time">
-              <option value="Descanso" disabled ${valDescanso === "Descanso" ? "selected" : ""}>⏱️</option>
-              <option value="30s" ${valDescanso === "30s" ? "selected" : ""}>30s</option>
-              <option value="45s" ${valDescanso === "45s" ? "selected" : ""}>45s</option>
-              <option value="1min" ${valDescanso === "1min" ? "selected" : ""}>1min</option>
-              <option value="1:30" ${valDescanso === "1:30" ? "selected" : ""}>1:30</option>
-              <option value="2min" ${valDescanso === "2min" ? "selected" : ""}>2min</option>
-            </select>
-            <select id="metodo_${ex.id}" class="admin-input-mini w-method">
-              <option value="Normal" ${valMetodo === "Normal" ? "selected" : ""}>Normal</option>
-              <option value="Falha" ${valMetodo === "Falha" ? "selected" : ""}>Falha</option>
-              <option value="Drop" ${valMetodo === "Drop" ? "selected" : ""}>Drop</option>
-              <option value="Bi-set" ${valMetodo === "Bi-set" ? "selected" : ""}>Bi-set</option>
-              <option value="FST-7" ${valMetodo === "FST-7" ? "selected" : ""}>FST-7</option>
-              <option value="Aquec." ${valMetodo === "Aquec." ? "selected" : ""}>Aquec.</option>
-            </select>
+            <select id="descanso_${ex.id}" class="admin-input-mini w-time"><option value="Descanso" disabled ${valDescanso === "Descanso" ? "selected" : ""}>⏱️</option><option value="30s" ${valDescanso === "30s" ? "selected" : ""}>30s</option><option value="45s" ${valDescanso === "45s" ? "selected" : ""}>45s</option><option value="1min" ${valDescanso === "1min" ? "selected" : ""}>1min</option><option value="1:30" ${valDescanso === "1:30" ? "selected" : ""}>1:30</option><option value="2min" ${valDescanso === "2min" ? "selected" : ""}>2min</option></select>
+            <select id="metodo_${ex.id}" class="admin-input-mini w-method"><option value="Normal" ${valMetodo === "Normal" ? "selected" : ""}>Normal</option><option value="Falha" ${valMetodo === "Falha" ? "selected" : ""}>Falha</option><option value="Drop" ${valMetodo === "Drop" ? "selected" : ""}>Drop</option><option value="Bi-set" ${valMetodo === "Bi-set" ? "selected" : ""}>Bi-set</option><option value="FST-7" ${valMetodo === "FST-7" ? "selected" : ""}>FST-7</option><option value="Aquec." ${valMetodo === "Aquec." ? "selected" : ""}>Aquec.</option></select>
             <input type="text" id="series_${ex.id}" class="admin-input-mini w-text" placeholder="3x12" value="${valSeries}" maxlength="8">
           </div>
-        </div>
-      `;
+        </div>`;
     });
   });
 }
-
 function salvarTreinoPersonal() {
-  const marcados = document.querySelectorAll('#listaSelecao input[type="checkbox"]:checked');
-  const listaFinal = [];
+  const marcados = document.querySelectorAll('#listaSelecao input[type="checkbox"]:checked'); const listaFinal = [];
   marcados.forEach(checkbox => {
-    const id = parseInt(checkbox.value);
-    const exBase = todosExercicios.find(e => e.id === id);
-    const descanso = document.getElementById(`descanso_${id}`).value;
-    const metodo = document.getElementById(`metodo_${id}`).value;
-    const series = document.getElementById(`series_${id}`).value;
+    const id = parseInt(checkbox.value); const exBase = todosExercicios.find(e => e.id === id);
+    const descanso = document.getElementById(`descanso_${id}`).value; const metodo = document.getElementById(`metodo_${id}`).value; const series = document.getElementById(`series_${id}`).value;
     listaFinal.push({ ...exBase, descanso: descanso !== "Descanso" ? descanso : "1min", metodo: metodo, series: series || "3x12" });
   });
-  const idx = listaDeAlunos.findIndex(a => a.telefone === alunoEmEdicaoId);
-  listaDeAlunos[idx].treinos[moduloEmEdicao].exercicios = listaFinal;
-  salvarNaNuvem(listaDeAlunos[idx]);
-  alert("Treino salvo na nuvem! 💾");
+  const idx = listaDeAlunos.findIndex(a => a.telefone === alunoEmEdicaoId); listaDeAlunos[idx].treinos[moduloEmEdicao].exercicios = listaFinal;
+  salvarNaNuvem(listaDeAlunos[idx]); alert("Treino salvo na nuvem! 💾");
 }
 
-/* ================= ÁREA DO ALUNO ================= */
+/* ALUNO */
 function carregarInterfaceAluno() {
-    const nome = alunoLogado.nome.split(' ')[0];
-    document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
-    renderizarCardsTreinoAluno();
-    atualizarDisplayFogo();
-    atualizarDisplayVencimentoPerfil();
-    document.getElementById('nomePerfil').innerText = alunoLogado.nome;
-    document.getElementById('telPerfil').innerText = alunoLogado.telefone;
-    document.getElementById('pesoInicialInput').value = alunoLogado.pesoInicial || "";
-    document.getElementById('pesoAtualInput').value = alunoLogado.pesoAtual || "";
+    const nome = alunoLogado.nome.split(' ')[0]; document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
+    renderizarCardsTreinoAluno(); atualizarDisplayFogo(); atualizarDisplayVencimentoPerfil();
+    document.getElementById('nomePerfil').innerText = alunoLogado.nome; document.getElementById('telPerfil').innerText = alunoLogado.telefone;
+    document.getElementById('pesoInicialInput').value = alunoLogado.pesoInicial || ""; document.getElementById('pesoAtualInput').value = alunoLogado.pesoAtual || "";
     // Carrega link spotify salvo
     if (alunoLogado.spotifyUrl) document.getElementById('spotifyLinkInput').value = alunoLogado.spotifyUrl;
-    mostrarTela('treinos');
-    document.getElementById('mainNav').style.display = 'flex';
+    mostrarTela('treinos'); document.getElementById('mainNav').style.display = 'flex';
 }
-
 function renderizarCardsTreinoAluno() {
-    const grid = document.getElementById('containerTreinosAluno');
-    grid.innerHTML = "";
+    const grid = document.getElementById('containerTreinosAluno'); grid.innerHTML = "";
     MODULOS_DISPONIVEIS.forEach(letra => {
-        const treino = alunoLogado.treinos[letra];
-        const qtd = treino ? treino.exercicios.length : 0;
+        const treino = alunoLogado.treinos[letra]; const qtd = treino ? treino.exercicios.length : 0;
         let cor = (letra === 'B'||letra==='E')?"blue":(letra==='C')?"purple":"";
         if (qtd > 0) grid.innerHTML += `<div class="treino-card" onclick="abrirTreino('${letra}')"><div class="icon-box ${cor}">${letra}</div><div class="info"><h3>Treino ${letra}</h3><p>${qtd} exercícios</p></div><span class="material-icons-round">chevron_right</span></div>`;
     });
 }
-
 function abrirTreino(modulo) {
-  moduloTreinoAtual = modulo;
-  const listaEx = alunoLogado.treinos[modulo].exercicios;
-  mostrarTela('detalheTreino');
-  document.getElementById('tituloTreino').innerText = `Treino ${modulo}`;
-  const container = document.getElementById('listaExercicios');
-  container.innerHTML = "";
-
+  moduloTreinoAtual = modulo; const listaEx = alunoLogado.treinos[modulo].exercicios;
+  mostrarTela('detalheTreino'); document.getElementById('tituloTreino').innerText = `Treino ${modulo}`;
+  const container = document.getElementById('listaExercicios'); container.innerHTML = "";
   listaEx.forEach(ex => {
-    if(!alunoLogado.registros) alunoLogado.registros = {};
-    const keyPeso = `${modulo}_${ex.id}_peso`;
-    const pesoSalvo = alunoLogado.registros[keyPeso] || "";
-    
-    // BADGES
+    if(!alunoLogado.registros) alunoLogado.registros = {}; const keyPeso = `${modulo}_${ex.id}_peso`; const pesoSalvo = alunoLogado.registros[keyPeso] || "";
     const badgeSeries = ex.series ? `<span class="badge-info badge-series">📋 ${ex.series}</span>` : "";
     const badgeDescanso = ex.descanso ? `<span class="badge-info badge-rest">⏰ ${ex.descanso}</span>` : "";
     const badgeMetodo = ex.metodo && ex.metodo !== "Normal" ? `<span class="badge-info badge-method">${ex.metodo}</span>` : "";
-
-    // BOLINHAS DE SÉRIE
-    let numSeries = parseInt(ex.series); 
-    if (isNaN(numSeries) || numSeries < 1) numSeries = 3;
+    let numSeries = parseInt(ex.series); if (isNaN(numSeries) || numSeries < 1) numSeries = 3;
     let bolinhasHTML = '<div class="sets-container">';
     for(let i=1; i<=numSeries; i++) {
-        const setKey = `${modulo}_${ex.id}_set_${i}`;
-        const isDone = alunoLogado.registros[setKey] ? "done" : "";
+        const setKey = `${modulo}_${ex.id}_set_${i}`; const isDone = alunoLogado.registros[setKey] ? "done" : "";
         bolinhasHTML += `<div class="set-circle ${isDone}" onclick="toggleSet('${ex.id}', ${i}, '${ex.descanso || '1min'}', this)">${i}</div>`;
     }
     bolinhasHTML += '</div>';
-
-    container.innerHTML += `
-      <div class="exercise-item">
-        <div class="exercise-header">
-            <span class="exercise-name">${ex.nome}</span>
-            <button class="btn-video-mini" onclick="abrirVideo('${ex.nome}')"><span class="material-icons-round" style="font-size:14px">play_arrow</span> Vídeo</button>
-        </div>
-        <div class="exercise-badges">${badgeSeries} ${badgeDescanso} ${badgeMetodo}</div>
-        <div class="exercise-controls">
-          <div class="input-carga-wrapper"><span class="label">Carga (kg)</span><input type="tel" class="input-carga" placeholder="0" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)"></div>
-          ${bolinhasHTML}
-        </div>
-      </div>
-    `;
+    container.innerHTML += `<div class="exercise-item"><div class="exercise-header"><span class="exercise-name">${ex.nome}</span><button class="btn-video-mini" onclick="abrirVideo('${ex.nome}')"><span class="material-icons-round" style="font-size:14px">play_arrow</span> Vídeo</button></div><div class="exercise-badges">${badgeSeries} ${badgeDescanso} ${badgeMetodo}</div><div class="exercise-controls"><div class="input-carga-wrapper"><span class="label">Carga (kg)</span><input type="tel" class="input-carga" placeholder="0" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)"></div>${bolinhasHTML}</div></div>`;
   });
   atualizarBarraProgresso();
 }
 
-/* ================= LÓGICA DE CARDIO ================= */
+/* CARDIO */
 function renderizarCardio() {
     const exerciciosCardio = todosExercicios.filter(e => e.grupo === 'Cardio');
-    const container = document.getElementById('listaCardioContainer');
-    container.innerHTML = "";
-
+    const container = document.getElementById('listaCardioContainer'); container.innerHTML = "";
     exerciciosCardio.forEach(ex => {
-        container.innerHTML += `
-            <div class="treino-card" style="padding:15px;" onclick="iniciarExercicioCardio('${ex.nome}')">
-                <div class="icon-box blue" style="width:45px; height:45px;"><span class="material-icons-round">directions_run</span></div>
-                <div class="info">
-                    <h3 style="font-size:1rem;">${ex.nome}</h3>
-                    <p>Toque para abrir</p>
-                </div>
-                <span class="material-icons-round">play_arrow</span>
-            </div>
-        `;
+        container.innerHTML += `<div class="treino-card" style="padding:15px;" onclick="iniciarExercicioCardio('${ex.nome}')"><div class="icon-box blue" style="width:45px; height:45px;"><span class="material-icons-round">directions_run</span></div><div class="info"><h3 style="font-size:1rem;">${ex.nome}</h3><p>Toque para abrir</p></div><span class="material-icons-round">play_arrow</span></div>`;
     });
 }
-
-function iniciarExercicioCardio(nome) {
-    if(confirm("Iniciar cronômetro para " + nome + "?")) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}
-
+function iniciarExercicioCardio(nome) { if(confirm("Iniciar cronômetro para " + nome + "?")) { window.scrollTo({ top: 0, behavior: 'smooth' }); } }
 function toggleCardioTimer() {
-    const btn = document.getElementById('btnCardioAction');
-    const display = document.getElementById('cardioTimerDisplay');
-
-    if (!cardioRunning) {
-        cardioRunning = true;
-        btn.innerText = "PAUSAR";
-        btn.style.background = "#eab308"; 
-        
-        cardioInterval = setInterval(() => {
-            cardioSeconds++;
-            const m = Math.floor(cardioSeconds / 60).toString().padStart(2, '0');
-            const s = (cardioSeconds % 60).toString().padStart(2, '0');
-            display.innerText = `${m}:${s}`;
-        }, 1000);
-    } else {
-        cardioRunning = false;
-        clearInterval(cardioInterval);
-        btn.innerText = "RETOMAR";
-        btn.style.background = "#10b981"; 
-    }
+    const btn = document.getElementById('btnCardioAction'); const display = document.getElementById('cardioTimerDisplay');
+    if (!cardioRunning) { cardioRunning = true; btn.innerText = "PAUSAR"; btn.style.background = "#eab308"; cardioInterval = setInterval(() => { cardioSeconds++; const m = Math.floor(cardioSeconds / 60).toString().padStart(2, '0'); const s = (cardioSeconds % 60).toString().padStart(2, '0'); display.innerText = `${m}:${s}`; }, 1000); } 
+    else { cardioRunning = false; clearInterval(cardioInterval); btn.innerText = "RETOMAR"; btn.style.background = "#10b981"; }
 }
+function resetCardioTimer() { cardioRunning = false; clearInterval(cardioInterval); cardioSeconds = 0; document.getElementById('cardioTimerDisplay').innerText = "00:00"; const btn = document.getElementById('btnCardioAction'); btn.innerText = "INICIAR"; btn.style.background = "#10b981"; }
 
-function resetCardioTimer() {
-    cardioRunning = false;
-    clearInterval(cardioInterval);
-    cardioSeconds = 0;
-    document.getElementById('cardioTimerDisplay').innerText = "00:00";
-    const btn = document.getElementById('btnCardioAction');
-    btn.innerText = "INICIAR";
-    btn.style.background = "#10b981";
-}
-
-/* ================= CRONÔMETRO DE DESCANSO ================= */
+/* TIMER */
 function toggleSet(exId, setIndex, descanso, elemento) {
-    if(navigator.vibrate) navigator.vibrate(30);
-    elemento.classList.toggle('done');
-    
-    const isDone = elemento.classList.contains('done');
-    const key = `${moduloTreinoAtual}_${exId}_set_${setIndex}`;
-    
-    if(!alunoLogado.registros) alunoLogado.registros = {};
-    alunoLogado.registros[key] = isDone;
-    salvarNaNuvem(alunoLogado);
-
-    if(isDone) iniciarTimer(descanso);
-    if(atualizarBarraProgresso() === 100) registrarDiaDeFogo();
+    if(navigator.vibrate) navigator.vibrate(30); elemento.classList.toggle('done');
+    const isDone = elemento.classList.contains('done'); const key = `${moduloTreinoAtual}_${exId}_set_${setIndex}`;
+    if(!alunoLogado.registros) alunoLogado.registros = {}; alunoLogado.registros[key] = isDone; salvarNaNuvem(alunoLogado);
+    if(isDone) iniciarTimer(descanso); if(atualizarBarraProgresso() === 100) registrarDiaDeFogo();
 }
-
 function iniciarTimer(tempoString) {
-    let segundos = 60; 
-    tempoString = tempoString.toLowerCase().trim();
-
+    let segundos = 60; tempoString = tempoString.toLowerCase().trim();
     if(tempoString.includes('min')) segundos = parseInt(tempoString) * 60;
-    else if (tempoString.includes(':')) {
-        const partes = tempoString.split(':');
-        segundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]);
-    } else if (tempoString.includes('s')) {
-        segundos = parseInt(tempoString);
-    }
-
-    const overlay = document.getElementById('timerOverlay');
-    const display = document.getElementById('timerDisplay');
-    overlay.classList.remove('hidden');
-    
-    if(timerInterval) clearInterval(timerInterval);
-    
+    else if (tempoString.includes(':')) { const p = tempoString.split(':'); segundos = (parseInt(p[0]) * 60) + parseInt(p[1]); }
+    else if (tempoString.includes('s')) segundos = parseInt(tempoString);
+    const overlay = document.getElementById('timerOverlay'); const display = document.getElementById('timerDisplay');
+    overlay.classList.remove('hidden'); if(timerInterval) clearInterval(timerInterval);
     let restante = segundos;
-    
-    function updateDisplay() {
-        const m = Math.floor(restante / 60).toString().padStart(2, '0');
-        const s = (restante % 60).toString().padStart(2, '0');
-        display.innerText = `${m}:${s}`;
-    }
+    function updateDisplay() { const m = Math.floor(restante / 60).toString().padStart(2, '0'); const s = (restante % 60).toString().padStart(2, '0'); display.innerText = `${m}:${s}`; }
     updateDisplay();
-    
-    timerInterval = setInterval(() => {
-        restante--;
-        updateDisplay();
-        if (restante <= 0) {
-            clearInterval(timerInterval);
-            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-            fecharTimer();
-        }
-    }, 1000);
+    timerInterval = setInterval(() => { restante--; updateDisplay(); if (restante <= 0) { clearInterval(timerInterval); if(navigator.vibrate) navigator.vibrate([200, 100, 200]); fecharTimer(); } }, 1000);
 }
-
 function adicionarTempo(s) {
-    const display = document.getElementById('timerDisplay').innerText;
-    const partes = display.split(':');
-    let atualSegundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]);
-    
-    clearInterval(timerInterval);
-    let restante = atualSegundos + s;
+    const display = document.getElementById('timerDisplay').innerText; const p = display.split(':');
+    let atualSegundos = (parseInt(p[0]) * 60) + parseInt(p[1]);
+    clearInterval(timerInterval); let restante = atualSegundos + s;
     const displayEl = document.getElementById('timerDisplay');
-    
-    timerInterval = setInterval(() => {
-        restante--;
-        const m = Math.floor(restante / 60).toString().padStart(2, '0');
-        const s = (restante % 60).toString().padStart(2, '0');
-        displayEl.innerText = `${m}:${s}`;
-        if (restante <= 0) { clearInterval(timerInterval); fecharTimer(); }
-    }, 1000);
+    timerInterval = setInterval(() => { restante--; const m = Math.floor(restante / 60).toString().padStart(2, '0'); const s = (restante % 60).toString().padStart(2, '0'); displayEl.innerText = `${m}:${s}`; if (restante <= 0) { clearInterval(timerInterval); fecharTimer(); } }, 1000);
 }
-
-window.fecharTimer = function() {
-    document.getElementById('timerOverlay').classList.add('hidden');
-    if(timerInterval) clearInterval(timerInterval);
-}
+window.fecharTimer = function() { document.getElementById('timerOverlay').classList.add('hidden'); if(timerInterval) clearInterval(timerInterval); }
 window.adicionarTempo = adicionarTempo; 
 
-/* ================= SPOTIFY INTELIGENTE ================= */
-function abrirSpotify() {
-    // 1. Tenta recuperar o link salvo do aluno
-    if(alunoLogado && alunoLogado.spotifyUrl) {
-        document.getElementById('spotifyIframe').src = alunoLogado.spotifyUrl;
-    }
-    document.getElementById('spotifyModal').classList.add('active');
-}
-
-function fecharSpotify() {
-    document.getElementById('spotifyModal').classList.remove('active');
-}
-
-function carregarPlaylistUsuario() {
-    const input = document.getElementById('inputPlaylistUrl').value.trim();
-    
-    if (!input) return alert("Cole um link do Spotify primeiro!");
-
-    // Converte link normal para embed se for um link direto
-    let novoLink = input;
-    
-    // Verifica se é um link padrão do Spotify (open.spotify.com) e não é embed ainda
-    if (input.includes("open.spotify.com") && !input.includes("/embed/")) {
-        const partes = input.split('.com/'); // separa depois do .com/
-        if (partes[1]) {
-            // Remove parâmetros extras (?si=...)
-            const caminhoLimpo = partes[1].split('?')[0]; 
-            // Constrói o link embed correto
-            novoLink = `https://open.spotify.com/embed/${caminhoLimpo}?utm_source=generator&theme=0`;
-        }
-    }
-
-    document.getElementById('spotifyIframe').src = novoLink;
-    
-    if (alunoLogado) {
-        alunoLogado.spotifyUrl = novoLink;
-        salvarNaNuvem(alunoLogado);
-    }
-    
-    document.getElementById('inputPlaylistUrl').value = "";
-    alert("Playlist salva! 🎧");
-}
-// Torna a função global para o HTML acessar
-window.carregarPlaylistUsuario = carregarPlaylistUsuario;
-
-/* ================= FUNÇÕES BÁSICAS ================= */
+/* UTILS */
 function salvarPeso(exId, v) {
-  if(!v) return;
-  if(!alunoLogado.registros) alunoLogado.registros={};
-  alunoLogado.registros[`${moduloTreinoAtual}_${exId}_peso`] = v;
-  if(!alunoLogado.historicoCargas) alunoLogado.historicoCargas={};
-  if(!alunoLogado.historicoCargas[exId]) alunoLogado.historicoCargas[exId]=[];
-  const h = new Date().toLocaleDateString('pt-BR').slice(0,5);
-  const hist = alunoLogado.historicoCargas[exId];
-  const ent = hist.find(x => x.data === h);
-  if(ent) ent.carga = parseFloat(v); else hist.push({data:h, carga:parseFloat(v)});
-  salvarNaNuvem(alunoLogado);
+  if(!v) return; if(!alunoLogado.registros) alunoLogado.registros={}; alunoLogado.registros[`${moduloTreinoAtual}_${exId}_peso`] = v;
+  if(!alunoLogado.historicoCargas) alunoLogado.historicoCargas={}; if(!alunoLogado.historicoCargas[exId]) alunoLogado.historicoCargas[exId]=[];
+  const h = new Date().toLocaleDateString('pt-BR').slice(0,5); const hist = alunoLogado.historicoCargas[exId]; const ent = hist.find(x => x.data === h);
+  if(ent) ent.carga = parseFloat(v); else hist.push({data:h, carga:parseFloat(v)}); salvarNaNuvem(alunoLogado);
 }
-
 function atualizarBarraProgresso() {
-  const totalSets = document.querySelectorAll('.set-circle').length;
-  if(totalSets===0) return 0;
-  const doneSets = document.querySelectorAll('.set-circle.done').length;
-  const p = Math.round((doneSets/totalSets)*100);
-  document.getElementById('barraProgresso').style.width = `${p}%`;
-  document.getElementById('progressoPorcentagem').innerText = `${p}%`;
-  return p;
+  const totalSets = document.querySelectorAll('.set-circle').length; if(totalSets===0) return 0;
+  const doneSets = document.querySelectorAll('.set-circle.done').length; const p = Math.round((doneSets/totalSets)*100);
+  document.getElementById('barraProgresso').style.width = `${p}%`; document.getElementById('progressoPorcentagem').innerText = `${p}%`; return p;
 }
-
 function registrarDiaDeFogo() {
-    const h = new Date().toLocaleDateString('pt-BR');
-    if(!alunoLogado.historicoFogo) alunoLogado.historicoFogo=[];
-    if(!alunoLogado.historicoFogo.includes(h)) {
-        alunoLogado.historicoFogo.push(h);
-        salvarNaNuvem(alunoLogado);
-        alert("Treino completo! 🔥");
-        atualizarDisplayFogo();
-    }
+    const h = new Date().toLocaleDateString('pt-BR'); if(!alunoLogado.historicoFogo) alunoLogado.historicoFogo=[];
+    if(!alunoLogado.historicoFogo.includes(h)) { alunoLogado.historicoFogo.push(h); salvarNaNuvem(alunoLogado); alert("Treino completo! 🔥"); atualizarDisplayFogo(); }
 }
 function atualizarDisplayFogo() { document.getElementById('streakCount').innerText = alunoLogado.historicoFogo ? alunoLogado.historicoFogo.length : 0; }
-
 function carregarEstatisticas() {
     if (!alunoLogado) return;
     const ctxPeso = document.getElementById('graficoPesoCanvas');
     if(ctxPeso) {
-        let labels=[], dados=[];
-        if(alunoLogado.pesoInicial) { labels.push("Início"); dados.push(alunoLogado.pesoInicial); }
+        let labels=[], dados=[]; if(alunoLogado.pesoInicial) { labels.push("Início"); dados.push(alunoLogado.pesoInicial); }
         if(alunoLogado.historicoPeso) { alunoLogado.historicoPeso.forEach(x => { labels.push(x.data); dados.push(x.peso); }); }
-        if(chartPeso) chartPeso.destroy();
-        chartPeso = new Chart(ctxPeso, {
-            type: 'line',
-            data: { labels, datasets: [{ label: 'Peso (kg)', data: dados, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', borderWidth:3, tension:0.4, fill:true, pointBackgroundColor:'#020617', pointBorderColor:'#10b981' }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } }
-        });
+        if(chartPeso) chartPeso.destroy(); chartPeso = new Chart(ctxPeso, { type: 'line', data: { labels, datasets: [{ label: 'Peso (kg)', data: dados, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', borderWidth:3, tension:0.4, fill:true, pointBackgroundColor:'#020617', pointBorderColor:'#10b981' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } } });
     }
-    renderizarGraficoFrequenciaReal();
-    povoarSelectExercicios();
+    renderizarGraficoFrequenciaReal(); povoarSelectExercicios();
 }
-
 function renderizarGraficoFrequenciaReal() {
-    let hist = alunoLogado.historicoFogo || [];
-    const container = document.getElementById('graficoSemanal');
-    container.innerHTML = "";
-    const hoje = new Date();
-    const dom = new Date(hoje); dom.setDate(hoje.getDate() - hoje.getDay());
+    let hist = alunoLogado.historicoFogo || []; const container = document.getElementById('graficoSemanal'); container.innerHTML = "";
+    const hoje = new Date(); const dom = new Date(hoje); dom.setDate(hoje.getDate() - hoje.getDay());
     const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
     for(let i=0; i<7; i++) {
-        const d = new Date(dom); d.setDate(dom.getDate()+i);
-        const str = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-        const active = hist.includes(str) ? 'active' : '';
-        const h = active ? '100%' : '10%';
+        const d = new Date(dom); d.setDate(dom.getDate()+i); const str = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+        const active = hist.includes(str) ? 'active' : ''; const h = active ? '100%' : '10%';
         container.innerHTML += `<div class="chart-bar-wrapper"><div class="chart-bar ${active}" style="height:${h}"></div><span class="week-day">${dias[i]}</span></div>`;
     }
 }
-
 function povoarSelectExercicios() {
-    const sel = document.getElementById('selectExercicioGrafico');
-    if(!sel) return;
-    let ids = Object.keys(alunoLogado.historicoCargas || {});
-    sel.innerHTML = "";
-    if(ids.length===0) { sel.innerHTML="<option>Sem dados</option>"; return; }
-    ids.forEach(id => { const nome = todosExercicios.find(e=>e.id==id)?.nome || "Ex "+id; sel.innerHTML+=`<option value="${id}">${nome}</option>`; });
-    atualizarGraficoCarga();
+    const sel = document.getElementById('selectExercicioGrafico'); if(!sel) return;
+    let ids = Object.keys(alunoLogado.historicoCargas || {}); sel.innerHTML = ""; if(ids.length===0) { sel.innerHTML="<option>Sem dados</option>"; return; }
+    ids.forEach(id => { const nome = todosExercicios.find(e=>e.id==id)?.nome || "Ex "+id; sel.innerHTML+=`<option value="${id}">${nome}</option>`; }); atualizarGraficoCarga();
 }
-
 function atualizarGraficoCarga() {
-    const id = document.getElementById('selectExercicioGrafico').value;
-    if(!id || !alunoLogado.historicoCargas) return;
-    const hist = alunoLogado.historicoCargas[id] || [];
-    const labels = hist.map(x=>x.data);
-    const dados = hist.map(x=>x.carga);
-    if(dados.length>0) {
-        document.getElementById('cargaInicialDisplay').innerText = dados[0]+"kg";
-        document.getElementById('recordeDisplay').innerText = Math.max(...dados)+"kg";
-    }
-    const ctx = document.getElementById('graficoCargaCanvas');
-    if(chartCarga) chartCarga.destroy();
-    chartCarga = new Chart(ctx, {
-        type: 'line',
-        data: { labels, datasets: [{ label: 'Carga', data: dados, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.15)', borderWidth:3, tension:0.3, fill:true, pointBackgroundColor:'#020617', pointBorderColor:'#3b82f6' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } }
-    });
+    const id = document.getElementById('selectExercicioGrafico').value; if(!id || !alunoLogado.historicoCargas) return;
+    const hist = alunoLogado.historicoCargas[id] || []; const labels = hist.map(x=>x.data); const dados = hist.map(x=>x.carga);
+    if(dados.length>0) { document.getElementById('cargaInicialDisplay').innerText = dados[0]+"kg"; document.getElementById('recordeDisplay').innerText = Math.max(...dados)+"kg"; }
+    const ctx = document.getElementById('graficoCargaCanvas'); if(chartCarga) chartCarga.destroy(); chartCarga = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga', data: dados, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.15)', borderWidth:3, tension:0.3, fill:true, pointBackgroundColor:'#020617', pointBorderColor:'#3b82f6' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } } });
 }
-
 function salvarPesoCorporal(v) {
-    if(!v) return;
-    if(!alunoLogado.pesoInicial) { alunoLogado.pesoInicial=v; document.getElementById('pesoInicialInput').value=v; }
-    alunoLogado.pesoAtual = v;
-    if(!alunoLogado.historicoPeso) alunoLogado.historicoPeso=[];
-    const h = new Date().toLocaleDateString('pt-BR').slice(0,5);
-    const reg = alunoLogado.historicoPeso.find(x=>x.data===h);
-    if(reg) reg.peso=parseFloat(v); else alunoLogado.historicoPeso.push({data:h, peso:parseFloat(v)});
-    salvarNaNuvem(alunoLogado); carregarEstatisticas();
+    if(!v) return; if(!alunoLogado.pesoInicial) { alunoLogado.pesoInicial=v; document.getElementById('pesoInicialInput').value=v; }
+    alunoLogado.pesoAtual = v; if(!alunoLogado.historicoPeso) alunoLogado.historicoPeso=[];
+    const h = new Date().toLocaleDateString('pt-BR').slice(0,5); const reg = alunoLogado.historicoPeso.find(x=>x.data===h);
+    if(reg) reg.peso=parseFloat(v); else alunoLogado.historicoPeso.push({data:h, peso:parseFloat(v)}); salvarNaNuvem(alunoLogado); carregarEstatisticas();
 }
-
 function atualizarDisplayVencimentoPerfil() {
-    const el = document.getElementById('vencimentoPerfil');
-    const st = document.getElementById('statusPagamento');
-    if(!alunoLogado.vencimento) { el.innerText="--/--"; st.innerText="N/A"; return; }
-    const p = alunoLogado.vencimento.split('-');
-    el.innerText = `${p[2]}/${p[1]}/${p[0]}`;
-    const h = new Date(); const v = new Date(alunoLogado.vencimento); v.setHours(23,59,59);
-    if(h > v) { st.innerText="Atrasado"; st.style.color="#f87171"; st.style.background="rgba(239,68,68,0.2)"; }
-    else { st.innerText="Em dia"; st.style.color="#10b981"; st.style.background="rgba(16,185,129,0.2)"; }
+    const el = document.getElementById('vencimentoPerfil'); const st = document.getElementById('statusPagamento');
+    if(!alunoLogado.vencimento) { el.innerText="--/--"; st.innerText="N/A"; return; } const p = alunoLogado.vencimento.split('-'); el.innerText = `${p[2]}/${p[1]}/${p[0]}`;
+    const h = new Date(); const v = new Date(alunoLogado.vencimento); v.setHours(23,59,59); if(h > v) { st.innerText="Atrasado"; st.style.color="#f87171"; st.style.background="rgba(239,68,68,0.2)"; } else { st.innerText="Em dia"; st.style.color="#10b981"; st.style.background="rgba(16,185,129,0.2)"; }
 }
 
+/* SPOTIFY */
+function salvarLinkSpotify(link) {
+    if(!link) return;
+    // Tenta extrair ID do link (seja web player ou app)
+    // Ex: https://open.spotify.com/playlist/37i9dQZF1DX76Wlfdnj7AP?si=...
+    let embedUrl = "https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP"; // Default
+    
+    if (link.includes("spotify.com")) {
+        // Simplesmente troca o 'open.spotify.com' por 'open.spotify.com/embed' se o usuário colar o link normal
+        embedUrl = link.replace("open.spotify.com", "open.spotify.com/embed").split('?')[0];
+    }
+    
+    alunoLogado.spotifyUrl = embedUrl;
+    salvarNaNuvem(alunoLogado);
+    alert("Playlist salva! O player será atualizado na próxima vez.");
+}
+
+function abrirSpotify() { 
+    // Carrega URL salva se existir
+    if(alunoLogado && alunoLogado.spotifyUrl) {
+        document.getElementById('spotifyIframe').src = alunoLogado.spotifyUrl;
+    }
+    document.getElementById('spotifyModal').classList.add('active'); 
+}
+function fecharSpotify() { document.getElementById('spotifyModal').classList.remove('active'); }
+
+/* NAV / GERAL */
 function obterIcone(g){const m={'Perna':'🦵','Peito':'🏋️','Costas':'🦍','Ombro':'🥥','Bíceps':'💪','Tríceps':'💪','Abs':'🔥','Cardio':'🏃'};return m[g]||'📋';}
 function toggleFormulario(){document.getElementById('formCadastroAluno').classList.toggle('hidden');}
 async function cadastrarAluno(){const n=document.getElementById('novoNome').value; const t=document.getElementById('novoTel').value; const d=document.getElementById('novoVencimento').value; if(!n||!t)return alert('Preencha tudo'); const novo={nome:n,telefone:t,vencimento:d,treinos:{A:{exercicios:[]},B:{exercicios:[]},C:{exercicios:[]},D:{exercicios:[]},E:{exercicios:[]}}}; listaDeAlunos.push(novo); await salvarNaNuvem(novo); renderizarListaAlunosAdmin(); toggleFormulario();}
@@ -652,6 +372,5 @@ function mostrarTela(id){
 
     if (id === 'estatisticas') { carregarEstatisticas(); document.querySelector('.nav-item:nth-child(1)').style.color = '#f8fafc'; }
     if (id === 'cardio') { renderizarCardio(); document.querySelector('.nav-item:nth-child(2)').style.color = '#10b981'; } 
-    if (id === 'treinos') { /* auto */ }
     if (id === 'conta') { document.querySelector('.nav-item:last-child').style.color = '#f8fafc'; }
 }
