@@ -139,28 +139,28 @@ function renderizarListaAcademias() {
     listaDeAcademias.forEach(a => { div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`; });
 }
 
-/* ================= PAINEL PROFESSOR (COM CHECKBOX LIGA/DESLIGA) ================= */
+/* ================= PAINEL PROFESSOR (COM BOTÃO LIGA/DESLIGA) ================= */
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
     
-    // CARREGA AVISO E ESTADO DO CHECKBOX
+    // CARREGA AVISO E SE ESTÁ ATIVO
     if(usuarioLogado.aviso) document.getElementById('textoAvisoAcademia').value = usuarioLogado.aviso;
     else document.getElementById('textoAvisoAcademia').value = "";
     
-    // Verifica se está ativo (true) ou não
+    // Marca o botão se estiver ligado (true)
     document.getElementById('chkAvisoAtivo').checked = (usuarioLogado.avisoAtivo === true);
 
     renderizarListaAlunosAdmin(); 
 }
 
-// SALVAR AVISO (COM LÓGICA DE CHECKBOX)
+// SALVAR AVISO (SALVA O ESTADO DO BOTÃO)
 async function salvarAvisoAcademia() {
     const texto = document.getElementById('textoAvisoAcademia').value.trim();
     const ativo = document.getElementById('chkAvisoAtivo').checked;
     
     usuarioLogado.aviso = texto;
-    usuarioLogado.avisoAtivo = ativo; // Salva o estado do botão
+    usuarioLogado.avisoAtivo = ativo; // Salva se está ligado ou desligado
     
     await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
     
@@ -171,8 +171,8 @@ async function salvarAvisoAcademia() {
         listaDeAcademias[idx].avisoAtivo = ativo;
     }
     
-    if(!ativo) alert("Aviso salvo, mas OCULTO para os alunos.");
-    else alert("Aviso publicado e VISÍVEL!");
+    if(!ativo) alert("Aviso DESATIVADO. Ele sumiu do app do aluno.");
+    else alert("Aviso ATIVADO e visível para todos!");
 }
 
 function renderizarListaAlunosAdmin(filtro = "") {
@@ -280,20 +280,20 @@ function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
     document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
     
-    // MURAL INTELIGENTE: Verifica se o Professor ATIVOU (avisoAtivo)
+    // LÓGICA DO INTERRUPTOR
     const academiaDoAluno = listaDeAcademias.find(gym => gym.id === usuarioLogado.academiaId);
     const boxAviso = document.getElementById('boxAvisoAluno');
     
-    // SÓ MOSTRA SE 'avisoAtivo' FOR VERDADEIRO
+    // Só mostra se o PROFESSOR ATIVOU (avisoAtivo == true)
     if(academiaDoAluno && academiaDoAluno.avisoAtivo === true && academiaDoAluno.aviso) {
         boxAviso.classList.remove('hidden');
         document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
     } else {
-        // SE ESTIVER DESATIVADO (CHECKBOX OFF), ESCONDE
+        // Se estiver desligado, ESCONDE A CAIXA INTEIRA
         boxAviso.classList.add('hidden');
     }
 
-    // FOGO (Streak)
+    // FOGO
     atualizarDisplayFogo();
 
     renderizarCardsTreino(); atualizarDisplayVencimentoPerfil();
@@ -385,7 +385,6 @@ function atualizarBarraProgresso() {
 
 /* ================= ESTATÍSTICAS E GRÁFICOS (COMPLETOS) ================= */
 function carregarEstatisticas() {
-    // 1. Gráfico de Composição (Peso/Gordura)
     const ctx = document.getElementById('graficoComposicaoCanvas');
     if(ctx && usuarioLogado.historicoAvaliacoes) {
         let labels=[], dPeso=[], dGordura=[];
@@ -398,7 +397,7 @@ function carregarEstatisticas() {
         });
     }
 
-    // 2. Gráfico de Frequência (Dias da Semana)
+    // Gráfico de Frequência
     let hist = usuarioLogado.historicoFogo || [];
     const container = document.getElementById('graficoSemanal');
     container.innerHTML = "";
@@ -413,7 +412,6 @@ function carregarEstatisticas() {
         container.innerHTML += `<div class="chart-bar-wrapper"><div class="chart-bar ${active}" style="height:${h}"></div><span class="week-day">${dias[i]}</span></div>`;
     }
 
-    // 3. Preencher Select de Força
     povoarSelectExercicios();
 }
 
