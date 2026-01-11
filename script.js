@@ -139,30 +139,44 @@ function renderizarListaAcademias() {
     listaDeAcademias.forEach(a => { div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`; });
 }
 
-/* ================= PAINEL PROFESSOR ================= */
+/* ================= PAINEL PROFESSOR (COM MURAL INTELIGENTE) ================= */
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
+    
+    // Carregar Aviso Salvo no Input
     if(usuarioLogado.aviso) document.getElementById('textoAvisoAcademia').value = usuarioLogado.aviso;
     else document.getElementById('textoAvisoAcademia').value = "";
+
     renderizarListaAlunosAdmin(); 
 }
+
+// SALVAR AVISO (INTELIGENTE: LIMPA SE ESTIVER VAZIO)
 async function salvarAvisoAcademia() {
     const texto = document.getElementById('textoAvisoAcademia').value.trim();
     usuarioLogado.aviso = texto;
     await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
     const idx = listaDeAcademias.findIndex(a => a.id === usuarioLogado.id);
     if(idx >= 0) listaDeAcademias[idx].aviso = texto;
-    if(texto === "") alert("Aviso removido!");
+    
+    if(texto === "") alert("Aviso removido! O mural sumiu para os alunos.");
     else alert("Aviso publicado!");
 }
+
 function renderizarListaAlunosAdmin(filtro = "") {
     const container = document.getElementById('listaAlunosCoach'); container.innerHTML = "";
     const meusAlunos = listaDeAlunos.filter(aluno => aluno.academiaId === usuarioLogado.id);
     document.getElementById('totalAlunos').innerText = meusAlunos.length;
     const listaFiltrada = meusAlunos.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase()) || a.telefone.includes(filtro));
     listaFiltrada.forEach(aluno => {
-        container.innerHTML += `<div class="student-card"><div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div><div class="student-actions"><button class="btn-icon" style="background: #334155;" onclick="abrirModalAvaliacao('${aluno.telefone}')" title="Avaliação Física"><span class="material-icons-round" style="color:#eab308">straighten</span></button><button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button></div></div>`;
+        container.innerHTML += `
+        <div class="student-card">
+            <div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div>
+            <div class="student-actions">
+                <button class="btn-icon" style="background: #334155;" onclick="abrirModalAvaliacao('${aluno.telefone}')" title="Avaliação Física"><span class="material-icons-round" style="color:#eab308">straighten</span></button>
+                <button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button>
+            </div>
+        </div>`;
     });
 }
 async function cadastrarAluno() {
@@ -249,20 +263,26 @@ function salvarTreinoPersonal() {
   alert("Salvo!");
 }
 
-/* ================= APP DO ALUNO ================= */
+/* ================= APP DO ALUNO (COM LÓGICA DE AVISO INTELIGENTE) ================= */
 function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
     document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
     
-    // MURAL
+    // MURAL INTELIGENTE: Só mostra se tiver texto real
     const academiaDoAluno = listaDeAcademias.find(gym => gym.id === usuarioLogado.academiaId);
     const boxAviso = document.getElementById('boxAvisoAluno');
-    if(academiaDoAluno && academiaDoAluno.aviso && academiaDoAluno.aviso.trim() !== "") {
+    
+    // VERIFICA SE TEM TEXTO (E NÃO É SÓ ESPAÇO VAZIO)
+    if(academiaDoAluno && academiaDoAluno.aviso && academiaDoAluno.aviso.trim().length > 0) {
+        // TEM AVISO: MOSTRA
         boxAviso.classList.remove('hidden');
         document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
-    } else { boxAviso.classList.add('hidden'); }
+    } else {
+        // NÃO TEM AVISO: ESCONDE TOTALMENTE
+        boxAviso.classList.add('hidden');
+    }
 
-    // FOGO
+    // FOGO (Streak)
     atualizarDisplayFogo();
 
     renderizarCardsTreino(); atualizarDisplayVencimentoPerfil();
@@ -311,18 +331,18 @@ function toggleSet(exId, idx, descanso, el) {
     salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado);
     if(status) iniciarTimer(descanso || '1min');
     
-    // CORREÇÃO: VERIFICA SE O TREINO ACABOU PARA SALVAR O FOGO
+    // VERIFICA SE O TREINO ACABOU PARA SALVAR O FOGO
     if(atualizarBarraProgresso() === 100) registrarDiaDeFogo();
 }
 
-// LÓGICA DO FOGO (STREAK) - CORRIGIDA
+// LÓGICA DO FOGO (STREAK)
 function registrarDiaDeFogo() {
     const h = new Date().toLocaleDateString('pt-BR');
     if(!usuarioLogado.historicoFogo) usuarioLogado.historicoFogo=[];
     if(!usuarioLogado.historicoFogo.includes(h)) {
         usuarioLogado.historicoFogo.push(h);
         salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado);
-        if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]); // Vibração de Sucesso
+        if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]); 
         alert("TREINO 100% CONCLUÍDO! 🔥");
         atualizarDisplayFogo();
     }
@@ -367,7 +387,7 @@ function carregarEstatisticas() {
         });
     }
 
-    // 2. Gráfico de Frequência (Dias da Semana) - CORRIGIDO
+    // 2. Gráfico de Frequência (Dias da Semana)
     let hist = usuarioLogado.historicoFogo || [];
     const container = document.getElementById('graficoSemanal');
     container.innerHTML = "";
@@ -382,7 +402,7 @@ function carregarEstatisticas() {
         container.innerHTML += `<div class="chart-bar-wrapper"><div class="chart-bar ${active}" style="height:${h}"></div><span class="week-day">${dias[i]}</span></div>`;
     }
 
-    // 3. Preencher Select de Força - CORRIGIDO
+    // 3. Preencher Select de Força
     povoarSelectExercicios();
 }
 
