@@ -83,6 +83,11 @@ let chartPeso = null;
 let chartCarga = null;
 let timerInterval = null; 
 
+// Estado do Cardio
+let cardioInterval = null;
+let cardioSeconds = 0;
+let cardioRunning = false;
+
 /* ================= INICIALIZAÇÃO FIREBASE ================= */
 setTimeout(() => {
     carregarDadosDaNuvem().then(() => { verificarSessao(); });
@@ -236,25 +241,16 @@ function renderizarCheckboxesExercicios() {
 function salvarTreinoPersonal() {
   const marcados = document.querySelectorAll('#listaSelecao input[type="checkbox"]:checked');
   const listaFinal = [];
-
   marcados.forEach(checkbox => {
     const id = parseInt(checkbox.value);
     const exBase = todosExercicios.find(e => e.id === id);
     const descanso = document.getElementById(`descanso_${id}`).value;
     const metodo = document.getElementById(`metodo_${id}`).value;
     const series = document.getElementById(`series_${id}`).value;
-
-    listaFinal.push({
-      ...exBase,
-      descanso: descanso !== "Descanso" ? descanso : "1min",
-      metodo: metodo,
-      series: series || "3x12"
-    });
+    listaFinal.push({ ...exBase, descanso: descanso !== "Descanso" ? descanso : "1min", metodo: metodo, series: series || "3x12" });
   });
-
   const idx = listaDeAlunos.findIndex(a => a.telefone === alunoEmEdicaoId);
   listaDeAlunos[idx].treinos[moduloEmEdicao].exercicios = listaFinal;
-  
   salvarNaNuvem(listaDeAlunos[idx]);
   alert("Treino salvo na nuvem! 💾");
 }
@@ -318,18 +314,11 @@ function abrirTreino(modulo) {
       <div class="exercise-item">
         <div class="exercise-header">
             <span class="exercise-name">${ex.nome}</span>
-            <button class="btn-video-mini" onclick="abrirVideo('${ex.nome}')">
-                <span class="material-icons-round" style="font-size:14px">play_arrow</span> Vídeo
-            </button>
+            <button class="btn-video-mini" onclick="abrirVideo('${ex.nome}')"><span class="material-icons-round" style="font-size:14px">play_arrow</span> Vídeo</button>
         </div>
-        <div class="exercise-badges">
-            ${badgeSeries} ${badgeDescanso} ${badgeMetodo}
-        </div>
+        <div class="exercise-badges">${badgeSeries} ${badgeDescanso} ${badgeMetodo}</div>
         <div class="exercise-controls">
-          <div class="input-carga-wrapper">
-             <span class="label">Carga (kg)</span>
-             <input type="tel" class="input-carga" placeholder="0" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)">
-          </div>
+          <div class="input-carga-wrapper"><span class="label">Carga (kg)</span><input type="tel" class="input-carga" placeholder="0" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)"></div>
           ${bolinhasHTML}
         </div>
       </div>
@@ -338,44 +327,94 @@ function abrirTreino(modulo) {
   atualizarBarraProgresso();
 }
 
-/* ================= LÓGICA DO CRONÔMETRO (CORRIGIDA) ================= */
+/* ================= LÓGICA DE CARDIO (NOVO) ================= */
+function renderizarCardio() {
+    // Filtra apenas exercícios de Cardio
+    const exerciciosCardio = todosExercicios.filter(e => e.grupo === 'Cardio');
+    const container = document.getElementById('listaCardioContainer');
+    container.innerHTML = "";
+
+    exerciciosCardio.forEach(ex => {
+        container.innerHTML += `
+            <div class="treino-card" style="padding:15px;" onclick="iniciarExercicioCardio('${ex.nome}')">
+                <div class="icon-box blue" style="width:45px; height:45px;"><span class="material-icons-round">directions_run</span></div>
+                <div class="info">
+                    <h3 style="font-size:1rem;">${ex.nome}</h3>
+                    <p>Toque para abrir</p>
+                </div>
+                <span class="material-icons-round">play_arrow</span>
+            </div>
+        `;
+    });
+}
+
+function iniciarExercicioCardio(nome) {
+    if(confirm("Iniciar cronômetro para " + nome + "?")) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Aqui poderia abrir um modal específico, por enquanto vamos focar no timer principal
+    }
+}
+
+function toggleCardioTimer() {
+    const btn = document.getElementById('btnCardioAction');
+    const display = document.getElementById('cardioTimerDisplay');
+
+    if (!cardioRunning) {
+        // Iniciar
+        cardioRunning = true;
+        btn.innerText = "PAUSAR";
+        btn.style.background = "#eab308"; // Amarelo
+        
+        cardioInterval = setInterval(() => {
+            cardioSeconds++;
+            const m = Math.floor(cardioSeconds / 60).toString().padStart(2, '0');
+            const s = (cardioSeconds % 60).toString().padStart(2, '0');
+            display.innerText = `${m}:${s}`;
+        }, 1000);
+    } else {
+        // Pausar
+        cardioRunning = false;
+        clearInterval(cardioInterval);
+        btn.innerText = "RETOMAR";
+        btn.style.background = "#10b981"; // Verde
+    }
+}
+
+function resetCardioTimer() {
+    cardioRunning = false;
+    clearInterval(cardioInterval);
+    cardioSeconds = 0;
+    document.getElementById('cardioTimerDisplay').innerText = "00:00";
+    const btn = document.getElementById('btnCardioAction');
+    btn.innerText = "INICIAR";
+    btn.style.background = "#10b981";
+}
+
+/* ================= LÓGICA DO CRONÔMETRO (DESCANSO) ================= */
 function toggleSet(exId, setIndex, descanso, elemento) {
     if(navigator.vibrate) navigator.vibrate(30);
     elemento.classList.toggle('done');
-    
     const isDone = elemento.classList.contains('done');
     const key = `${moduloTreinoAtual}_${exId}_set_${setIndex}`;
-    
     if(!alunoLogado.registros) alunoLogado.registros = {};
     alunoLogado.registros[key] = isDone;
     salvarNaNuvem(alunoLogado);
-
     if(isDone) iniciarTimer(descanso);
     if(atualizarBarraProgresso() === 100) registrarDiaDeFogo();
 }
 
 function iniciarTimer(tempoString) {
-    let segundos = 60; // Padrão
-    
-    // Normaliza a string para evitar erros de espaços
+    let segundos = 60;
     tempoString = tempoString.toLowerCase().trim();
-
-    // Lógica inteligente para converter
-    if(tempoString.includes('min')) {
-        segundos = parseInt(tempoString) * 60; // "2min" -> 120
-    } else if (tempoString.includes(':')) {
-        const partes = tempoString.split(':');
-        segundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]); // "1:30" -> 90
-    } else if (tempoString.includes('s')) {
-        segundos = parseInt(tempoString); // "45s" -> 45
-    }
+    if(tempoString.includes('min')) segundos = parseInt(tempoString) * 60;
+    else if (tempoString.includes(':')) { const p = tempoString.split(':'); segundos = (parseInt(p[0]) * 60) + parseInt(p[1]); }
+    else if (tempoString.includes('s')) segundos = parseInt(tempoString);
 
     const overlay = document.getElementById('timerOverlay');
     const display = document.getElementById('timerDisplay');
     overlay.classList.remove('hidden');
     
     if(timerInterval) clearInterval(timerInterval);
-    
     let restante = segundos;
     
     function updateDisplay() {
@@ -398,29 +437,21 @@ function iniciarTimer(tempoString) {
 
 function adicionarTempo(s) {
     const display = document.getElementById('timerDisplay').innerText;
-    const partes = display.split(':');
-    let atualSegundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]);
-    
+    const p = display.split(':');
+    let atualSegundos = (parseInt(p[0]) * 60) + parseInt(p[1]);
     clearInterval(timerInterval);
     let restante = atualSegundos + s;
     const displayEl = document.getElementById('timerDisplay');
-    
     timerInterval = setInterval(() => {
         restante--;
         const m = Math.floor(restante / 60).toString().padStart(2, '0');
         const s = (restante % 60).toString().padStart(2, '0');
         displayEl.innerText = `${m}:${s}`;
-        if (restante <= 0) {
-            clearInterval(timerInterval);
-            fecharTimer();
-        }
+        if (restante <= 0) { clearInterval(timerInterval); fecharTimer(); }
     }, 1000);
 }
 
-window.fecharTimer = function() {
-    document.getElementById('timerOverlay').classList.add('hidden');
-    if(timerInterval) clearInterval(timerInterval);
-}
+window.fecharTimer = function() { document.getElementById('timerOverlay').classList.add('hidden'); if(timerInterval) clearInterval(timerInterval); }
 window.adicionarTempo = adicionarTempo; 
 
 /* ================= FUNÇÕES BÁSICAS ================= */
@@ -467,11 +498,7 @@ function carregarEstatisticas() {
         if(alunoLogado.pesoInicial) { labels.push("Início"); dados.push(alunoLogado.pesoInicial); }
         if(alunoLogado.historicoPeso) { alunoLogado.historicoPeso.forEach(x => { labels.push(x.data); dados.push(x.peso); }); }
         if(chartPeso) chartPeso.destroy();
-        chartPeso = new Chart(ctxPeso, {
-            type: 'line',
-            data: { labels, datasets: [{ label: 'Peso (kg)', data: dados, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', borderWidth:3, tension:0.4, fill:true, pointBackgroundColor:'#020617', pointBorderColor:'#10b981' }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } }
-        });
+        chartPeso = new Chart(ctxPeso, { type: 'line', data: { labels, datasets: [{ label: 'Peso (kg)', data: dados, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', borderWidth:3, tension:0.4, fill:true, pointBackgroundColor:'#020617', pointBorderColor:'#10b981' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } } });
     }
     renderizarGraficoFrequenciaReal();
     povoarSelectExercicios();
@@ -515,11 +542,7 @@ function atualizarGraficoCarga() {
     }
     const ctx = document.getElementById('graficoCargaCanvas');
     if(chartCarga) chartCarga.destroy();
-    chartCarga = new Chart(ctx, {
-        type: 'line',
-        data: { labels, datasets: [{ label: 'Carga', data: dados, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.15)', borderWidth:3, tension:0.3, fill:true, pointBackgroundColor:'#020617', pointBorderColor:'#3b82f6' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } }
-    });
+    chartCarga = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga', data: dados, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.15)', borderWidth:3, tension:0.3, fill:true, pointBackgroundColor:'#020617', pointBorderColor:'#3b82f6' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display:false }, y: { grid:{ color:'rgba(255,255,255,0.05)' } } } } });
 }
 
 function salvarPesoCorporal(v) {
@@ -552,12 +575,27 @@ function voltarTreinos(){mostrarTela('treinos');}
 function abrirVideo(t){document.getElementById('videoModal').classList.add('active'); document.getElementById('videoTitulo').innerText=t;}
 function fecharVideo(){document.getElementById('videoModal').classList.remove('active');}
 function filtrarAlunos(){renderizarListaAlunosAdmin(document.getElementById('inputBusca').value);}
-function mostrarTela(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); const nav=document.getElementById('mainNav'); if(id.includes('dash')||id==='login')nav.style.display='none'; else if(alunoLogado)nav.style.display='flex';}
-/* ================= SPOTIFY ================= */
-function abrirSpotify() {
-  document.getElementById('spotifyModal').classList.add('active');
+function mostrarTela(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); 
+    document.getElementById(id).classList.add('active'); 
+    
+    // NAVEGAÇÃO
+    const nav=document.getElementById('mainNav'); 
+    if(id.includes('dash')||id==='login') nav.style.display='none'; 
+    else if(alunoLogado) nav.style.display='flex';
+
+    // RESETAR CORES
+    document.querySelectorAll('.nav-item').forEach(btn => btn.style.color = '#64748b');
+
+    // LOGICA ESPECÍFICA DAS TELAS
+    if (id === 'estatisticas') { carregarEstatisticas(); document.querySelector('.nav-item:nth-child(1)').style.color = '#f8fafc'; }
+    if (id === 'cardio') { renderizarCardio(); document.querySelector('.nav-item:nth-child(2)').style.color = '#10b981'; } // Highlight verde para Cardio
+    if (id === 'treinos') { /* Central é auto */ }
+    if (id === 'conta') { document.querySelector('.nav-item:last-child').style.color = '#f8fafc'; }
 }
 
-function fecharSpotify() {
-  document.getElementById('spotifyModal').classList.remove('active');
+/* ================= SPOTIFY ================= */
+function abrirSpotify() { document.getElementById('spotifyModal').classList.add('active'); }
+function fecharSpotify() { document.getElementById('spotifyModal').classList.remove('active'); }
 }
+
