@@ -183,7 +183,6 @@ function renderizarListaAlunosAdmin(filtro = "") {
     });
 }
 
-// FEATURE NOVA: IMPRESSÃO DE PDF
 function imprimirTreino(tel) {
     const aluno = listaDeAlunos.find(a => a.telefone === tel);
     if(!aluno) return;
