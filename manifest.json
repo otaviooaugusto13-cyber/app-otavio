@@ -1,5 +1,5 @@
 {
-  "name": "IRON PRO System",
+  "name": "IRON PRO",
   "short_name": "IRON PRO",
   "start_url": "/index.html",
   "display": "standalone",
@@ -19,3 +19,4 @@
     }
   ]
 }
+
