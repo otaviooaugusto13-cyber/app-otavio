@@ -18,7 +18,6 @@ const todosExercicios = [
   { id: 15, nome: "Cadeira Abdutora", grupo: "Perna" },
   { id: 16, nome: "Panturrilha Sentado", grupo: "Perna" },
   { id: 17, nome: "Panturrilha no Leg", grupo: "Perna" },
-
   // PEITO
   { id: 20, nome: "Supino Reto (Barra)", grupo: "Peito" },
   { id: 21, nome: "Supino Reto (Halter)", grupo: "Peito" },
@@ -31,12 +30,11 @@ const todosExercicios = [
   { id: 28, nome: "Crossover Polia Baixa", grupo: "Peito" },
   { id: 29, nome: "Flexão de Braço", grupo: "Peito" },
   { id: 30, nome: "Supino Máquina", grupo: "Peito" },
-
   // COSTAS
   { id: 40, nome: "Puxada Alta (Frente)", grupo: "Costas" },
   { id: 41, nome: "Puxada Alta (Triângulo)", grupo: "Costas" },
   { id: 42, nome: "Puxada Alta (Costas)", grupo: "Costas" },
-  { id: 43, nome: "Remada Baixa", grupo: "Costas" },
+  { id: 43, nome: "Remada Baixa (Triângulo)", grupo: "Costas" },
   { id: 44, nome: "Remada Curvada", grupo: "Costas" },
   { id: 45, nome: "Remada Cavalinho", grupo: "Costas" },
   { id: 46, nome: "Remada Serrote", grupo: "Costas" },
@@ -44,7 +42,6 @@ const todosExercicios = [
   { id: 48, nome: "Barra Fixa", grupo: "Costas" },
   { id: 49, nome: "Voador Inverso", grupo: "Costas" },
   { id: 50, nome: "Lombar Máquina", grupo: "Costas" },
-
   // OMBRO
   { id: 60, nome: "Desenv. Halter", grupo: "Ombro" },
   { id: 61, nome: "Desenv. Máquina", grupo: "Ombro" },
@@ -53,7 +50,6 @@ const todosExercicios = [
   { id: 64, nome: "Elevação Frontal", grupo: "Ombro" },
   { id: 65, nome: "Remada Alta", grupo: "Ombro" },
   { id: 66, nome: "Encolhimento", grupo: "Ombro" },
-
   // BÍCEPS
   { id: 70, nome: "Rosca Direta (Barra)", grupo: "Bíceps" },
   { id: 71, nome: "Rosca Direta (Polia)", grupo: "Bíceps" },
@@ -61,7 +57,6 @@ const todosExercicios = [
   { id: 73, nome: "Rosca Martelo", grupo: "Bíceps" },
   { id: 74, nome: "Rosca Scott", grupo: "Bíceps" },
   { id: 75, nome: "Rosca Concentrada", grupo: "Bíceps" },
-
   // TRÍCEPS
   { id: 80, nome: "Tríceps Polia", grupo: "Tríceps" },
   { id: 81, nome: "Tríceps Corda", grupo: "Tríceps" },
@@ -69,8 +64,7 @@ const todosExercicios = [
   { id: 83, nome: "Tríceps Francês", grupo: "Tríceps" },
   { id: 84, nome: "Tríceps Banco", grupo: "Tríceps" },
   { id: 85, nome: "Tríceps Coice", grupo: "Tríceps" },
-
-  // ABDÔMEN & CARDIO
+  // OUTROS
   { id: 90, nome: "Abdominal Supra", grupo: "Abs" },
   { id: 91, nome: "Abdominal Infra", grupo: "Abs" },
   { id: 92, nome: "Prancha", grupo: "Abs" },
@@ -80,21 +74,22 @@ const todosExercicios = [
 ];
 
 /* ================= ESTADO GLOBAL ================= */
-let listaDeAlunos = []; 
-let alunoLogado = null; 
-let alunoEmEdicaoId = null; 
-let moduloEmEdicao = 'A'; 
-const MODULOS_DISPONIVEIS = ['A', 'B', 'C', 'D', 'E']; 
+let listaDeAlunos = [];
+let alunoLogado = null;
+let alunoEmEdicaoId = null;
+let moduloEmEdicao = 'A';
+const MODULOS_DISPONIVEIS = ['A', 'B', 'C', 'D', 'E'];
 let chartPeso = null;
 let chartCarga = null;
+let timerInterval = null; // Variável para controlar o cronômetro
 
-/* ================= INICIALIZAÇÃO FIREBASE ================= */
+/* ================= INICIALIZAÇÃO ================= */
 setTimeout(() => {
     carregarDadosDaNuvem().then(() => { verificarSessao(); });
 }, 1000);
 
 async function carregarDadosDaNuvem() {
-    if (!window.db) return console.error("ERRO: Firebase OFF");
+    if (!window.db) return console.error("Firebase OFF");
     try {
         const snap = await window.f_getDocs(window.f_collection(window.db, "alunos"));
         listaDeAlunos = [];
@@ -105,7 +100,7 @@ async function carregarDadosDaNuvem() {
 
 async function salvarNaNuvem(aluno) {
     if (!window.db) return;
-    try { await window.f_setDoc(window.f_doc(window.db, "alunos", aluno.telefone), aluno); } 
+    try { await window.f_setDoc(window.f_doc(window.db, "alunos", aluno.telefone), aluno); }
     catch (e) { console.error(e); }
 }
 
@@ -117,7 +112,7 @@ function verificarSessao() {
         if (user.tipo === 'admin') autenticarAdmin();
         else {
             const dados = listaDeAlunos.find(a => a.telefone === user.telefone);
-            if(dados) { alunoLogado = dados; carregarInterfaceAluno(); } 
+            if(dados) { alunoLogado = dados; carregarInterfaceAluno(); }
             else logout();
         }
     }
@@ -151,9 +146,7 @@ function renderizarListaAlunosAdmin(filtro="") {
   if(!container) return;
   document.getElementById('totalAlunos').innerText = listaDeAlunos.length;
   container.innerHTML = "";
-  
   const filtrados = listaDeAlunos.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase()) || a.telefone.includes(filtro));
-  
   filtrados.forEach(aluno => {
     container.innerHTML += `
       <div class="student-card">
@@ -183,16 +176,12 @@ function trocarModuloEdicao(mod) {
   renderizarCheckboxesExercicios();
 }
 
-// === RENDERIZAÇÃO PROFISSIONAL (3 CAMPOS NA DIREITA) ===
 function renderizarCheckboxesExercicios() {
   const container = document.getElementById('listaSelecao');
   container.innerHTML = "";
   const aluno = listaDeAlunos.find(a => a.telefone === alunoEmEdicaoId);
   if (!aluno) return;
-
   const exerciciosSalvos = aluno.treinos[moduloEmEdicao].exercicios || [];
-  
-  // Agrupa por categoria
   const grupos = {};
   todosExercicios.forEach(ex => {
     if (!grupos[ex.grupo]) grupos[ex.grupo] = [];
@@ -201,25 +190,20 @@ function renderizarCheckboxesExercicios() {
 
   Object.keys(grupos).forEach(grupo => {
     container.innerHTML += `<div class="group-header"><span>${obterIcone(grupo)}</span> ${grupo}</div>`;
-    
     grupos[grupo].forEach(ex => {
       const salvo = exerciciosSalvos.find(s => s.id === ex.id);
       const isChecked = salvo ? "checked" : "";
-      
-      const valDescanso = salvo && salvo.descanso ? salvo.descanso : "Descanso"; 
-      const valMetodo = salvo && salvo.metodo ? salvo.metodo : "Normal"; 
-      const valSeries = salvo && salvo.series ? salvo.series : ""; // Texto livre
+      const valDescanso = salvo && salvo.descanso ? salvo.descanso : "Descanso";
+      const valMetodo = salvo && salvo.metodo ? salvo.metodo : "Normal";
+      const valSeries = salvo && salvo.series ? salvo.series : "";
 
       container.innerHTML += `
         <div class="admin-exercise-row">
-          
           <div class="admin-row-left">
             <input type="checkbox" id="check_${ex.id}" value="${ex.id}" ${isChecked}>
             <label for="check_${ex.id}" style="color:white; font-size: 0.9rem; cursor:pointer;">${ex.nome}</label>
           </div>
-
-          <div class="admin-row-right">
-            
+          <div class="admin-row-options">
             <select id="descanso_${ex.id}" class="admin-input-mini w-time">
               <option value="Descanso" disabled ${valDescanso === "Descanso" ? "selected" : ""}>⏱️</option>
               <option value="30s" ${valDescanso === "30s" ? "selected" : ""}>30s</option>
@@ -228,7 +212,6 @@ function renderizarCheckboxesExercicios() {
               <option value="1:30" ${valDescanso === "1:30" ? "selected" : ""}>1:30</option>
               <option value="2min" ${valDescanso === "2min" ? "selected" : ""}>2min</option>
             </select>
-
             <select id="metodo_${ex.id}" class="admin-input-mini w-method">
               <option value="Normal" ${valMetodo === "Normal" ? "selected" : ""}>Normal</option>
               <option value="Falha" ${valMetodo === "Falha" ? "selected" : ""}>Falha</option>
@@ -237,9 +220,7 @@ function renderizarCheckboxesExercicios() {
               <option value="FST-7" ${valMetodo === "FST-7" ? "selected" : ""}>FST-7</option>
               <option value="Aquec." ${valMetodo === "Aquec." ? "selected" : ""}>Aquec.</option>
             </select>
-
             <input type="text" id="series_${ex.id}" class="admin-input-mini w-text" placeholder="3x12" value="${valSeries}" maxlength="8">
-
           </div>
         </div>
       `;
@@ -250,47 +231,36 @@ function renderizarCheckboxesExercicios() {
 function salvarTreinoPersonal() {
   const marcados = document.querySelectorAll('#listaSelecao input[type="checkbox"]:checked');
   const listaFinal = [];
-
   marcados.forEach(checkbox => {
     const id = parseInt(checkbox.value);
     const exBase = todosExercicios.find(e => e.id === id);
-    
-    // PEGA OS 3 VALORES
     const descanso = document.getElementById(`descanso_${id}`).value;
     const metodo = document.getElementById(`metodo_${id}`).value;
     const series = document.getElementById(`series_${id}`).value;
-
     listaFinal.push({
       ...exBase,
       descanso: descanso !== "Descanso" ? descanso : "1min",
       metodo: metodo,
-      series: series || "3x12" // Padrão se deixar vazio
+      series: series || "3x12"
     });
   });
-
   const idx = listaDeAlunos.findIndex(a => a.telefone === alunoEmEdicaoId);
   listaDeAlunos[idx].treinos[moduloEmEdicao].exercicios = listaFinal;
-  
   salvarNaNuvem(listaDeAlunos[idx]);
-  alert("Treino salvo com sucesso! 💾");
+  alert("Treino salvo na nuvem! 💾");
 }
 
 /* ================= ÁREA DO ALUNO ================= */
 function carregarInterfaceAluno() {
-    const hora = new Date().getHours();
-    let saudacao = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
     const nome = alunoLogado.nome.split(' ')[0];
-    document.querySelector('.header-student h1').innerHTML = `${saudacao}, <span style="color:#10b981">${nome}</span>`;
-
+    document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
     renderizarCardsTreinoAluno();
     atualizarDisplayFogo();
     atualizarDisplayVencimentoPerfil();
-    
     document.getElementById('nomePerfil').innerText = alunoLogado.nome;
     document.getElementById('telPerfil').innerText = alunoLogado.telefone;
     document.getElementById('pesoInicialInput').value = alunoLogado.pesoInicial || "";
     document.getElementById('pesoAtualInput').value = alunoLogado.pesoAtual || "";
-
     mostrarTela('treinos');
     document.getElementById('mainNav').style.display = 'flex';
 }
@@ -319,30 +289,39 @@ function abrirTreino(modulo) {
     const keyPeso = `${modulo}_${ex.id}_peso`;
     const pesoSalvo = alunoLogado.registros[keyPeso] || "";
     
-    // INFO BADGES (Séries, Descanso, Método)
+    // BADGES
     const badgeSeries = ex.series ? `<span class="badge-info badge-series">📋 ${ex.series}</span>` : "";
     const badgeDescanso = ex.descanso ? `<span class="badge-info badge-rest">⏰ ${ex.descanso}</span>` : "";
     const badgeMetodo = ex.metodo && ex.metodo !== "Normal" ? `<span class="badge-info badge-method">${ex.metodo}</span>` : "";
+
+    // SÉRIES INTERATIVAS (BOLINHAS)
+    // Tenta pegar o primeiro numero da string (ex: "4x12" -> 4). Se falhar, usa 3.
+    let numSeries = parseInt(ex.series); 
+    if (isNaN(numSeries) || numSeries < 1) numSeries = 3;
+    
+    let bolinhasHTML = '<div class="sets-container">';
+    for(let i=1; i<=numSeries; i++) {
+        const setKey = `${modulo}_${ex.id}_set_${i}`;
+        const isDone = alunoLogado.registros[setKey] ? "done" : "";
+        // Ao clicar: marca feito E inicia cronômetro
+        bolinhasHTML += `<div class="set-circle ${isDone}" onclick="toggleSet('${ex.id}', ${i}, '${ex.descanso || '1min'}', this)">${i}</div>`;
+    }
+    bolinhasHTML += '</div>';
 
     container.innerHTML += `
       <div class="exercise-item">
         <div class="exercise-header">
             <span class="exercise-name">${ex.nome}</span>
-            <div class="exercise-badges">
-                ${badgeSeries}
-                ${badgeDescanso}
-                ${badgeMetodo}
-            </div>
+            <div class="exercise-badges">${badgeSeries} ${badgeDescanso} ${badgeMetodo}</div>
         </div>
         
-        <div class="exercise-controls">
-          <div class="input-carga-wrapper">
-             <div class="weight-history"><span class="label">Carga</span></div>
-             <input type="tel" class="input-carga" placeholder="kg" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)">
-          </div>
-          <label class="check-wrapper">
-            <input type="checkbox" onchange="toggleExercicio('${ex.id}', this.checked)" ${alunoLogado.registros[`${modulo}_${ex.id}_check`]?"checked":""}>
-          </label>
+        <div class="exercise-controls" style="flex-direction:column; align-items:flex-start;">
+          <div style="display:flex; width:100%; justify-content:space-between; align-items:center;">
+             <div class="input-carga-wrapper">
+                <div class="weight-history"><span class="label">Carga</span></div>
+                <input type="tel" class="input-carga" placeholder="kg" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)">
+             </div>
+             ${bolinhasHTML} </div>
         </div>
       </div>
     `;
@@ -350,37 +329,125 @@ function abrirTreino(modulo) {
   atualizarBarraProgresso();
 }
 
-/* ================= GRÁFICOS & AUXILIARES ================= */
+/* ================= LÓGICA DO CRONÔMETRO ================= */
+function toggleSet(exId, setIndex, descanso, elemento) {
+    if(navigator.vibrate) navigator.vibrate(30);
+    
+    // Marca/Desmarca visualmente
+    elemento.classList.toggle('done');
+    
+    // Salva no banco
+    const isDone = elemento.classList.contains('done');
+    const key = `${moduloTreinoAtual}_${exId}_set_${setIndex}`;
+    
+    if(!alunoLogado.registros) alunoLogado.registros = {};
+    alunoLogado.registros[key] = isDone;
+    salvarNaNuvem(alunoLogado);
+
+    // Se marcou como FEITO, abre o cronômetro
+    if(isDone) {
+        iniciarTimer(descanso);
+    }
+    
+    // Verifica se completou o treino todo
+    const pct = atualizarBarraProgresso();
+    if (pct === 100) registrarDiaDeFogo();
+}
+
+function iniciarTimer(tempoString) {
+    // Converte "1min", "30s", "1:30" para segundos
+    let segundos = 60; // Padrão
+    if(tempoString.includes('s')) segundos = parseInt(tempoString);
+    else if(tempoString.includes(':')) {
+        const partes = tempoString.split(':');
+        segundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]);
+    }
+    else if(tempoString.includes('min')) segundos = parseInt(tempoString) * 60;
+
+    // Mostra o timer
+    const overlay = document.getElementById('timerOverlay');
+    const display = document.getElementById('timerDisplay');
+    overlay.classList.remove('hidden');
+    
+    // Limpa timer anterior se houver
+    if(timerInterval) clearInterval(timerInterval);
+    
+    let restante = segundos;
+    
+    function updateDisplay() {
+        const m = Math.floor(restante / 60).toString().padStart(2, '0');
+        const s = (restante % 60).toString().padStart(2, '0');
+        display.innerText = `${m}:${s}`;
+    }
+    
+    updateDisplay();
+    
+    timerInterval = setInterval(() => {
+        restante--;
+        updateDisplay();
+        
+        if (restante <= 0) {
+            clearInterval(timerInterval);
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200]); // Vibra pra avisar
+            fecharTimer(); // Fecha sozinho ou pode tocar som
+        }
+    }, 1000);
+}
+
+function adicionarTempo(s) {
+    // Pega o tempo atual do display e soma
+    const display = document.getElementById('timerDisplay').innerText;
+    const partes = display.split(':');
+    let atualSegundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]);
+    
+    clearInterval(timerInterval); // Para para reiniciar com novo tempo
+    
+    // Reutiliza lógica de contagem
+    let restante = atualSegundos + s;
+    
+    const displayEl = document.getElementById('timerDisplay');
+    
+    timerInterval = setInterval(() => {
+        restante--;
+        const m = Math.floor(restante / 60).toString().padStart(2, '0');
+        const s = (restante % 60).toString().padStart(2, '0');
+        displayEl.innerText = `${m}:${s}`;
+        
+        if (restante <= 0) {
+            clearInterval(timerInterval);
+            fecharTimer();
+        }
+    }, 1000);
+}
+
+// Essa função precisa ser acessível globalmente (window) para o botão fechar
+window.fecharTimer = function() {
+    document.getElementById('timerOverlay').classList.add('hidden');
+    if(timerInterval) clearInterval(timerInterval);
+}
+// Mesma coisa para adicionar tempo
+window.adicionarTempo = adicionarTempo; 
+
+/* ================= FUNÇÕES BÁSICAS ================= */
 function salvarPeso(exId, v) {
   if(!v) return;
   if(!alunoLogado.registros) alunoLogado.registros={};
   alunoLogado.registros[`${moduloTreinoAtual}_${exId}_peso`] = v;
-
   if(!alunoLogado.historicoCargas) alunoLogado.historicoCargas={};
   if(!alunoLogado.historicoCargas[exId]) alunoLogado.historicoCargas[exId]=[];
-  
   const h = new Date().toLocaleDateString('pt-BR').slice(0,5);
   const hist = alunoLogado.historicoCargas[exId];
   const ent = hist.find(x => x.data === h);
-  if(ent) ent.carga = parseFloat(v);
-  else hist.push({data:h, carga:parseFloat(v)});
-  
+  if(ent) ent.carga = parseFloat(v); else hist.push({data:h, carga:parseFloat(v)});
   salvarNaNuvem(alunoLogado);
-}
-
-function toggleExercicio(exId, c) {
-  if(navigator.vibrate) navigator.vibrate(40);
-  if(!alunoLogado.registros) alunoLogado.registros={};
-  alunoLogado.registros[`${moduloTreinoAtual}_${exId}_check`] = c;
-  salvarNaNuvem(alunoLogado);
-  if(atualizarBarraProgresso() === 100) registrarDiaDeFogo();
 }
 
 function atualizarBarraProgresso() {
-  const t = document.querySelectorAll('#listaExercicios input[type="checkbox"]').length;
-  if(t===0) return 0;
-  const c = document.querySelectorAll('#listaExercicios input[type="checkbox"]:checked').length;
-  const p = Math.round((c/t)*100);
+  // Agora conta bolinhas preenchidas vs total de bolinhas
+  const totalSets = document.querySelectorAll('.set-circle').length;
+  if(totalSets===0) return 0;
+  const doneSets = document.querySelectorAll('.set-circle.done').length;
+  const p = Math.round((doneSets/totalSets)*100);
   document.getElementById('barraProgresso').style.width = `${p}%`;
   document.getElementById('progressoPorcentagem').innerText = `${p}%`;
   return p;
@@ -405,7 +472,6 @@ function carregarEstatisticas() {
         let labels=[], dados=[];
         if(alunoLogado.pesoInicial) { labels.push("Início"); dados.push(alunoLogado.pesoInicial); }
         if(alunoLogado.historicoPeso) { alunoLogado.historicoPeso.forEach(x => { labels.push(x.data); dados.push(x.peso); }); }
-        
         if(chartPeso) chartPeso.destroy();
         chartPeso = new Chart(ctxPeso, {
             type: 'line',
@@ -449,12 +515,10 @@ function atualizarGraficoCarga() {
     const hist = alunoLogado.historicoCargas[id] || [];
     const labels = hist.map(x=>x.data);
     const dados = hist.map(x=>x.carga);
-    
     if(dados.length>0) {
         document.getElementById('cargaInicialDisplay').innerText = dados[0]+"kg";
         document.getElementById('recordeDisplay').innerText = Math.max(...dados)+"kg";
     }
-
     const ctx = document.getElementById('graficoCargaCanvas');
     if(chartCarga) chartCarga.destroy();
     chartCarga = new Chart(ctx, {
