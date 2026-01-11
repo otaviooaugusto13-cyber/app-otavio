@@ -36,7 +36,7 @@
       </div>
       <div style="text-align: center; margin-bottom: 10px; opacity: 0.4;">
         <p style="font-size: 0.65rem; color: #fff; margin-bottom: 5px;">© 2026 Otávio Augusto • Todos os direitos reservados</p>
-        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">Tecnologia IRON PRO 2.6</p>
+        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">Tecnologia IRON PRO 2.7</p>
       </div>
     </div>
   </section>
@@ -134,7 +134,6 @@
 
   <section id="cardio" class="screen">
     <div class="header-student"><div><h1>Cardio</h1><p>Aeróbico</p></div><div class="streak-badge">🏃💨</div></div>
-    
     <div class="goal-card" style="text-align:center; padding: 30px 20px;">
         <span class="material-icons-round" style="font-size: 40px; color: #3b82f6; margin-bottom:10px;">timer</span>
         <h2 id="cardioTimerDisplay" style="font-size: 3rem; margin:0; font-family:'Courier New', monospace;">00:00</h2>
@@ -144,22 +143,11 @@
             <button onclick="finalizarCardio()" class="btn-logout" style="background:rgba(255,255,255,0.1); color:#fff;">FINALIZAR</button>
         </div>
     </div>
-
     <div class="stats-row-mini" style="margin-top: 20px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; display:flex; justify-content:space-around;">
-      <div class="stat-mini" style="align-items:center;">
-        <span class="stat-label">Hoje</span>
-        <span class="stat-value" id="cardioHojeMin" style="color:white; font-size:1.1rem;">0 min</span>
-      </div>
-      <div class="stat-mini" style="align-items:center;">
-        <span class="stat-label">Queima</span>
-        <span class="stat-value" id="cardioHojeKcal" style="color:#eab308; font-size:1.1rem;">0 kcal</span>
-      </div>
-      <div class="stat-mini" style="align-items:center;">
-        <span class="stat-label">Semana</span>
-        <span class="stat-value" id="cardioSemanaMin" style="color:#10b981; font-size:1.1rem;">0 min</span>
-      </div>
+      <div class="stat-mini" style="align-items:center;"><span class="stat-label">Hoje</span><span class="stat-value" id="cardioHojeMin" style="color:white; font-size:1.1rem;">0 min</span></div>
+      <div class="stat-mini" style="align-items:center;"><span class="stat-label">Queima</span><span class="stat-value" id="cardioHojeKcal" style="color:#eab308; font-size:1.1rem;">0 kcal</span></div>
+      <div class="stat-mini" style="align-items:center;"><span class="stat-label">Semana</span><span class="stat-value" id="cardioSemanaMin" style="color:#10b981; font-size:1.1rem;">0 min</span></div>
     </div>
-
     <h3 class="section-title-small">Equipamentos</h3>
     <div id="listaCardioContainer" class="workout-grid"></div>
     <div style="height: 80px;"></div>
@@ -167,7 +155,6 @@
 
   <section id="treinos" class="screen">
     <div class="header-student"><div><h1>Olá, <span id="nomeAlunoDisplay">Atleta</span></h1><p>Bora treinar?</p></div><div class="streak-badge">🔥 <span id="streakCount">0</span></div></div>
-    
     <div id="boxAvisoAluno" class="goal-card hidden" style="background: linear-gradient(135deg, #334155, #1e293b); border-left: 4px solid #eab308; margin-bottom: 15px;">
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
         <span class="material-icons-round" style="color:#eab308;">campaign</span>
@@ -175,7 +162,6 @@
       </div>
       <p id="textoAvisoAlunoDisplay" style="color:white; font-size:0.9rem; line-height:1.4;">...</p>
     </div>
-
     <div class="workout-grid" id="containerTreinosAluno"></div>
     <div style="height: 80px;"></div>
   </section>
@@ -213,26 +199,13 @@
     <button class="nav-item" onclick="mostrarTela('estatisticas', this)"><span class="material-icons-round">show_chart</span></button>
     <button class="nav-item" onclick="mostrarTela('cardio', this)"><span class="material-icons-round">directions_run</span></button>
     <div class="nav-center-wrapper"><button class="nav-center-btn" onclick="mostrarTela('treinos', this)"><span class="material-icons-round" style="font-size: 32px;">fitness_center</span></button></div>
-    <button class="nav-item" onclick="abrirSpotify()"><span class="material-icons-round" style="color: #1DB954;">queue_music</span></button>
+    <button class="nav-item" onclick="abrirSpotify()"><span class="material-icons-round">queue_music</span></button>
     <button class="nav-item" onclick="mostrarTela('conta', this)"><span class="material-icons-round">person</span></button>
   </nav>
 
-  <div id="modalAvaliacao" class="video-modal">
-    <div class="video-box" style="height:auto; padding:20px;">
-      <div class="video-header"><h3>Nova Avaliação</h3><button onclick="fecharModalAvaliacao()" class="close-btn"><span class="material-icons-round">close</span></button></div>
-      <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;" id="nomeAlunoAvaliacao">Aluno...</p>
-      <div class="form-row" style="flex-direction:column; gap:10px;">
-        <input type="number" id="avalPeso" placeholder="Peso (kg)">
-        <input type="number" id="avalGordura" placeholder="% Gordura">
-        <input type="number" id="avalMusculo" placeholder="% Músculo (Opcional)">
-        <button onclick="salvarAvaliacaoFisica()" class="btn-primary" style="margin-top:10px;">Salvar Medidas</button>
-      </div>
-    </div>
-  </div>
-
+  <div id="modalAvaliacao" class="video-modal"><div class="video-box" style="height:auto; padding:20px;"><div class="video-header"><h3>Nova Avaliação</h3><button onclick="fecharModalAvaliacao()" class="close-btn"><span class="material-icons-round">close</span></button></div><p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;" id="nomeAlunoAvaliacao">Aluno...</p><div class="form-row" style="flex-direction:column; gap:10px;"><input type="number" id="avalPeso" placeholder="Peso (kg)"><input type="number" id="avalGordura" placeholder="% Gordura"><input type="number" id="avalMusculo" placeholder="% Músculo (Opcional)"><button onclick="salvarAvaliacaoFisica()" class="btn-primary" style="margin-top:10px;">Salvar Medidas</button></div></div></div>
   <div id="videoModal" class="video-modal"><div class="video-box"><div class="video-header"><h3 id="videoTitulo">Exercício</h3><button onclick="fecharVideo()" class="close-btn"><span class="material-icons-round">close</span></button></div><div class="video-placeholder"><span class="material-icons-round">play_circle</span><p>Vídeo Demonstrativo</p></div></div></div>
   <div id="timerOverlay" class="timer-overlay hidden"><div class="timer-content"><div class="timer-header">Descanso</div><div id="timerDisplay" class="timer-display">00:00</div><div class="timer-controls"><button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button><button onclick="fecharTimer()" class="btn-timer-close">Pular</button></div></div></div>
-
   <div id="spotifyModal" class="video-modal"><div class="video-box" style="background: #000; padding: 0; overflow: hidden;"><div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #121212;"><h3 style="color: white; margin: 0; display:flex; align-items:center; gap:8px; font-size: 1rem;"><span class="material-icons-round" style="color:#1DB954">spotify</span> Meu Som</h3><button onclick="fecharSpotify()" class="close-btn"><span class="material-icons-round">expand_more</span></button></div><div style="padding: 10px; background: #181818; border-bottom: 1px solid #282828;"><div style="display: flex; gap: 8px;"><input type="text" id="inputPlaylistUrl" placeholder="Link da playlist..." style="flex:1; background:#2a2a2a; border:none; padding:8px 12px; border-radius:4px; color:white; font-size:0.8rem; outline:none;"><button onclick="carregarPlaylistUsuario()" style="background:#1DB954; color:white; border:none; padding:0 12px; border-radius:4px; font-weight:700; font-size:0.7rem;">OK</button></div></div><iframe id="spotifyIframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe><a href="spotify://" class="btn-primary" style="margin:0; border-radius:0; background:#191414; color:#1DB954; font-size:0.75rem; padding:12px; text-decoration:none; display:flex; justify-content:center; border-top:1px solid #282828;">ABRIR APP</a></div></div>
 
   <script type="module">
