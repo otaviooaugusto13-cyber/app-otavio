@@ -139,39 +139,40 @@ function renderizarListaAcademias() {
     listaDeAcademias.forEach(a => { div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`; });
 }
 
-/* ================= PAINEL PROFESSOR (COM MURAL LIGA/DESLIGA) ================= */
+/* ================= PAINEL PROFESSOR (COM CHECKBOX LIGA/DESLIGA) ================= */
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
     
-    // Carregar Aviso e Estado do Checkbox
+    // CARREGA AVISO E ESTADO DO CHECKBOX
     if(usuarioLogado.aviso) document.getElementById('textoAvisoAcademia').value = usuarioLogado.aviso;
     else document.getElementById('textoAvisoAcademia').value = "";
     
-    document.getElementById('chkAvisoAtivo').checked = usuarioLogado.avisoAtivo === true;
+    // Verifica se está ativo (true) ou não
+    document.getElementById('chkAvisoAtivo').checked = (usuarioLogado.avisoAtivo === true);
 
     renderizarListaAlunosAdmin(); 
 }
 
-// SALVAR AVISO (SALVA O ESTADO DO CHECKBOX)
+// SALVAR AVISO (COM LÓGICA DE CHECKBOX)
 async function salvarAvisoAcademia() {
     const texto = document.getElementById('textoAvisoAcademia').value.trim();
     const ativo = document.getElementById('chkAvisoAtivo').checked;
     
     usuarioLogado.aviso = texto;
-    usuarioLogado.avisoAtivo = ativo;
+    usuarioLogado.avisoAtivo = ativo; // Salva o estado do botão
     
     await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
     
-    // Atualiza Memória Local
+    // Atualiza localmente
     const idx = listaDeAcademias.findIndex(a => a.id === usuarioLogado.id);
     if(idx >= 0) {
         listaDeAcademias[idx].aviso = texto;
         listaDeAcademias[idx].avisoAtivo = ativo;
     }
     
-    if(!ativo) alert("Aviso salvo, mas oculto para os alunos.");
-    else alert("Aviso publicado e visível!");
+    if(!ativo) alert("Aviso salvo, mas OCULTO para os alunos.");
+    else alert("Aviso publicado e VISÍVEL!");
 }
 
 function renderizarListaAlunosAdmin(filtro = "") {
@@ -274,7 +275,7 @@ function salvarTreinoPersonal() {
   alert("Salvo!");
 }
 
-/* ================= APP DO ALUNO (COM LÓGICA DE AVISO ON/OFF) ================= */
+/* ================= APP DO ALUNO (SÓ MOSTRA SE O PROFESSOR ATIVOU) ================= */
 function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
     document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
@@ -288,7 +289,7 @@ function abrirAppAluno() {
         boxAviso.classList.remove('hidden');
         document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
     } else {
-        // SE ESTIVER DESATIVADO (OU SEM TEXTO), ESCONDE
+        // SE ESTIVER DESATIVADO (CHECKBOX OFF), ESCONDE
         boxAviso.classList.add('hidden');
     }
 
