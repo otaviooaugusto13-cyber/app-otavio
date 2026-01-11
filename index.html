@@ -93,7 +93,6 @@
       <div><h1>Modo Cardio</h1><p>Aeróbico & Resistência</p></div>
       <div class="streak-badge">🏃💨</div>
     </div>
-    
     <div class="goal-card" style="text-align:center; padding: 30px 20px;">
         <span class="material-icons-round" style="font-size: 40px; color: #3b82f6; margin-bottom:10px;">timer</span>
         <h2 id="cardioTimerDisplay" style="font-size: 3rem; margin:0; font-family:'Courier New', monospace;">00:00</h2>
@@ -103,7 +102,6 @@
             <button onclick="resetCardioTimer()" class="btn-logout" style="background:rgba(255,255,255,0.1); color:#fff;">ZERAR</button>
         </div>
     </div>
-
     <h3 class="section-title-small">Equipamentos Disponíveis</h3>
     <div id="listaCardioContainer" class="workout-grid"></div>
     <div style="height: 80px;"></div>
@@ -135,47 +133,42 @@
       <h2 id="nomePerfil">Aluno</h2>
       <span class="badge-student">Aluno Regular</span>
     </div>
+    
+    <div class="info-group">
+      <label>Sua Playlist Spotify (Cole o Link)</label>
+      <div class="search-box" style="border:1px solid #1DB954; background: rgba(29, 185, 84, 0.1);">
+        <span class="material-icons-round" style="color:#1DB954">link</span>
+        <input type="text" id="spotifyLinkInput" placeholder="Ex: https://open.spotify.com/playlist/..." onblur="salvarLinkSpotify(this.value)" style="font-size:0.8rem;">
+      </div>
+      <p style="font-size:0.7rem; color:#64748b; margin-top:5px;">Cole o link da sua playlist aqui para ouvir no player.</p>
+    </div>
+
     <div class="info-group"><label>Status</label><div id="cardVencimentoPerfil" class="due-date-card"><span class="material-icons-round">event</span><span>Vencimento: <strong id="vencimentoPerfil">--/--</strong></span><span id="statusPagamento" class="status-badge">...</span></div></div>
     <div class="info-group"><label>Login</label><div class="info-box" id="telPerfil">...</div></div>
     <button onclick="logout()" class="btn-logout-outline">Sair da Conta</button>
   </section>
 
   <nav class="floating-nav" id="mainNav" style="display: none;">
-    
-    <button class="nav-item" onclick="mostrarTela('estatisticas', this)">
-      <span class="material-icons-round">show_chart</span>
-    </button>
-    
-    <button class="nav-item" onclick="mostrarTela('cardio', this)">
-      <span class="material-icons-round">directions_run</span>
-    </button>
-
-    <div class="nav-center-wrapper">
-      <button class="nav-center-btn" onclick="mostrarTela('treinos', this)">
-        <span class="material-icons-round" style="font-size: 32px;">fitness_center</span>
-      </button>
-    </div>
-
-    <button class="nav-item" onclick="abrirSpotify()">
-      <span class="material-icons-round" style="color: #1DB954;">queue_music</span>
-    </button>
-
-    <button class="nav-item" onclick="mostrarTela('conta', this)">
-      <span class="material-icons-round">person</span>
-    </button>
+    <button class="nav-item" onclick="mostrarTela('estatisticas', this)"><span class="material-icons-round">show_chart</span></button>
+    <button class="nav-item" onclick="mostrarTela('cardio', this)"><span class="material-icons-round">directions_run</span></button>
+    <div class="nav-center-wrapper"><button class="nav-center-btn" onclick="mostrarTela('treinos', this)"><span class="material-icons-round" style="font-size: 32px;">fitness_center</span></button></div>
+    <button class="nav-item" onclick="abrirSpotify()"><span class="material-icons-round" style="color: #1DB954;">queue_music</span></button>
+    <button class="nav-item" onclick="mostrarTela('conta', this)"><span class="material-icons-round">person</span></button>
   </nav>
 
   <div id="videoModal" class="video-modal"><div class="video-box"><div class="video-header"><h3 id="videoTitulo">Exercício</h3><button onclick="fecharVideo()" class="close-btn"><span class="material-icons-round">close</span></button></div><div class="video-placeholder"><span class="material-icons-round">play_circle</span><p>Vídeo Demonstrativo</p></div></div></div>
-  
   <div id="timerOverlay" class="timer-overlay hidden"><div class="timer-content"><div class="timer-header">Descanso</div><div id="timerDisplay" class="timer-display">00:00</div><div class="timer-controls"><button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button><button onclick="fecharTimer()" class="btn-timer-close">Pular</button></div></div></div>
 
   <div id="spotifyModal" class="video-modal">
     <div class="video-box" style="background: #000; padding: 0;">
       <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #191414; border-radius: 24px 24px 0 0;">
-        <h3 style="color: white; margin: 0; display:flex; align-items:center; gap:8px;"><span class="material-icons-round" style="color:#1DB954">spotify</span> Playlist</h3>
+        <h3 style="color: white; margin: 0; display:flex; align-items:center; gap:8px;"><span class="material-icons-round" style="color:#1DB954">spotify</span> Player</h3>
         <button onclick="fecharSpotify()" class="close-btn"><span class="material-icons-round">expand_more</span></button>
       </div>
-      <iframe style="border-radius: 0 0 24px 24px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      
+      <a href="spotify://" class="btn-primary" style="margin:0; border-radius:0; background:#1DB954; color:white; font-size:0.8rem; padding:10px; text-decoration:none; display:flex; justify-content:center;">ABRIR NO APLICATIVO DO SPOTIFY</a>
+      
+      <iframe id="spotifyIframe" style="border-radius: 0 0 24px 24px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
   </div>
 
