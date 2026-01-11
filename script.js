@@ -52,7 +52,7 @@ let moduloEmEdicao = 'A';
 const MODULOS_DISPONIVEIS = ['A', 'B', 'C', 'D', 'E']; 
 
 // Features
-let chartComposicao = null; let timerInterval = null;
+let chartComposicao = null; let chartCarga = null; let timerInterval = null;
 let cardioInterval = null; let cardioSeconds = 0; let cardioRunning = false;
 
 /* ================= INICIALIZAÇÃO ================= */
@@ -143,42 +143,26 @@ function renderizarListaAcademias() {
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
-    
-    // Carregar Aviso Salvo no Input
     if(usuarioLogado.aviso) document.getElementById('textoAvisoAcademia').value = usuarioLogado.aviso;
     else document.getElementById('textoAvisoAcademia').value = "";
-
     renderizarListaAlunosAdmin(); 
 }
-
-// SALVAR AVISO (COM TRIM PARA EVITAR ESPAÇOS VAZIOS)
 async function salvarAvisoAcademia() {
     const texto = document.getElementById('textoAvisoAcademia').value.trim();
     usuarioLogado.aviso = texto;
     await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
-    
-    // Atualiza lista local
     const idx = listaDeAcademias.findIndex(a => a.id === usuarioLogado.id);
     if(idx >= 0) listaDeAcademias[idx].aviso = texto;
-    
     if(texto === "") alert("Aviso removido!");
     else alert("Aviso publicado!");
 }
-
 function renderizarListaAlunosAdmin(filtro = "") {
     const container = document.getElementById('listaAlunosCoach'); container.innerHTML = "";
     const meusAlunos = listaDeAlunos.filter(aluno => aluno.academiaId === usuarioLogado.id);
     document.getElementById('totalAlunos').innerText = meusAlunos.length;
     const listaFiltrada = meusAlunos.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase()) || a.telefone.includes(filtro));
     listaFiltrada.forEach(aluno => {
-        container.innerHTML += `
-        <div class="student-card">
-            <div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div>
-            <div class="student-actions">
-                <button class="btn-icon" style="background: #334155;" onclick="abrirModalAvaliacao('${aluno.telefone}')" title="Avaliação Física"><span class="material-icons-round" style="color:#eab308">straighten</span></button>
-                <button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button>
-            </div>
-        </div>`;
+        container.innerHTML += `<div class="student-card"><div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div><div class="student-actions"><button class="btn-icon" style="background: #334155;" onclick="abrirModalAvaliacao('${aluno.telefone}')" title="Avaliação Física"><span class="material-icons-round" style="color:#eab308">straighten</span></button><button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button></div></div>`;
     });
 }
 async function cadastrarAluno() {
@@ -190,7 +174,7 @@ async function cadastrarAluno() {
     const novoAluno = {
         nome: nome, telefone: tel, vencimento: dataVenc,
         academiaId: usuarioLogado.id, academiaNome: usuarioLogado.nome,
-        pesoInicial: "", historicoAvaliacoes: [], historicoCargas: {}, registros: {},
+        pesoInicial: "", historicoFogo: [], historicoAvaliacoes: [], historicoCargas: {}, registros: {},
         treinos: { A: { exercicios: [] }, B: { exercicios: [] }, C: { exercicios: [] }, D: { exercicios: [] }, E: { exercicios: [] } }
     };
     listaDeAlunos.push(novoAluno);
@@ -210,27 +194,17 @@ function abrirModalAvaliacao(tel) {
     document.getElementById('avalMusculo').value = "";
 }
 function fecharModalAvaliacao() { document.getElementById('modalAvaliacao').classList.remove('active'); }
-
 async function salvarAvaliacaoFisica() {
     const peso = document.getElementById('avalPeso').value;
     const gordura = document.getElementById('avalGordura').value;
     const musculo = document.getElementById('avalMusculo').value;
     if(!peso || !gordura) return alert("Preencha Peso e % Gordura");
-    
     const aluno = listaDeAlunos.find(a => a.telefone === alunoSendoAvaliadoId);
     if(!aluno.historicoAvaliacoes) aluno.historicoAvaliacoes = [];
-    
     const hoje = new Date().toLocaleDateString('pt-BR');
-    aluno.historicoAvaliacoes.push({
-        data: hoje,
-        peso: parseFloat(peso),
-        gordura: parseFloat(gordura),
-        musculo: musculo ? parseFloat(musculo) : null
-    });
-    
+    aluno.historicoAvaliacoes.push({ data: hoje, peso: parseFloat(peso), gordura: parseFloat(gordura), musculo: musculo ? parseFloat(musculo) : null });
     await salvarNaColecao("alunos", aluno.telefone, aluno);
-    alert("Medidas salvas!");
-    fecharModalAvaliacao();
+    alert("Medidas salvas!"); fecharModalAvaliacao();
 }
 
 /* ================= EDITOR DE TREINO ================= */
@@ -275,23 +249,21 @@ function salvarTreinoPersonal() {
   alert("Salvo!");
 }
 
-/* ================= APP DO ALUNO (COM LÓGICA DE AVISO INTELIGENTE) ================= */
+/* ================= APP DO ALUNO ================= */
 function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
     document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
     
-    // MURAL INTELIGENTE: Só mostra se tiver texto real
+    // MURAL
     const academiaDoAluno = listaDeAcademias.find(gym => gym.id === usuarioLogado.academiaId);
     const boxAviso = document.getElementById('boxAvisoAluno');
-    
     if(academiaDoAluno && academiaDoAluno.aviso && academiaDoAluno.aviso.trim() !== "") {
-        // TEM AVISO: MOSTRA
         boxAviso.classList.remove('hidden');
         document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
-    } else {
-        // NÃO TEM AVISO: ESCONDE
-        boxAviso.classList.add('hidden');
-    }
+    } else { boxAviso.classList.add('hidden'); }
+
+    // FOGO
+    atualizarDisplayFogo();
 
     renderizarCardsTreino(); atualizarDisplayVencimentoPerfil();
     document.getElementById('nomePerfil').innerText = usuarioLogado.nome;
@@ -315,16 +287,11 @@ function abrirTreino(mod) {
     lista.forEach(ex => {
         if(!usuarioLogado.registros) usuarioLogado.registros = {};
         const pesoSalvo = usuarioLogado.registros[`${mod}_${ex.id}_peso`] || "";
-        
         let textoUltimaCarga = "";
         if(usuarioLogado.historicoCargas && usuarioLogado.historicoCargas[ex.id]) {
             const hist = usuarioLogado.historicoCargas[ex.id];
-            if(hist.length > 0) {
-                const ult = hist[hist.length-1].carga;
-                textoUltimaCarga = `<span style="font-size:0.7rem; color:#10b981; margin-left:5px; font-weight:normal;">(Últ: ${ult}kg)</span>`;
-            }
+            if(hist.length > 0) { const ult = hist[hist.length-1].carga; textoUltimaCarga = `<span style="font-size:0.7rem; color:#10b981; margin-left:5px; font-weight:normal;">(Últ: ${ult}kg)</span>`; }
         }
-
         let numSeries = parseInt(ex.series); if(isNaN(numSeries)) numSeries = 3;
         let bolinhas = '<div class="sets-container">';
         for(let i=1; i<=numSeries; i++) {
@@ -343,8 +310,24 @@ function toggleSet(exId, idx, descanso, el) {
     usuarioLogado.registros[`${moduloTreinoAtual}_${exId}_set_${idx}`] = status;
     salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado);
     if(status) iniciarTimer(descanso || '1min');
-    atualizarBarraProgresso();
+    
+    // CORREÇÃO: VERIFICA SE O TREINO ACABOU PARA SALVAR O FOGO
+    if(atualizarBarraProgresso() === 100) registrarDiaDeFogo();
 }
+
+// LÓGICA DO FOGO (STREAK) - CORRIGIDA
+function registrarDiaDeFogo() {
+    const h = new Date().toLocaleDateString('pt-BR');
+    if(!usuarioLogado.historicoFogo) usuarioLogado.historicoFogo=[];
+    if(!usuarioLogado.historicoFogo.includes(h)) {
+        usuarioLogado.historicoFogo.push(h);
+        salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado);
+        if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]); // Vibração de Sucesso
+        alert("TREINO 100% CONCLUÍDO! 🔥");
+        atualizarDisplayFogo();
+    }
+}
+function atualizarDisplayFogo() { document.getElementById('streakCount').innerText = usuarioLogado.historicoFogo ? usuarioLogado.historicoFogo.length : 0; }
 
 function salvarPeso(exId, val) {
     if(!val) return;
@@ -361,11 +344,65 @@ function salvarPeso(exId, val) {
 }
 
 function atualizarBarraProgresso() {
-    const t = document.querySelectorAll('.set-circle').length; if(t===0) return;
+    const t = document.querySelectorAll('.set-circle').length; if(t===0) return 0;
     const c = document.querySelectorAll('.set-circle.done').length;
     const p = Math.round((c/t)*100);
     document.getElementById('barraProgresso').style.width = `${p}%`;
     document.getElementById('progressoPorcentagem').innerText = `${p}%`;
+    return p;
+}
+
+/* ================= ESTATÍSTICAS E GRÁFICOS (COMPLETOS) ================= */
+function carregarEstatisticas() {
+    // 1. Gráfico de Composição (Peso/Gordura)
+    const ctx = document.getElementById('graficoComposicaoCanvas');
+    if(ctx && usuarioLogado.historicoAvaliacoes) {
+        let labels=[], dPeso=[], dGordura=[];
+        usuarioLogado.historicoAvaliacoes.forEach(x => { labels.push(x.data.slice(0,5)); dPeso.push(x.peso); dGordura.push(x.gordura); });
+        if(dPeso.length>0) { document.getElementById('statPesoAtual').innerText = dPeso[dPeso.length-1] + ' kg'; document.getElementById('statGorduraAtual').innerText = dGordura[dGordura.length-1] + '%'; }
+        if(chartComposicao) chartComposicao.destroy();
+        chartComposicao = new Chart(ctx, {
+            type: 'line', data: { labels, datasets: [ { label: 'Peso (kg)', data: dPeso, borderColor: '#f8fafc', tension:0.4, yAxisID: 'y' }, { label: '% Gordura', data: dGordura, borderColor: '#eab308', borderDash:[5,5], tension:0.4, yAxisID: 'y1' } ] },
+            options: { responsive:true, maintainAspectRatio:false, scales:{ x:{display:false}, y:{type:'linear', display:true, position:'left'}, y1:{type:'linear', display:true, position:'right', grid:{drawOnChartArea:false}} } }
+        });
+    }
+
+    // 2. Gráfico de Frequência (Dias da Semana) - CORRIGIDO
+    let hist = usuarioLogado.historicoFogo || [];
+    const container = document.getElementById('graficoSemanal');
+    container.innerHTML = "";
+    const hoje = new Date();
+    const dom = new Date(hoje); dom.setDate(hoje.getDate() - hoje.getDay());
+    const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    for(let i=0; i<7; i++) {
+        const d = new Date(dom); d.setDate(dom.getDate()+i);
+        const str = d.toLocaleDateString('pt-BR');
+        const active = hist.includes(str) ? 'active' : '';
+        const h = active ? '100%' : '10%';
+        container.innerHTML += `<div class="chart-bar-wrapper"><div class="chart-bar ${active}" style="height:${h}"></div><span class="week-day">${dias[i]}</span></div>`;
+    }
+
+    // 3. Preencher Select de Força - CORRIGIDO
+    povoarSelectExercicios();
+}
+
+function povoarSelectExercicios() {
+    const sel = document.getElementById('selectExercicioGrafico'); if(!sel) return;
+    let ids = Object.keys(usuarioLogado.historicoCargas || {});
+    sel.innerHTML = "";
+    if(ids.length===0) { sel.innerHTML="<option>Sem dados</option>"; return; }
+    ids.forEach(id => { const nome = todosExercicios.find(e=>e.id==id)?.nome || "Ex "+id; sel.innerHTML+=`<option value="${id}">${nome}</option>`; });
+    atualizarGraficoCarga();
+}
+
+function atualizarGraficoCarga() {
+    const id = document.getElementById('selectExercicioGrafico').value; if(!id || !usuarioLogado.historicoCargas) return;
+    const hist = usuarioLogado.historicoCargas[id] || [];
+    const labels = hist.map(x=>x.data); const dados = hist.map(x=>x.carga);
+    if(dados.length>0) { document.getElementById('recordeDisplay').innerText = Math.max(...dados)+"kg"; }
+    const ctx = document.getElementById('graficoCargaCanvas');
+    if(chartCarga) chartCarga.destroy();
+    chartCarga = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga', data: dados, borderColor: '#3b82f6', tension:0.3, fill:true, backgroundColor:'rgba(59,130,246,0.1)' }] }, options: { responsive:true, maintainAspectRatio:false, scales:{x:{display:false}} } });
 }
 
 /* ================= EXTRAS ================= */
@@ -424,38 +461,4 @@ function atualizarDisplayVencimentoPerfil() {
 function salvarLinkSpotify(val) { if(usuarioLogado && val) { usuarioLogado.spotifyUrl = val; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); } }
 function salvarPesoCorporal(v) { if(!v) return; if(!usuarioLogado.pesoInicial) { usuarioLogado.pesoInicial=v; document.getElementById('pesoInicialInput').value=v; } usuarioLogado.pesoAtual = v; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); carregarEstatisticas(); }
 
-// GRÁFICO DUPLO
-function carregarEstatisticas() {
-    const ctx = document.getElementById('graficoComposicaoCanvas');
-    if(ctx && usuarioLogado.historicoAvaliacoes) {
-        let labels=[], dPeso=[], dGordura=[];
-        usuarioLogado.historicoAvaliacoes.forEach(x => {
-            labels.push(x.data.slice(0,5)); 
-            dPeso.push(x.peso);
-            dGordura.push(x.gordura);
-        });
-
-        if(dPeso.length>0) {
-            document.getElementById('statPesoAtual').innerText = dPeso[dPeso.length-1] + ' kg';
-            document.getElementById('statGorduraAtual').innerText = dGordura[dGordura.length-1] + '%';
-        }
-
-        if(chartComposicao) chartComposicao.destroy();
-        chartComposicao = new Chart(ctx, {
-            type: 'line',
-            data: { 
-                labels, 
-                datasets: [
-                    { label: 'Peso (kg)', data: dPeso, borderColor: '#f8fafc', tension:0.4, yAxisID: 'y' },
-                    { label: '% Gordura', data: dGordura, borderColor: '#eab308', borderDash:[5,5], tension:0.4, yAxisID: 'y1' }
-                ] 
-            },
-            options: { 
-                responsive:true, maintainAspectRatio:false, 
-                scales:{ x:{display:false}, y:{type:'linear', display:true, position:'left'}, y1:{type:'linear', display:true, position:'right', grid:{drawOnChartArea:false}} }
-            }
-        });
-    }
-}
-
-window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.abrirSpotify=abrirSpotify; window.fecharSpotify=fecharSpotify; window.carregarPlaylistUsuario=carregarPlaylistUsuario; window.salvarLinkSpotify=salvarLinkSpotify; window.salvarPesoCorporal=salvarPesoCorporal; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica;
+window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.abrirSpotify=abrirSpotify; window.fecharSpotify=fecharSpotify; window.carregarPlaylistUsuario=carregarPlaylistUsuario; window.salvarLinkSpotify=salvarLinkSpotify; window.salvarPesoCorporal=salvarPesoCorporal; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica; window.atualizarGraficoCarga=atualizarGraficoCarga;
