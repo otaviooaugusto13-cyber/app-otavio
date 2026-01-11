@@ -74,16 +74,16 @@ const todosExercicios = [
 ];
 
 /* ================= ESTADO GLOBAL ================= */
-let listaDeAlunos = [];
-let alunoLogado = null;
-let alunoEmEdicaoId = null;
-let moduloEmEdicao = 'A';
-const MODULOS_DISPONIVEIS = ['A', 'B', 'C', 'D', 'E'];
+let listaDeAlunos = []; 
+let alunoLogado = null; 
+let alunoEmEdicaoId = null; 
+let moduloEmEdicao = 'A'; 
+const MODULOS_DISPONIVEIS = ['A', 'B', 'C', 'D', 'E']; 
 let chartPeso = null;
 let chartCarga = null;
-let timerInterval = null; // Variável para controlar o cronômetro
+let timerInterval = null; 
 
-/* ================= INICIALIZAÇÃO ================= */
+/* ================= INICIALIZAÇÃO FIREBASE ================= */
 setTimeout(() => {
     carregarDadosDaNuvem().then(() => { verificarSessao(); });
 }, 1000);
@@ -100,7 +100,7 @@ async function carregarDadosDaNuvem() {
 
 async function salvarNaNuvem(aluno) {
     if (!window.db) return;
-    try { await window.f_setDoc(window.f_doc(window.db, "alunos", aluno.telefone), aluno); }
+    try { await window.f_setDoc(window.f_doc(window.db, "alunos", aluno.telefone), aluno); } 
     catch (e) { console.error(e); }
 }
 
@@ -112,7 +112,7 @@ function verificarSessao() {
         if (user.tipo === 'admin') autenticarAdmin();
         else {
             const dados = listaDeAlunos.find(a => a.telefone === user.telefone);
-            if(dados) { alunoLogado = dados; carregarInterfaceAluno(); }
+            if(dados) { alunoLogado = dados; carregarInterfaceAluno(); } 
             else logout();
         }
     }
@@ -146,7 +146,9 @@ function renderizarListaAlunosAdmin(filtro="") {
   if(!container) return;
   document.getElementById('totalAlunos').innerText = listaDeAlunos.length;
   container.innerHTML = "";
+  
   const filtrados = listaDeAlunos.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase()) || a.telefone.includes(filtro));
+  
   filtrados.forEach(aluno => {
     container.innerHTML += `
       <div class="student-card">
@@ -181,7 +183,9 @@ function renderizarCheckboxesExercicios() {
   container.innerHTML = "";
   const aluno = listaDeAlunos.find(a => a.telefone === alunoEmEdicaoId);
   if (!aluno) return;
+
   const exerciciosSalvos = aluno.treinos[moduloEmEdicao].exercicios || [];
+  
   const grupos = {};
   todosExercicios.forEach(ex => {
     if (!grupos[ex.grupo]) grupos[ex.grupo] = [];
@@ -193,8 +197,9 @@ function renderizarCheckboxesExercicios() {
     grupos[grupo].forEach(ex => {
       const salvo = exerciciosSalvos.find(s => s.id === ex.id);
       const isChecked = salvo ? "checked" : "";
-      const valDescanso = salvo && salvo.descanso ? salvo.descanso : "Descanso";
-      const valMetodo = salvo && salvo.metodo ? salvo.metodo : "Normal";
+      
+      const valDescanso = salvo && salvo.descanso ? salvo.descanso : "Descanso"; 
+      const valMetodo = salvo && salvo.metodo ? salvo.metodo : "Normal"; 
       const valSeries = salvo && salvo.series ? salvo.series : "";
 
       container.innerHTML += `
@@ -231,12 +236,14 @@ function renderizarCheckboxesExercicios() {
 function salvarTreinoPersonal() {
   const marcados = document.querySelectorAll('#listaSelecao input[type="checkbox"]:checked');
   const listaFinal = [];
+
   marcados.forEach(checkbox => {
     const id = parseInt(checkbox.value);
     const exBase = todosExercicios.find(e => e.id === id);
     const descanso = document.getElementById(`descanso_${id}`).value;
     const metodo = document.getElementById(`metodo_${id}`).value;
     const series = document.getElementById(`series_${id}`).value;
+
     listaFinal.push({
       ...exBase,
       descanso: descanso !== "Descanso" ? descanso : "1min",
@@ -244,8 +251,10 @@ function salvarTreinoPersonal() {
       series: series || "3x12"
     });
   });
+
   const idx = listaDeAlunos.findIndex(a => a.telefone === alunoEmEdicaoId);
   listaDeAlunos[idx].treinos[moduloEmEdicao].exercicios = listaFinal;
+  
   salvarNaNuvem(listaDeAlunos[idx]);
   alert("Treino salvo na nuvem! 💾");
 }
@@ -276,10 +285,6 @@ function renderizarCardsTreinoAluno() {
     });
 }
 
-// ... (resto do código igual)
-
-/* ================= ÁREA DO ALUNO (ATUALIZADA) ================= */
-
 function abrirTreino(modulo) {
   moduloTreinoAtual = modulo;
   const listaEx = alunoLogado.treinos[modulo].exercicios;
@@ -289,57 +294,43 @@ function abrirTreino(modulo) {
   container.innerHTML = "";
 
   listaEx.forEach(ex => {
-    // Garante estrutura de registros
     if(!alunoLogado.registros) alunoLogado.registros = {};
     const keyPeso = `${modulo}_${ex.id}_peso`;
     const pesoSalvo = alunoLogado.registros[keyPeso] || "";
     
-    // BADGES (Etiquetas)
-    // Se não tiver série definida, assume 3
-    let serieTexto = ex.series ? ex.series : "3 Séries";
-    const badgeSeries = `<span class="badge-info badge-series">${serieTexto}</span>`;
+    // BADGES
+    const badgeSeries = ex.series ? `<span class="badge-info badge-series">📋 ${ex.series}</span>` : "";
     const badgeDescanso = ex.descanso ? `<span class="badge-info badge-rest">⏰ ${ex.descanso}</span>` : "";
-    const classeFalha = ex.metodo === "Falha" ? "falha" : "";
-    const badgeMetodo = ex.metodo && ex.metodo !== "Normal" ? `<span class="badge-info badge-method ${classeFalha}">${ex.metodo}</span>` : "";
+    const badgeMetodo = ex.metodo && ex.metodo !== "Normal" ? `<span class="badge-info badge-method">${ex.metodo}</span>` : "";
 
-    // GERAÇÃO DAS BOLINHAS (Séries)
+    // BOLINHAS DE SÉRIE
     let numSeries = parseInt(ex.series); 
-    if (isNaN(numSeries) || numSeries < 1) numSeries = 3; // Padrão 3
-    
+    if (isNaN(numSeries) || numSeries < 1) numSeries = 3;
     let bolinhasHTML = '<div class="sets-container">';
     for(let i=1; i<=numSeries; i++) {
         const setKey = `${modulo}_${ex.id}_set_${i}`;
         const isDone = alunoLogado.registros[setKey] ? "done" : "";
-        // Cria a bolinha clicável
         bolinhasHTML += `<div class="set-circle ${isDone}" onclick="toggleSet('${ex.id}', ${i}, '${ex.descanso || '1min'}', this)">${i}</div>`;
     }
     bolinhasHTML += '</div>';
 
-    // HTML DO CARTÃO (Com o botão de vídeo de volta!)
     container.innerHTML += `
       <div class="exercise-item">
-        
         <div class="exercise-header">
             <span class="exercise-name">${ex.nome}</span>
             <button class="btn-video-mini" onclick="abrirVideo('${ex.nome}')">
                 <span class="material-icons-round" style="font-size:14px">play_arrow</span> Vídeo
             </button>
         </div>
-
         <div class="exercise-badges">
-            ${badgeDescanso}
-            ${badgeMetodo}
+            ${badgeSeries} ${badgeDescanso} ${badgeMetodo}
         </div>
-        
         <div class="exercise-controls">
-          
           <div class="input-carga-wrapper">
              <span class="label">Carga (kg)</span>
              <input type="tel" class="input-carga" placeholder="0" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)">
           </div>
-
           ${bolinhasHTML}
-          
         </div>
       </div>
     `;
@@ -347,16 +338,11 @@ function abrirTreino(modulo) {
   atualizarBarraProgresso();
 }
 
-// ... (Mantenha o resto das funções: toggleSet, timer, etc.)
-
-/* ================= LÓGICA DO CRONÔMETRO ================= */
+/* ================= LÓGICA DO CRONÔMETRO (CORRIGIDA) ================= */
 function toggleSet(exId, setIndex, descanso, elemento) {
     if(navigator.vibrate) navigator.vibrate(30);
-    
-    // Marca/Desmarca visualmente
     elemento.classList.toggle('done');
     
-    // Salva no banco
     const isDone = elemento.classList.contains('done');
     const key = `${moduloTreinoAtual}_${exId}_set_${setIndex}`;
     
@@ -364,32 +350,30 @@ function toggleSet(exId, setIndex, descanso, elemento) {
     alunoLogado.registros[key] = isDone;
     salvarNaNuvem(alunoLogado);
 
-    // Se marcou como FEITO, abre o cronômetro
-    if(isDone) {
-        iniciarTimer(descanso);
-    }
-    
-    // Verifica se completou o treino todo
-    const pct = atualizarBarraProgresso();
-    if (pct === 100) registrarDiaDeFogo();
+    if(isDone) iniciarTimer(descanso);
+    if(atualizarBarraProgresso() === 100) registrarDiaDeFogo();
 }
 
 function iniciarTimer(tempoString) {
-    // Converte "1min", "30s", "1:30" para segundos
     let segundos = 60; // Padrão
-    if(tempoString.includes('s')) segundos = parseInt(tempoString);
-    else if(tempoString.includes(':')) {
-        const partes = tempoString.split(':');
-        segundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]);
-    }
-    else if(tempoString.includes('min')) segundos = parseInt(tempoString) * 60;
+    
+    // Normaliza a string para evitar erros de espaços
+    tempoString = tempoString.toLowerCase().trim();
 
-    // Mostra o timer
+    // Lógica inteligente para converter
+    if(tempoString.includes('min')) {
+        segundos = parseInt(tempoString) * 60; // "2min" -> 120
+    } else if (tempoString.includes(':')) {
+        const partes = tempoString.split(':');
+        segundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]); // "1:30" -> 90
+    } else if (tempoString.includes('s')) {
+        segundos = parseInt(tempoString); // "45s" -> 45
+    }
+
     const overlay = document.getElementById('timerOverlay');
     const display = document.getElementById('timerDisplay');
     overlay.classList.remove('hidden');
     
-    // Limpa timer anterior se houver
     if(timerInterval) clearInterval(timerInterval);
     
     let restante = segundos;
@@ -399,32 +383,26 @@ function iniciarTimer(tempoString) {
         const s = (restante % 60).toString().padStart(2, '0');
         display.innerText = `${m}:${s}`;
     }
-    
     updateDisplay();
     
     timerInterval = setInterval(() => {
         restante--;
         updateDisplay();
-        
         if (restante <= 0) {
             clearInterval(timerInterval);
-            if(navigator.vibrate) navigator.vibrate([200, 100, 200]); // Vibra pra avisar
-            fecharTimer(); // Fecha sozinho ou pode tocar som
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            fecharTimer();
         }
     }, 1000);
 }
 
 function adicionarTempo(s) {
-    // Pega o tempo atual do display e soma
     const display = document.getElementById('timerDisplay').innerText;
     const partes = display.split(':');
     let atualSegundos = (parseInt(partes[0]) * 60) + parseInt(partes[1]);
     
-    clearInterval(timerInterval); // Para para reiniciar com novo tempo
-    
-    // Reutiliza lógica de contagem
+    clearInterval(timerInterval);
     let restante = atualSegundos + s;
-    
     const displayEl = document.getElementById('timerDisplay');
     
     timerInterval = setInterval(() => {
@@ -432,7 +410,6 @@ function adicionarTempo(s) {
         const m = Math.floor(restante / 60).toString().padStart(2, '0');
         const s = (restante % 60).toString().padStart(2, '0');
         displayEl.innerText = `${m}:${s}`;
-        
         if (restante <= 0) {
             clearInterval(timerInterval);
             fecharTimer();
@@ -440,12 +417,10 @@ function adicionarTempo(s) {
     }, 1000);
 }
 
-// Essa função precisa ser acessível globalmente (window) para o botão fechar
 window.fecharTimer = function() {
     document.getElementById('timerOverlay').classList.add('hidden');
     if(timerInterval) clearInterval(timerInterval);
 }
-// Mesma coisa para adicionar tempo
 window.adicionarTempo = adicionarTempo; 
 
 /* ================= FUNÇÕES BÁSICAS ================= */
@@ -463,7 +438,6 @@ function salvarPeso(exId, v) {
 }
 
 function atualizarBarraProgresso() {
-  // Agora conta bolinhas preenchidas vs total de bolinhas
   const totalSets = document.querySelectorAll('.set-circle').length;
   if(totalSets===0) return 0;
   const doneSets = document.querySelectorAll('.set-circle.done').length;
@@ -579,4 +553,3 @@ function abrirVideo(t){document.getElementById('videoModal').classList.add('acti
 function fecharVideo(){document.getElementById('videoModal').classList.remove('active');}
 function filtrarAlunos(){renderizarListaAlunosAdmin(document.getElementById('inputBusca').value);}
 function mostrarTela(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); const nav=document.getElementById('mainNav'); if(id.includes('dash')||id==='login')nav.style.display='none'; else if(alunoLogado)nav.style.display='flex';}
-
