@@ -57,7 +57,7 @@ async function carregarDadosDaNuvem() {
         }
     } catch (e) {
         console.error(e);
-        alert("Erro ao conectar ao Banco de Dados. Verifique se a 'Edição Standard' (ou Nativa) foi criada no console do Firebase.");
+        // Não alerta erro de conexão para não assustar, apenas loga
     }
 }
 
@@ -90,7 +90,6 @@ function verificarSessao() {
                 alunoLogado = dados; 
                 carregarInterfaceAluno(); 
             } else { 
-                // Se o aluno foi apagado do banco, faz logout
                 logout(); 
             }
         }
@@ -125,7 +124,9 @@ function autenticarAdmin() {
 function carregarInterfaceAluno() {
     const hora = new Date().getHours();
     let saudacao = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
-    document.querySelector('.header-student h1').innerHTML = `${saudacao}, <span style="color:#10b981">${alunoLogado.nome.split(' ')[0]}</span>`;
+    const primeiroNome = alunoLogado.nome.split(' ')[0];
+    const h1 = document.querySelector('.header-student h1');
+    if(h1) h1.innerHTML = `${saudacao}, <span style="color:#10b981">${primeiroNome}</span>`;
 
     renderizarCardsTreinoAluno();
     atualizarDisplayFogo();
@@ -154,6 +155,7 @@ function mostrarTela(idTela) {
   const tela = document.getElementById(idTela);
   if(tela) tela.classList.add('active');
   const nav = document.getElementById('mainNav');
+  if(!nav) return;
   
   if(idTela === 'login' || idTela === 'dashProfessor' || idTela === 'painelPersonal') {
     nav.style.display = 'none';
@@ -163,16 +165,21 @@ function mostrarTela(idTela) {
     
     if (idTela === 'estatisticas') {
         carregarEstatisticas(); 
-        document.querySelector('.nav-item:first-child').style.color = '#f8fafc';
+        const btn = document.querySelector('.nav-item:first-child');
+        if(btn) btn.style.color = '#f8fafc';
     }
     if (idTela === 'conta') {
-        document.querySelector('.nav-item:last-child').style.color = '#f8fafc';
+        const btn = document.querySelector('.nav-item:last-child');
+        if(btn) btn.style.color = '#f8fafc';
     }
   }
 }
 
 /* ================= ADMIN ================= */
-function toggleFormulario() { document.getElementById('formCadastroAluno').classList.toggle('hidden'); }
+function toggleFormulario() { 
+    const form = document.getElementById('formCadastroAluno');
+    if(form) form.classList.toggle('hidden'); 
+}
 
 async function cadastrarAluno() {
   const nome = document.getElementById('novoNome').value;
@@ -190,21 +197,24 @@ async function cadastrarAluno() {
     pesoAtual: "",
     historicoPeso: [],
     historicoCargas: {}, 
-    registros: {}, // Guarda checkins e pesos atuais
+    registros: {}, 
     treinos: { A: { exercicios: [] }, B: { exercicios: [] }, C: { exercicios: [] }, D: { exercicios: [] }, E: { exercicios: [] } }
   };
 
   listaDeAlunos.push(novoAluno);
-  await salvarNaNuvem(novoAluno); // Guarda no Firebase
+  await salvarNaNuvem(novoAluno);
   
   renderizarListaAlunosAdmin();
   toggleFormulario();
-  alert("Aluno salvo na nuvem com sucesso!");
+  alert("Aluno salvo na nuvem!");
 }
 
 function renderizarListaAlunosAdmin(filtro = "") {
   const container = document.getElementById('listaAlunosCoach');
-  document.getElementById('totalAlunos').innerText = listaDeAlunos.length;
+  const total = document.getElementById('totalAlunos');
+  if(!container) return;
+  
+  total.innerText = listaDeAlunos.length;
   container.innerHTML = "";
 
   const listaFiltrada = listaDeAlunos.filter(aluno => 
@@ -228,7 +238,7 @@ function renderizarListaAlunosAdmin(filtro = "") {
 async function excluirAluno(tel) {
     const telefoneStr = String(tel);
     const aluno = listaDeAlunos.find(a => a.telefone === telefoneStr);
-    if(aluno && confirm(`Apagar ${aluno.nome}? Esta ação remove da nuvem permanentemente.`)) {
+    if(aluno && confirm(`Apagar ${aluno.nome}?`)) {
         listaDeAlunos = listaDeAlunos.filter(a => a.telefone !== telefoneStr);
         renderizarListaAlunosAdmin();
         await apagarDaNuvem(telefoneStr);
@@ -237,7 +247,9 @@ async function excluirAluno(tel) {
 
 function abrirEditorTreino(tel) {
   alunoEmEdicaoId = tel;
-  document.getElementById('alunoSendoEditado').innerText = listaDeAlunos.find(a => a.telefone === tel).nome;
+  const aluno = listaDeAlunos.find(a => a.telefone === tel);
+  document.getElementById('alunoSendoEditado').innerText = aluno.nome;
+  
   const containerBtns = document.getElementById('botoesModulosAdmin');
   containerBtns.innerHTML = "";
   MODULOS_DISPONIVEIS.forEach(letra => {
@@ -251,18 +263,61 @@ function trocarModuloEdicao(modulo) {
   moduloEmEdicao = modulo;
   document.getElementById('moduloAtualNome').innerText = modulo;
   document.querySelectorAll('.mod-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById('btnModulo' + modulo).classList.add('active');
+  const btn = document.getElementById('btnModulo' + modulo);
+  if(btn) btn.classList.add('active');
   renderizarCheckboxesExercicios();
 }
 
+// === LISTA DE EXERCÍCIOS AGRUPADA POR CATEGORIA (NOVO) ===
 function renderizarCheckboxesExercicios() {
   const container = document.getElementById('listaSelecao');
   container.innerHTML = "";
+  
   const aluno = listaDeAlunos.find(a => a.telefone === alunoEmEdicaoId);
+  if (!aluno) return;
+
   const idsAtuais = aluno.treinos[moduloEmEdicao].exercicios.map(e => e.id);
+
+  // 1. Agrupar os exercícios por categoria
+  const grupos = {};
   todosExercicios.forEach(ex => {
-    container.innerHTML += `<label class="selection-item"><input type="checkbox" value="${ex.id}" ${idsAtuais.includes(ex.id)?"checked":""}><div style="flex:1"><strong style="color:white;">${ex.nome}</strong><br><small>${ex.grupo}</small></div></label>`;
+    if (!grupos[ex.grupo]) {
+      grupos[ex.grupo] = [];
+    }
+    grupos[ex.grupo].push(ex);
   });
+
+  // 2. Renderizar grupos
+  Object.keys(grupos).forEach(grupoNome => {
+    // Cabeçalho da Categoria
+    const icone = obterIconeGrupo(grupoNome);
+    container.innerHTML += `
+      <div class="group-header">
+        <span>${icone}</span> ${grupoNome}
+      </div>
+    `;
+
+    // Lista de Exercícios da Categoria
+    grupos[grupoNome].forEach(ex => {
+      const isChecked = idsAtuais.includes(ex.id) ? "checked" : "";
+      container.innerHTML += `
+        <label class="selection-item">
+          <input type="checkbox" value="${ex.id}" ${isChecked}>
+          <div style="flex:1">
+            <strong style="color:white; font-size: 0.95rem;">${ex.nome}</strong>
+          </div>
+        </label>
+      `;
+    });
+  });
+}
+
+function obterIconeGrupo(grupo) {
+  const map = {
+    'Perna': '🦵', 'Peito': '🏋️', 'Costas': '🦍', 'Ombro': '🥥',
+    'Bíceps': '💪', 'Tríceps': '💪', 'Abs': '🔥', 'Cardio': '🏃'
+  };
+  return map[grupo] || '📋';
 }
 
 function salvarTreinoPersonal() {
@@ -273,13 +328,13 @@ function salvarTreinoPersonal() {
   
   listaDeAlunos[idx].treinos[moduloEmEdicao].exercicios = novos;
   salvarNaNuvem(listaDeAlunos[idx]);
-  
-  alert(`Treino ${moduloEmEdicao} atualizado na nuvem!`);
+  alert(`Treino guardado na nuvem!`);
 }
 
 /* ================= ALUNO ================= */
 function renderizarCardsTreinoAluno() {
     const grid = document.getElementById('containerTreinosAluno');
+    if(!grid) return;
     grid.innerHTML = "";
     MODULOS_DISPONIVEIS.forEach(letra => {
         const treino = alunoLogado.treinos[letra];
@@ -298,39 +353,16 @@ function abrirTreino(modulo) {
   container.innerHTML = "";
 
   listaEx.forEach(ex => {
-    // Garante que o objeto de registos existe
     if(!alunoLogado.registros) alunoLogado.registros = {};
-    
     const keyCheck = `${modulo}_${ex.id}_check`;
     const keyPeso = `${modulo}_${ex.id}_peso`;
-    
     const isChecked = alunoLogado.registros[keyCheck] ? "checked" : "";
     const pesoSalvo = alunoLogado.registros[keyPeso] || "";
 
     container.innerHTML += `
       <div class="exercise-item">
-        <div class="exercise-header">
-            <span class="exercise-name">${ex.nome}</span>
-            <div class="video-link" onclick="abrirVideo('${ex.nome}')">
-                <span class="material-icons-round" style="font-size:18px">play_circle</span> Ver
-            </div>
-        </div>
-        
-        <div class="exercise-controls">
-          <div class="input-carga-wrapper">
-             <div class="weight-history">
-                <span class="label">Anterior</span>
-                <span class="value">${pesoSalvo ? pesoSalvo + 'kg' : '--'}</span>
-             </div>
-             <input type="tel" class="input-carga" placeholder="kg" 
-                    value="${pesoSalvo}" 
-                    onblur="salvarPeso('${ex.id}', this.value)">
-          </div>
-
-          <label class="check-wrapper">
-            <input type="checkbox" onchange="toggleExercicio('${ex.id}', this.checked)" ${isChecked}>
-          </label>
-        </div>
+        <div class="exercise-header"><span class="exercise-name">${ex.nome}</span><div class="video-link" onclick="abrirVideo('${ex.nome}')"><span class="material-icons-round" style="font-size:18px">play_circle</span> Ver</div></div>
+        <div class="exercise-controls"><div class="input-carga-wrapper"><div class="weight-history"><span class="label">Anterior</span><span class="value">${pesoSalvo}</span></div><input type="tel" class="input-carga" placeholder="kg" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)"></div><label class="check-wrapper"><input type="checkbox" onchange="toggleExercicio('${ex.id}', this.checked)" ${isChecked}></label></div>
       </div>
     `;
   });
@@ -340,12 +372,8 @@ function abrirTreino(modulo) {
 function salvarPeso(exId, valor) {
   if(!valor) return;
   if(!alunoLogado.registros) alunoLogado.registros = {};
-  
-  // 1. Atualiza valor atual
-  const keyPeso = `${moduloTreinoAtual}_${exId}_peso`;
-  alunoLogado.registros[keyPeso] = valor;
+  alunoLogado.registros[`${moduloTreinoAtual}_${exId}_peso`] = valor;
 
-  // 2. Adiciona ao histórico (para o gráfico de força)
   if(!alunoLogado.historicoCargas) alunoLogado.historicoCargas = {};
   if(!alunoLogado.historicoCargas[exId]) alunoLogado.historicoCargas[exId] = [];
   
@@ -356,19 +384,14 @@ function salvarPeso(exId, valor) {
   if(entry) entry.carga = parseFloat(valor);
   else hist.push({data: hoje, carga: parseFloat(valor)});
 
-  // Salva tudo na nuvem
   salvarNaNuvem(alunoLogado);
 }
 
 function toggleExercicio(exId, checked) {
   if (navigator.vibrate) navigator.vibrate(40);
-  
   if(!alunoLogado.registros) alunoLogado.registros = {};
-  const keyCheck = `${moduloTreinoAtual}_${exId}_check`;
-  alunoLogado.registros[keyCheck] = checked;
-  
-  salvarNaNuvem(alunoLogado); // Persiste o check
-  
+  alunoLogado.registros[`${moduloTreinoAtual}_${exId}_check`] = checked;
+  salvarNaNuvem(alunoLogado);
   const pct = atualizarBarraProgresso();
   if (pct === 100) registrarDiaDeFogo();
 }
@@ -386,7 +409,6 @@ function atualizarBarraProgresso() {
 function registrarDiaDeFogo() {
     const hoje = new Date().toLocaleDateString('pt-BR');
     if(!alunoLogado.historicoFogo) alunoLogado.historicoFogo = [];
-    
     if (!alunoLogado.historicoFogo.includes(hoje)) {
         alunoLogado.historicoFogo.push(hoje);
         salvarNaNuvem(alunoLogado);
@@ -403,12 +425,8 @@ function atualizarDisplayFogo() {
 
 function carregarEstatisticas() {
     if (!alunoLogado) return;
-    
-    // Gráfico de Peso
     gerarGraficoPesoChartJS();
-    // Gráfico Frequência
     renderizarGraficoFrequenciaReal();
-    // Select de Cargas
     povoarSelectExercicios();
 }
 
@@ -418,77 +436,33 @@ function gerarGraficoPesoChartJS() {
 
     let labels = [];
     let dados = [];
-    
-    if(alunoLogado.pesoInicial) {
-        labels.push("Início");
-        dados.push(alunoLogado.pesoInicial);
-    }
-    if(alunoLogado.historicoPeso) {
-        alunoLogado.historicoPeso.forEach(h => {
-            labels.push(h.data);
-            dados.push(h.peso);
-        });
-    }
+    if(alunoLogado.pesoInicial) { labels.push("Início"); dados.push(alunoLogado.pesoInicial); }
+    if(alunoLogado.historicoPeso) { alunoLogado.historicoPeso.forEach(h => { labels.push(h.data); dados.push(h.peso); }); }
 
     if(chartPeso) chartPeso.destroy(); 
-
     chartPeso = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Peso (kg)',
-                data: dados,
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#020617',
-                pointBorderColor: '#10b981',
-                pointRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { display: false }, ticks: { color: '#64748b' } },
-                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }
-            }
-        }
+        data: { labels: labels, datasets: [{ label: 'Peso (kg)', data: dados, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.15)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#020617', pointBorderColor: '#10b981', pointRadius: 5 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#64748b' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } } } }
     });
 }
 
 function povoarSelectExercicios() {
     const select = document.getElementById('selectExercicioGrafico');
     if(!select) return;
-    
     let ids = [];
     if(alunoLogado.historicoCargas) ids = Object.keys(alunoLogado.historicoCargas);
-
     select.innerHTML = "";
-    if (ids.length === 0) {
-        select.innerHTML = "<option>Registe cargas para ver...</option>";
-        return;
-    }
-
-    ids.forEach(id => {
-        const nome = todosExercicios.find(e => e.id == id)?.nome || "Ex " + id;
-        select.innerHTML += `<option value="${id}">${nome}</option>`;
-    });
-
+    if (ids.length === 0) { select.innerHTML = "<option>Registe cargas para ver...</option>"; return; }
+    ids.forEach(id => { const nome = todosExercicios.find(e => e.id == id)?.nome || "Ex " + id; select.innerHTML += `<option value="${id}">${nome}</option>`; });
     atualizarGraficoCarga();
 }
 
 function atualizarGraficoCarga() {
     const exId = document.getElementById('selectExercicioGrafico').value;
     if(!exId || !alunoLogado.historicoCargas) return;
-
     const hist = alunoLogado.historicoCargas[exId] || [];
     const ctx = document.getElementById('graficoCargaCanvas');
-    
     const labels = hist.map(h => h.data);
     const dados = hist.map(h => h.carga);
 
@@ -498,33 +472,10 @@ function atualizarGraficoCarga() {
     }
 
     if(chartCarga) chartCarga.destroy();
-
     chartCarga = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Carga (kg)',
-                data: dados,
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                borderWidth: 3,
-                tension: 0.3,
-                fill: true,
-                pointBackgroundColor: '#020617',
-                pointBorderColor: '#3b82f6',
-                pointRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { display: false }, ticks: { color: '#64748b' } },
-                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }
-            }
-        }
+        data: { labels: labels, datasets: [{ label: 'Carga (kg)', data: dados, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.15)', borderWidth: 3, tension: 0.3, fill: true, pointBackgroundColor: '#020617', pointBorderColor: '#3b82f6', pointRadius: 5 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#64748b' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } } } }
     });
 }
 
@@ -545,8 +496,7 @@ function renderizarGraficoFrequenciaReal() {
         const ano = dataLoop.getFullYear();
         const dataString = `${dia}/${mes}/${ano}`;
         const completou = historico.includes(dataString);
-        let altura = "10%";
-        let classe = "";
+        let altura = "10%"; let classe = "";
         if(completou) { altura = "100%"; classe = "active"; }
         container.innerHTML += `<div class="chart-bar-wrapper"><div class="chart-bar ${classe}" style="height: ${altura}"></div><span class="week-day">${diasLabel[i]}</span></div>`;
     }
@@ -555,19 +505,14 @@ function renderizarGraficoFrequenciaReal() {
 function salvarPesoCorporal(novoPeso) {
     if(!novoPeso) return;
     const pesoNum = parseFloat(novoPeso);
-    if (!alunoLogado.pesoInicial) {
-        alunoLogado.pesoInicial = novoPeso;
-        document.getElementById('pesoInicialInput').value = novoPeso;
-    }
+    if (!alunoLogado.pesoInicial) { alunoLogado.pesoInicial = novoPeso; document.getElementById('pesoInicialInput').value = novoPeso; }
     alunoLogado.pesoAtual = novoPeso;
     if(!alunoLogado.historicoPeso) alunoLogado.historicoPeso = [];
     const hoje = new Date().toLocaleDateString('pt-BR').slice(0, 5); 
     const registroHoje = alunoLogado.historicoPeso.find(h => h.data === hoje);
     if(registroHoje) registroHoje.peso = pesoNum;
     else alunoLogado.historicoPeso.push({ data: hoje, peso: pesoNum });
-    
-    salvarNaNuvem(alunoLogado);
-    carregarEstatisticas();
+    salvarNaNuvem(alunoLogado); carregarEstatisticas();
 }
 
 function atualizarDisplayVencimentoPerfil() {
