@@ -12,36 +12,55 @@
 <body>
 
   <section id="login" class="screen active">
-    <div class="login-wrapper">
-      <div class="brand">
-        <div style="
-            width: 80px; 
-            height: 80px; 
-            background: linear-gradient(135deg, #10b981, #059669); 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            margin: 0 auto 15px;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-            border: 2px solid #020617;">
-            <span class="material-icons-round" style="font-size: 48px; color: white;">offline_bolt</span>
+    <div class="login-wrapper" style="justify-content: space-between; padding-top: 60px;">
+      
+      <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="brand">
+          <div style="
+              width: 90px; 
+              height: 90px; 
+              background: linear-gradient(135deg, #10b981, #059669); 
+              border-radius: 50%; 
+              display: flex; 
+              align-items: center; 
+              justify-content: center; 
+              margin: 0 auto 15px;
+              box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+              border: 3px solid #020617;">
+              <span class="material-icons-round" style="font-size: 52px; color: #fff;">offline_bolt</span>
+          </div>
+          
+          <h1 style="font-family: 'Arial Black', sans-serif; letter-spacing: -1px; text-transform: uppercase; font-size: 3rem; margin-bottom:0;">
+            IRON <span style="color: #10b981;">PRO</span>
+          </h1>
+          <p style="letter-spacing: 3px; font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; margin-top: 5px; color: #10b981; font-weight: 700;">
+            ALTA PERFORMANCE
+          </p>
         </div>
         
-        <h1 style="font-family: 'Arial Black', sans-serif; letter-spacing: -1px; text-transform: uppercase; font-size: 2.5rem;">
-          IRON <span style="color: #10b981;">PRO</span>
-        </h1>
-        <p style="letter-spacing: 2px; font-size: 0.8rem; opacity: 0.7; text-transform: uppercase;">Alta Performance</p>
+        <div class="login-box" style="margin-top: 30px;">
+          <input type="text" id="userEmail" placeholder="Login (Telefone ou Academia)" autocomplete="off">
+          <input type="password" id="userPass" placeholder="Sua Senha" value="123">
+          <button onclick="autenticar()" class="btn-primary" style="background: #10b981; color: #000; font-weight: 800;">ENTRAR NO SISTEMA</button>
+        </div>
+        
+        <p class="footer-text" onclick="loginMaster()" style="cursor:pointer; opacity:0.5; font-size:0.75rem; margin-top: 25px; display:flex; align-items:center; gap:5px;">
+          <span class="material-icons-round" style="font-size:14px;">admin_panel_settings</span> Acesso Administrativo
+        </p>
       </div>
-      
-      <div class="login-box">
-        <input type="text" id="userEmail" placeholder="Login (Telefone ou Academia)" autocomplete="off">
-        <input type="password" id="userPass" placeholder="Senha" value="123">
-        <button onclick="autenticar()" class="btn-primary">ENTRAR NO SISTEMA</button>
+
+      <div style="text-align: center; margin-bottom: 10px; opacity: 0.4;">
+        <p style="font-size: 0.65rem; color: #fff; margin-bottom: 5px;">
+          © 2026 Otávio Augusto • Todos os direitos reservados
+        </p>
+        <p style="font-size: 0.6rem;">
+          <span style="cursor:pointer; text-decoration:underline;">Termos de Uso</span> • <span style="cursor:pointer; text-decoration:underline;">Privacidade</span>
+        </p>
+        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">
+          Desenvolvido com Tecnologia IRON PRO
+        </p>
       </div>
-      <p class="footer-text" onclick="loginMaster()" style="cursor:pointer; opacity:0.5; font-size:0.7rem; margin-top: 30px;">
-        <span class="material-icons-round" style="font-size:12px; vertical-align:middle;">admin_panel_settings</span> Acesso Administrativo
-      </p>
+
     </div>
   </section>
 
@@ -66,7 +85,7 @@
   <section id="dashProfessor" class="screen">
     <div class="header-top">
       <div>
-        <h1 style="margin-bottom: 5px;">Painel <span id="nomeAcademiaTitulo">...</span></h1>
+        <h1 style="margin-bottom: 5px;">Painel <span id="nomeAcademiaTitulo" style="color:#10b981">...</span></h1>
         <p>Gestão de Atletas</p>
       </div>
       <button onclick="logout()" class="btn-logout"><span class="material-icons-round">logout</span></button>
@@ -86,7 +105,7 @@
       <h4>Cadastrar Novo Atleta</h4>
       <div class="form-row">
         <input type="text" id="novoNome" placeholder="Nome Completo">
-        <input type="tel" id="novoTel" placeholder="WhatsApp (Login do Aluno)">
+        <input type="tel" id="novoTel" placeholder="WhatsApp (Será o Login)">
         <label style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">Data de Vencimento</label>
         <input type="date" id="novoVencimento" style="color-scheme: dark;">
       </div>
@@ -100,10 +119,15 @@
 
   <section id="painelPersonal" class="screen">
     <button class="btn-back" onclick="mostrarTela('dashProfessor')"><span class="material-icons-round">arrow_back</span> Voltar</button>
-    <div class="header-editor"><h2 id="alunoSendoEditado">Aluno: ...</h2><p>Editando Módulo: <span id="moduloAtualNome" class="highlight">A</span></p></div>
+    <div class="header-editor">
+      <h2 id="alunoSendoEditado">Aluno: ...</h2>
+      <p>Editando Módulo: <span id="moduloAtualNome" class="highlight">A</span></p>
+    </div>
     <div class="module-selector" id="botoesModulosAdmin"></div>
     <div id="listaSelecao" class="selection-list"></div>
-    <div class="fixed-bottom-action"><button onclick="salvarTreinoPersonal()" class="btn-primary">Salvar na Nuvem <span class="material-icons-round">cloud_upload</span></button></div>
+    <div class="fixed-bottom-action">
+      <button onclick="salvarTreinoPersonal()" class="btn-primary">Salvar na Nuvem <span class="material-icons-round">cloud_upload</span></button>
+    </div>
   </section>
 
   <section id="estatisticas" class="screen">
@@ -134,21 +158,27 @@
 
   <section id="cardio" class="screen">
     <div class="header-student"><div><h1>Modo Cardio</h1><p>Aeróbico & Resistência</p></div><div class="streak-badge">🏃💨</div></div>
+    
     <div class="goal-card" style="text-align:center; padding: 30px 20px;">
         <span class="material-icons-round" style="font-size: 40px; color: #3b82f6; margin-bottom:10px;">timer</span>
         <h2 id="cardioTimerDisplay" style="font-size: 3rem; margin:0; font-family:'Courier New', monospace;">00:00</h2>
+        <p style="color:#64748b; font-size:0.8rem; margin-top:5px;">Cronômetro Livre</p>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
             <button onclick="toggleCardioTimer()" id="btnCardioAction" class="btn-primary" style="margin:0; width:auto; padding: 10px 30px;">INICIAR</button>
             <button onclick="resetCardioTimer()" class="btn-logout" style="background:rgba(255,255,255,0.1); color:#fff;">ZERAR</button>
         </div>
     </div>
+
     <h3 class="section-title-small">Equipamentos</h3>
     <div id="listaCardioContainer" class="workout-grid"></div>
     <div style="height: 80px;"></div>
   </section>
 
   <section id="treinos" class="screen">
-    <div class="header-student"><div><h1>Olá, <span id="nomeAlunoDisplay">Atleta</span></h1><p>Bora treinar?</p></div><div class="streak-badge">🔥 <span id="streakCount">0</span></div></div>
+    <div class="header-student">
+      <div><h1>Olá, <span id="nomeAlunoDisplay">Atleta</span></h1><p>Bora completar 100% hoje?</p></div>
+      <div class="streak-badge">🔥 <span id="streakCount">0</span></div>
+    </div>
     <div class="workout-grid" id="containerTreinosAluno"></div>
     <div style="height: 80px;"></div>
   </section>
@@ -158,7 +188,10 @@
       <button class="btn-back" onclick="voltarTreinos()"><span class="material-icons-round">arrow_back</span> Voltar</button>
       <h2 id="tituloTreino">Treino A</h2>
     </div>
-    <div class="progress-container"><div class="progress-text"><span>Conclusão</span><span id="progressoPorcentagem">0%</span></div><div class="progress-bar"><div id="barraProgresso" style="width: 0%"></div></div></div>
+    <div class="progress-container">
+      <div class="progress-text"><span>Conclusão</span><span id="progressoPorcentagem">0%</span></div>
+      <div class="progress-bar"><div id="barraProgresso" style="width: 0%"></div></div>
+    </div>
     <div id="listaExercicios" class="exercise-list"></div>
     <div style="height: 80px;"></div>
   </section>
@@ -167,19 +200,20 @@
     <div class="header-student"><h1>Meu Perfil</h1></div>
     <div class="profile-card-large">
       <div class="avatar-large"><span class="material-icons-round">person</span></div>
-      <h2 id="nomePerfil">Aluno</h2>
+      <h2 id="nomePerfil">Nome do Aluno</h2>
       <span class="badge-student" id="academiaAlunoBadge">Academia</span>
     </div>
+    
     <div class="info-group">
       <label>Sua Playlist Spotify</label>
       <div class="search-box" style="border:1px solid #1DB954; background: rgba(29, 185, 84, 0.1);">
         <span class="material-icons-round" style="color:#1DB954">link</span>
-        <input type="text" id="spotifyLinkInput" placeholder="Cole o link aqui..." onblur="salvarLinkSpotify(this.value)" style="font-size:0.8rem;">
+        <input type="text" id="spotifyLinkInput" placeholder="Cole o link da sua playlist..." onblur="salvarLinkSpotify(this.value)" style="font-size:0.8rem;">
       </div>
     </div>
     <div class="info-group"><label>Status</label><div id="cardVencimentoPerfil" class="due-date-card"><span class="material-icons-round">event</span><span>Vencimento: <strong id="vencimentoPerfil">--/--</strong></span><span id="statusPagamento" class="status-badge">...</span></div></div>
     <div class="info-group"><label>Login</label><div class="info-box" id="telPerfil">...</div></div>
-    <button onclick="logout()" class="btn-logout-outline">Sair da Conta</button>
+    <button onclick="logout()" class="btn-logout-outline" style="width:100%; margin-top:20px;">Sair da Conta</button>
   </section>
 
   <nav class="floating-nav" id="mainNav" style="display: none;">
@@ -191,7 +225,17 @@
   </nav>
 
   <div id="videoModal" class="video-modal"><div class="video-box"><div class="video-header"><h3 id="videoTitulo">Exercício</h3><button onclick="fecharVideo()" class="close-btn"><span class="material-icons-round">close</span></button></div><div class="video-placeholder"><span class="material-icons-round">play_circle</span><p>Vídeo Demonstrativo</p></div></div></div>
-  <div id="timerOverlay" class="timer-overlay hidden"><div class="timer-content"><div class="timer-header">Descanso</div><div id="timerDisplay" class="timer-display">00:00</div><div class="timer-controls"><button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button><button onclick="fecharTimer()" class="btn-timer-close">Pular</button></div></div></div>
+  
+  <div id="timerOverlay" class="timer-overlay hidden">
+    <div class="timer-content">
+      <div class="timer-header">Descanso</div>
+      <div id="timerDisplay" class="timer-display">00:00</div>
+      <div class="timer-controls">
+        <button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button>
+        <button onclick="fecharTimer()" class="btn-timer-close">Pular</button>
+      </div>
+    </div>
+  </div>
 
   <div id="spotifyModal" class="video-modal">
     <div class="video-box" style="background: #000; padding: 0; overflow: hidden;">
@@ -201,12 +245,12 @@
       </div>
       <div style="padding: 10px; background: #181818; border-bottom: 1px solid #282828;">
         <div style="display: flex; gap: 8px;">
-          <input type="text" id="inputPlaylistUrl" placeholder="Cole o link da playlist..." style="flex:1; background:#2a2a2a; border:none; padding:8px 12px; border-radius:4px; color:white; font-size:0.8rem; outline:none;">
+          <input type="text" id="inputPlaylistUrl" placeholder="Cole o link da sua playlist..." style="flex:1; background:#2a2a2a; border:none; padding:8px 12px; border-radius:4px; color:white; font-size:0.8rem; outline:none;">
           <button onclick="carregarPlaylistUsuario()" style="background:#1DB954; color:white; border:none; padding:0 12px; border-radius:4px; font-weight:700; font-size:0.7rem;">OK</button>
         </div>
       </div>
       <iframe id="spotifyIframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-      <a href="spotify://" class="btn-primary" style="margin:0; border-radius:0; background:#191414; color:#1DB954; font-size:0.75rem; padding:12px; text-decoration:none; display:flex; justify-content:center; border-top:1px solid #282828;">ABRIR APLICATIVO OFICIAL</a>
+      <a href="spotify://" class="btn-primary" style="margin:0; border-radius:0; background:#191414; color:#1DB954; font-size:0.75rem; padding:12px; text-decoration:none; display:flex; justify-content:center; border-top:1px solid #282828;">ABRIR NO APLICATIVO OFICIAL</a>
     </div>
   </div>
 
@@ -233,9 +277,11 @@
         window.f_setDoc = setDoc;
         window.f_deleteDoc = deleteDoc;
         console.log("🔥 Firebase ON");
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Erro Firebase:", e); }
   </script>
+
   <script src="script.js"></script>
+
 </body>
 </html>
 
