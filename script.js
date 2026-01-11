@@ -52,7 +52,7 @@ let moduloEmEdicao = 'A';
 const MODULOS_DISPONIVEIS = ['A', 'B', 'C', 'D', 'E']; 
 
 // Features
-let chartPeso = null; let chartCarga = null; let timerInterval = null;
+let chartComposicao = null; let timerInterval = null;
 let cardioInterval = null; let cardioSeconds = 0; let cardioRunning = false;
 
 /* ================= INICIALIZAÇÃO ================= */
@@ -129,7 +129,7 @@ async function criarAcademia() {
     const senha = document.getElementById('novaAcademiaPass').value;
     if(!nome || !login || !senha) return alert("Preencha tudo!");
     if(listaDeAcademias.some(a => a.login === login)) return alert("Login já existe!");
-    const novaGym = { id: 'gym_' + Date.now(), nome, login, senha };
+    const novaGym = { id: 'gym_' + Date.now(), nome, login, senha, aviso: "" };
     listaDeAcademias.push(novaGym);
     await salvarNaColecao("academias", novaGym.id, novaGym);
     renderizarListaAcademias(); alert("Criado!");
@@ -139,15 +139,44 @@ function renderizarListaAcademias() {
     listaDeAcademias.forEach(a => { div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`; });
 }
 
-/* ================= PAINEL PROFESSOR ================= */
-function abrirPainelProfessor() { mostrarTela('dashProfessor'); document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; renderizarListaAlunosAdmin(); }
+/* ================= PAINEL PROFESSOR (COM MURAL E AVALIAÇÃO) ================= */
+function abrirPainelProfessor() { 
+    mostrarTela('dashProfessor'); 
+    document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
+    
+    // Carregar Aviso Salvo
+    if(usuarioLogado.aviso) document.getElementById('textoAvisoAcademia').value = usuarioLogado.aviso;
+
+    renderizarListaAlunosAdmin(); 
+}
+
+// FEATURE: SALVAR AVISO DO MURAL
+async function salvarAvisoAcademia() {
+    const texto = document.getElementById('textoAvisoAcademia').value;
+    usuarioLogado.aviso = texto;
+    await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
+    
+    // Atualiza na lista local também
+    const idx = listaDeAcademias.findIndex(a => a.id === usuarioLogado.id);
+    if(idx >= 0) listaDeAcademias[idx].aviso = texto;
+    
+    alert("Aviso publicado para todos os alunos!");
+}
+
 function renderizarListaAlunosAdmin(filtro = "") {
     const container = document.getElementById('listaAlunosCoach'); container.innerHTML = "";
     const meusAlunos = listaDeAlunos.filter(aluno => aluno.academiaId === usuarioLogado.id);
     document.getElementById('totalAlunos').innerText = meusAlunos.length;
     const listaFiltrada = meusAlunos.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase()) || a.telefone.includes(filtro));
     listaFiltrada.forEach(aluno => {
-        container.innerHTML += `<div class="student-card"><div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div><div class="student-actions"><button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button></div></div>`;
+        container.innerHTML += `
+        <div class="student-card">
+            <div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div>
+            <div class="student-actions">
+                <button class="btn-icon" style="background: #334155;" onclick="abrirModalAvaliacao('${aluno.telefone}')" title="Avaliação Física"><span class="material-icons-round" style="color:#eab308">straighten</span></button>
+                <button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button>
+            </div>
+        </div>`;
     });
 }
 async function cadastrarAluno() {
@@ -159,12 +188,48 @@ async function cadastrarAluno() {
     const novoAluno = {
         nome: nome, telefone: tel, vencimento: dataVenc,
         academiaId: usuarioLogado.id, academiaNome: usuarioLogado.nome,
-        pesoInicial: "", pesoAtual: "", historicoPeso: [], historicoCargas: {}, registros: {},
+        pesoInicial: "", historicoAvaliacoes: [], historicoCargas: {}, registros: {},
         treinos: { A: { exercicios: [] }, B: { exercicios: [] }, C: { exercicios: [] }, D: { exercicios: [] }, E: { exercicios: [] } }
     };
     listaDeAlunos.push(novoAluno);
     await salvarNaColecao("alunos", novoAluno.telefone, novoAluno);
     renderizarListaAlunosAdmin(); toggleFormulario();
+}
+
+/* ================= AVALIAÇÃO FÍSICA (PROFESSOR) ================= */
+let alunoSendoAvaliadoId = null;
+function abrirModalAvaliacao(tel) {
+    alunoSendoAvaliadoId = tel;
+    const aluno = listaDeAlunos.find(a => a.telefone === tel);
+    document.getElementById('nomeAlunoAvaliacao').innerText = aluno.nome;
+    document.getElementById('modalAvaliacao').classList.add('active');
+    document.getElementById('avalPeso').value = "";
+    document.getElementById('avalGordura').value = "";
+    document.getElementById('avalMusculo').value = "";
+}
+function fecharModalAvaliacao() { document.getElementById('modalAvaliacao').classList.remove('active'); }
+
+async function salvarAvaliacaoFisica() {
+    const peso = document.getElementById('avalPeso').value;
+    const gordura = document.getElementById('avalGordura').value;
+    const musculo = document.getElementById('avalMusculo').value;
+    
+    if(!peso || !gordura) return alert("Preencha pelo menos Peso e % Gordura");
+    
+    const aluno = listaDeAlunos.find(a => a.telefone === alunoSendoAvaliadoId);
+    if(!aluno.historicoAvaliacoes) aluno.historicoAvaliacoes = [];
+    
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    aluno.historicoAvaliacoes.push({
+        data: hoje,
+        peso: parseFloat(peso),
+        gordura: parseFloat(gordura),
+        musculo: musculo ? parseFloat(musculo) : null
+    });
+    
+    await salvarNaColecao("alunos", aluno.telefone, aluno);
+    alert("Medidas salvas!");
+    fecharModalAvaliacao();
 }
 
 /* ================= EDITOR DE TREINO ================= */
@@ -213,12 +278,18 @@ function salvarTreinoPersonal() {
 function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
     document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
+    
+    // VERIFICA SE TEM AVISO DA ACADEMIA
+    const academiaDoAluno = listaDeAcademias.find(gym => gym.id === usuarioLogado.academiaId);
+    if(academiaDoAluno && academiaDoAluno.aviso && academiaDoAluno.aviso.length > 0) {
+        document.getElementById('boxAvisoAluno').classList.remove('hidden');
+        document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
+    }
+
     renderizarCardsTreino(); atualizarDisplayVencimentoPerfil();
     document.getElementById('nomePerfil').innerText = usuarioLogado.nome;
     document.getElementById('academiaAlunoBadge').innerText = usuarioLogado.academiaNome || "Academia";
     document.getElementById('telPerfil').innerText = usuarioLogado.telefone;
-    document.getElementById('pesoInicialInput').value = usuarioLogado.pesoInicial || "";
-    document.getElementById('pesoAtualInput').value = usuarioLogado.pesoAtual || "";
     if(usuarioLogado.spotifyUrl) document.getElementById('spotifyLinkInput').value = usuarioLogado.spotifyUrl;
     mostrarTela('treinos'); document.getElementById('mainNav').style.display = 'flex';
 }
@@ -269,23 +340,17 @@ function toggleSet(exId, idx, descanso, el) {
     atualizarBarraProgresso();
 }
 
-// FEATURE: SALVAR CARGA COM HISTÓRICO
 function salvarPeso(exId, val) {
     if(!val) return;
     if(!usuarioLogado.registros) usuarioLogado.registros = {};
     usuarioLogado.registros[`${moduloTreinoAtual}_${exId}_peso`] = val;
-    
-    // Salva no histórico para gráfico e lembrete
     if(!usuarioLogado.historicoCargas) usuarioLogado.historicoCargas={};
     if(!usuarioLogado.historicoCargas[exId]) usuarioLogado.historicoCargas[exId]=[];
-    
     const hoje = new Date().toLocaleDateString('pt-BR').slice(0,5);
     const hist = usuarioLogado.historicoCargas[exId];
     const registroHoje = hist.find(x => x.data === hoje);
-    
     if(registroHoje) registroHoje.carga = parseFloat(val); 
     else hist.push({data:hoje, carga:parseFloat(val)});
-    
     salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado);
 }
 
@@ -350,31 +415,42 @@ function atualizarDisplayVencimentoPerfil() {
     if(!usuarioLogado.vencimento) { el.innerText="--/--"; st.innerText="N/A"; return; }
     const p = usuarioLogado.vencimento.split('-'); el.innerText = `${p[2]}/${p[1]}/${p[0]}`;
 }
+function salvarLinkSpotify(val) { if(usuarioLogado && val) { usuarioLogado.spotifyUrl = val; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); } }
 function salvarPesoCorporal(v) { if(!v) return; if(!usuarioLogado.pesoInicial) { usuarioLogado.pesoInicial=v; document.getElementById('pesoInicialInput').value=v; } usuarioLogado.pesoAtual = v; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); carregarEstatisticas(); }
+
+// FEATURE: GRÁFICO DUPLO (PESO + GORDURA)
 function carregarEstatisticas() {
-    const ctx = document.getElementById('graficoPesoCanvas');
-    if(ctx) {
-        let labels=["Início", "Atual"], dados=[usuarioLogado.pesoInicial||0, usuarioLogado.pesoAtual||0];
-        if(chartPeso) chartPeso.destroy();
-        chartPeso = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Peso', data: dados, borderColor: '#10b981', tension:0.4 }] }, options: { scales:{x:{display:false}} } });
+    const ctx = document.getElementById('graficoComposicaoCanvas');
+    if(ctx && usuarioLogado.historicoAvaliacoes) {
+        let labels=[], dPeso=[], dGordura=[];
+        usuarioLogado.historicoAvaliacoes.forEach(x => {
+            labels.push(x.data.slice(0,5)); // Só dia/mês
+            dPeso.push(x.peso);
+            dGordura.push(x.gordura);
+        });
+
+        // Atualiza números mini
+        if(dPeso.length>0) {
+            document.getElementById('statPesoAtual').innerText = dPeso[dPeso.length-1] + ' kg';
+            document.getElementById('statGorduraAtual').innerText = dGordura[dGordura.length-1] + '%';
+        }
+
+        if(chartComposicao) chartComposicao.destroy();
+        chartComposicao = new Chart(ctx, {
+            type: 'line',
+            data: { 
+                labels, 
+                datasets: [
+                    { label: 'Peso (kg)', data: dPeso, borderColor: '#f8fafc', tension:0.4, yAxisID: 'y' },
+                    { label: '% Gordura', data: dGordura, borderColor: '#eab308', borderDash:[5,5], tension:0.4, yAxisID: 'y1' }
+                ] 
+            },
+            options: { 
+                responsive:true, maintainAspectRatio:false, 
+                scales:{ x:{display:false}, y:{type:'linear', display:true, position:'left'}, y1:{type:'linear', display:true, position:'right', grid:{drawOnChartArea:false}} }
+            }
+        });
     }
-    povoarSelectExercicios();
-}
-function povoarSelectExercicios() {
-    const sel = document.getElementById('selectExercicioGrafico'); if(!sel) return;
-    let ids = Object.keys(usuarioLogado.historicoCargas || {}); sel.innerHTML = "";
-    if(ids.length===0) { sel.innerHTML="<option>Sem dados</option>"; return; }
-    ids.forEach(id => { const nome = todosExercicios.find(e=>e.id==id)?.nome || "Ex "+id; sel.innerHTML+=`<option value="${id}">${nome}</option>`; });
-    atualizarGraficoCarga();
-}
-function atualizarGraficoCarga() {
-    const id = document.getElementById('selectExercicioGrafico').value; if(!id || !usuarioLogado.historicoCargas) return;
-    const hist = usuarioLogado.historicoCargas[id] || [];
-    const labels = hist.map(x=>x.data); const dados = hist.map(x=>x.carga);
-    if(dados.length>0) { document.getElementById('cargaInicialDisplay').innerText = dados[0]+"kg"; document.getElementById('recordeDisplay').innerText = Math.max(...dados)+"kg"; }
-    const ctx = document.getElementById('graficoCargaCanvas');
-    if(chartCarga) chartCarga.destroy();
-    chartCarga = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga', data: dados, borderColor: '#3b82f6', tension:0.3, fill:true, backgroundColor:'rgba(59,130,246,0.1)' }] }, options: { scales:{x:{display:false}} } });
 }
 
-window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.abrirSpotify=abrirSpotify; window.fecharSpotify=fecharSpotify; window.carregarPlaylistUsuario=carregarPlaylistUsuario; window.salvarPesoCorporal=salvarPesoCorporal; window.atualizarGraficoCarga = atualizarGraficoCarga;
+window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.abrirSpotify=abrirSpotify; window.fecharSpotify=fecharSpotify; window.carregarPlaylistUsuario=carregarPlaylistUsuario; window.salvarLinkSpotify=salvarLinkSpotify; window.salvarPesoCorporal=salvarPesoCorporal; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica;
