@@ -1,97 +1,58 @@
-/* ================= BANCO DE DADOS COMPLETO (RESTAURADO) ================= */
+/* ================= BANCO DE DADOS COMPLETO ================= */
 const todosExercicios = [
-  // PERNA (Quadríceps/Posterior/Glúteo)
-  { id: 1, nome: "Agachamento Livre", grupo: "Perna" },
-  { id: 2, nome: "Agachamento Smith", grupo: "Perna" },
-  { id: 3, nome: "Agachamento Hack", grupo: "Perna" },
-  { id: 4, nome: "Leg Press 45º", grupo: "Perna" },
-  { id: 5, nome: "Leg Press Horizontal", grupo: "Perna" },
-  { id: 6, nome: "Cadeira Extensora", grupo: "Perna" },
-  { id: 7, nome: "Mesa Flexora", grupo: "Perna" },
-  { id: 8, nome: "Cadeira Flexora", grupo: "Perna" },
-  { id: 9, nome: "Stiff com Barra", grupo: "Perna" },
-  { id: 10, nome: "Levantamento Terra", grupo: "Perna" },
-  { id: 11, nome: "Afundo / Passada", grupo: "Perna" },
-  { id: 12, nome: "Búlgaro", grupo: "Perna" },
-  { id: 13, nome: "Elevação Pélvica", grupo: "Perna" },
-  { id: 14, nome: "Cadeira Adutora", grupo: "Perna" },
-  { id: 15, nome: "Cadeira Abdutora", grupo: "Perna" },
-  { id: 16, nome: "Panturrilha Sentado", grupo: "Perna" },
+  // PERNA
+  { id: 1, nome: "Agachamento Livre", grupo: "Perna" }, { id: 2, nome: "Agachamento Smith", grupo: "Perna" },
+  { id: 3, nome: "Agachamento Hack", grupo: "Perna" }, { id: 4, nome: "Leg Press 45º", grupo: "Perna" },
+  { id: 5, nome: "Leg Press Horizontal", grupo: "Perna" }, { id: 6, nome: "Cadeira Extensora", grupo: "Perna" },
+  { id: 7, nome: "Mesa Flexora", grupo: "Perna" }, { id: 8, nome: "Cadeira Flexora", grupo: "Perna" },
+  { id: 9, nome: "Stiff com Barra", grupo: "Perna" }, { id: 10, nome: "Levantamento Terra", grupo: "Perna" },
+  { id: 11, nome: "Afundo / Passada", grupo: "Perna" }, { id: 12, nome: "Búlgaro", grupo: "Perna" },
+  { id: 13, nome: "Elevação Pélvica", grupo: "Perna" }, { id: 14, nome: "Cadeira Adutora", grupo: "Perna" },
+  { id: 15, nome: "Cadeira Abdutora", grupo: "Perna" }, { id: 16, nome: "Panturrilha Sentado", grupo: "Perna" },
   { id: 17, nome: "Panturrilha no Leg", grupo: "Perna" },
-
   // PEITO
-  { id: 20, nome: "Supino Reto (Barra)", grupo: "Peito" },
-  { id: 21, nome: "Supino Reto (Halter)", grupo: "Peito" },
-  { id: 22, nome: "Supino Inclinado (Barra)", grupo: "Peito" },
-  { id: 23, nome: "Supino Inclinado (Halter)", grupo: "Peito" },
-  { id: 24, nome: "Supino Declinado", grupo: "Peito" },
-  { id: 25, nome: "Crucifixo Máquina (Peck Deck)", grupo: "Peito" },
-  { id: 26, nome: "Crucifixo Halter", grupo: "Peito" },
-  { id: 27, nome: "Crossover Polia Alta", grupo: "Peito" },
-  { id: 28, nome: "Crossover Polia Baixa", grupo: "Peito" },
-  { id: 29, nome: "Flexão de Braço", grupo: "Peito" },
+  { id: 20, nome: "Supino Reto (Barra)", grupo: "Peito" }, { id: 21, nome: "Supino Reto (Halter)", grupo: "Peito" },
+  { id: 22, nome: "Supino Inclinado (Barra)", grupo: "Peito" }, { id: 23, nome: "Supino Inclinado (Halter)", grupo: "Peito" },
+  { id: 24, nome: "Supino Declinado", grupo: "Peito" }, { id: 25, nome: "Crucifixo Máquina", grupo: "Peito" },
+  { id: 26, nome: "Crucifixo Halter", grupo: "Peito" }, { id: 27, nome: "Crossover Polia Alta", grupo: "Peito" },
+  { id: 28, nome: "Crossover Polia Baixa", grupo: "Peito" }, { id: 29, nome: "Flexão de Braço", grupo: "Peito" },
   { id: 30, nome: "Supino Máquina", grupo: "Peito" },
-
   // COSTAS
-  { id: 40, nome: "Puxada Alta (Frente)", grupo: "Costas" },
-  { id: 41, nome: "Puxada Alta (Triângulo)", grupo: "Costas" },
-  { id: 42, nome: "Puxada Alta (Costas)", grupo: "Costas" },
-  { id: 43, nome: "Remada Baixa (Triângulo)", grupo: "Costas" },
-  { id: 44, nome: "Remada Curvada (Barra)", grupo: "Costas" },
-  { id: 45, nome: "Remada Cavalinho", grupo: "Costas" },
-  { id: 46, nome: "Remada Unilateral (Serrote)", grupo: "Costas" },
-  { id: 47, nome: "Pulldown (Polia)", grupo: "Costas" },
-  { id: 48, nome: "Barra Fixa", grupo: "Costas" },
-  { id: 49, nome: "Voador Inverso", grupo: "Costas" },
+  { id: 40, nome: "Puxada Alta (Frente)", grupo: "Costas" }, { id: 41, nome: "Puxada Alta (Triângulo)", grupo: "Costas" },
+  { id: 42, nome: "Puxada Alta (Costas)", grupo: "Costas" }, { id: 43, nome: "Remada Baixa", grupo: "Costas" },
+  { id: 44, nome: "Remada Curvada", grupo: "Costas" }, { id: 45, nome: "Remada Cavalinho", grupo: "Costas" },
+  { id: 46, nome: "Remada Serrote", grupo: "Costas" }, { id: 47, nome: "Pulldown", grupo: "Costas" },
+  { id: 48, nome: "Barra Fixa", grupo: "Costas" }, { id: 49, nome: "Voador Inverso", grupo: "Costas" },
   { id: 50, nome: "Lombar Máquina", grupo: "Costas" },
-
   // OMBRO
-  { id: 60, nome: "Desenvolvimento Halter", grupo: "Ombro" },
-  { id: 61, nome: "Desenvolvimento Máquina", grupo: "Ombro" },
-  { id: 62, nome: "Desenvolvimento Barra", grupo: "Ombro" },
-  { id: 63, nome: "Elevação Lateral (Halter)", grupo: "Ombro" },
-  { id: 64, nome: "Elevação Lateral (Polia)", grupo: "Ombro" },
-  { id: 65, nome: "Elevação Frontal", grupo: "Ombro" },
-  { id: 66, nome: "Remada Alta", grupo: "Ombro" },
-  { id: 67, nome: "Encolhimento (Trapézio)", grupo: "Ombro" },
-
+  { id: 60, nome: "Desenv. Halter", grupo: "Ombro" }, { id: 61, nome: "Desenv. Máquina", grupo: "Ombro" },
+  { id: 62, nome: "Desenv. Barra", grupo: "Ombro" }, { id: 63, nome: "Elevação Lateral", grupo: "Ombro" },
+  { id: 64, nome: "Elevação Frontal", grupo: "Ombro" }, { id: 65, nome: "Remada Alta", grupo: "Ombro" },
+  { id: 66, nome: "Encolhimento", grupo: "Ombro" },
   // BÍCEPS
-  { id: 70, nome: "Rosca Direta (Barra)", grupo: "Bíceps" },
-  { id: 71, nome: "Rosca Direta (Polia)", grupo: "Bíceps" },
-  { id: 72, nome: "Rosca Alternada", grupo: "Bíceps" },
-  { id: 73, nome: "Rosca Martelo", grupo: "Bíceps" },
-  { id: 74, nome: "Rosca Scott (Máquina)", grupo: "Bíceps" },
-  { id: 75, nome: "Rosca Concentrada", grupo: "Bíceps" },
-  { id: 76, nome: "Rosca 21", grupo: "Bíceps" },
-
+  { id: 70, nome: "Rosca Direta (Barra)", grupo: "Bíceps" }, { id: 71, nome: "Rosca Direta (Polia)", grupo: "Bíceps" },
+  { id: 72, nome: "Rosca Alternada", grupo: "Bíceps" }, { id: 73, nome: "Rosca Martelo", grupo: "Bíceps" },
+  { id: 74, nome: "Rosca Scott", grupo: "Bíceps" }, { id: 75, nome: "Rosca Concentrada", grupo: "Bíceps" }, { id: 76, nome: "Rosca 21", grupo: "Bíceps" },
   // TRÍCEPS
-  { id: 80, nome: "Tríceps Polia (Barra)", grupo: "Tríceps" },
-  { id: 81, nome: "Tríceps Corda", grupo: "Tríceps" },
-  { id: 82, nome: "Tríceps Testa", grupo: "Tríceps" },
-  { id: 83, nome: "Tríceps Francês", grupo: "Tríceps" },
-  { id: 84, nome: "Tríceps Banco", grupo: "Tríceps" },
-  { id: 85, nome: "Tríceps Coice", grupo: "Tríceps" },
-
-  // ABDÔMEN & CARDIO
-  { id: 90, nome: "Abdominal Supra", grupo: "Abs" },
-  { id: 91, nome: "Abdominal Infra", grupo: "Abs" },
-  { id: 92, nome: "Prancha Isométrica", grupo: "Abs" },
-  { id: 93, nome: "Abdominal Máquina", grupo: "Abs" },
-  { id: 94, nome: "Esteira", grupo: "Cardio" },
-  { id: 95, nome: "Bicicleta Ergométrica", grupo: "Cardio" },
-  { id: 96, nome: "Elíptico", grupo: "Cardio" }
+  { id: 80, nome: "Tríceps Polia", grupo: "Tríceps" }, { id: 81, nome: "Tríceps Corda", grupo: "Tríceps" },
+  { id: 82, nome: "Tríceps Testa", grupo: "Tríceps" }, { id: 83, nome: "Tríceps Francês", grupo: "Tríceps" },
+  { id: 84, nome: "Tríceps Banco", grupo: "Tríceps" }, { id: 85, nome: "Tríceps Coice", grupo: "Tríceps" },
+  // OUTROS
+  { id: 90, nome: "Abdominal Supra", grupo: "Abs" }, { id: 91, nome: "Abdominal Infra", grupo: "Abs" },
+  { id: 92, nome: "Prancha", grupo: "Abs" }, { id: 93, nome: "Abdominal Máquina", grupo: "Abs" },
+  { id: 94, nome: "Esteira", grupo: "Cardio" }, { id: 95, nome: "Bike Ergométrica", grupo: "Cardio" }, { id: 96, nome: "Elíptico", grupo: "Cardio" }
 ];
 
 /* ================= ESTADO GLOBAL ================= */
 let listaDeAcademias = [];
 let listaDeAlunos = []; 
-let usuarioLogado = null; // Unificado: pode ser master, academia ou aluno
+let usuarioLogado = null; 
 let alunoEmEdicaoId = null; 
 let moduloEmEdicao = 'A'; 
 const MODULOS_DISPONIVEIS = ['A', 'B', 'C', 'D', 'E']; 
 
-// Variáveis de Features
-let chartPeso = null; let timerInterval = null;
+// Features
+let chartPeso = null; let chartCarga = null; let timerInterval = null;
 let cardioInterval = null; let cardioSeconds = 0; let cardioRunning = false;
 
 /* ================= INICIALIZAÇÃO ================= */
@@ -100,17 +61,13 @@ setTimeout(() => { carregarDadosDaNuvem(); }, 1500);
 async function carregarDadosDaNuvem() {
     if (!window.db) { console.warn("Aguardando Firebase..."); return; }
     try {
-        // Carrega Academias
         const snapGym = await window.f_getDocs(window.f_collection(window.db, "academias"));
-        listaDeAcademias = [];
-        snapGym.forEach(doc => listaDeAcademias.push(doc.data()));
+        listaDeAcademias = []; snapGym.forEach(doc => listaDeAcademias.push(doc.data()));
 
-        // Carrega Alunos
         const snapAlunos = await window.f_getDocs(window.f_collection(window.db, "alunos"));
-        listaDeAlunos = [];
-        snapAlunos.forEach(doc => listaDeAlunos.push(doc.data()));
+        listaDeAlunos = []; snapAlunos.forEach(doc => listaDeAlunos.push(doc.data()));
         
-        console.log("Dados carregados:", listaDeAcademias.length, "gyms,", listaDeAlunos.length, "alunos");
+        console.log("Dados carregados (Online/Cache).");
         verificarSessao();
     } catch (e) { console.error("Erro dados:", e); }
 }
@@ -121,38 +78,32 @@ async function salvarNaColecao(colecao, id, dados) {
     catch (e) { console.error(e); }
 }
 
-/* ================= SISTEMA DE LOGIN (HIERARQUIA) ================= */
+/* ================= LOGIN ================= */
 function autenticar() {
   const login = document.getElementById('userEmail').value.trim();
   const pass = document.getElementById('userPass').value.trim();
 
-  // 1. MASTER (Dono do Software)
+  // 1. MASTER
   if (login === 'master' && pass === 'admin123') {
     usuarioLogado = { tipo: 'master', nome: 'Otavio Master' };
     localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
-    abrirPainelMaster();
-    return;
+    abrirPainelMaster(); return;
   }
-
-  // 2. ACADEMIA (Cliente)
+  // 2. ACADEMIA
   const academia = listaDeAcademias.find(a => a.login === login && a.senha === pass);
   if (academia) {
     usuarioLogado = { tipo: 'academia', ...academia };
     localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
-    abrirPainelProfessor();
-    return;
+    abrirPainelProfessor(); return;
   }
-
-  // 3. ALUNO (Usuário Final)
+  // 3. ALUNO
   const aluno = listaDeAlunos.find(a => a.telefone === login);
   if (aluno) {
     usuarioLogado = { tipo: 'aluno', ...aluno };
     localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
-    abrirAppAluno();
-    return;
+    abrirAppAluno(); return;
   }
-
-  alert("Login incorreto ou usuário não encontrado.");
+  alert("Login incorreto.");
 }
 
 function verificarSessao() {
@@ -167,96 +118,73 @@ function verificarSessao() {
         }
     }
 }
-
 function logout() { localStorage.removeItem("usuarioLogado"); window.location.reload(); }
 function loginMaster() { document.getElementById('userEmail').value = "master"; }
 
 /* ================= PAINEL MASTER ================= */
 function abrirPainelMaster() { mostrarTela('dashMaster'); renderizarListaAcademias(); }
-
 async function criarAcademia() {
     const nome = document.getElementById('novaAcademiaNome').value;
     const login = document.getElementById('novaAcademiaLogin').value;
     const senha = document.getElementById('novaAcademiaPass').value;
     if(!nome || !login || !senha) return alert("Preencha tudo!");
-    
     if(listaDeAcademias.some(a => a.login === login)) return alert("Login já existe!");
-
     const novaGym = { id: 'gym_' + Date.now(), nome, login, senha };
     listaDeAcademias.push(novaGym);
     await salvarNaColecao("academias", novaGym.id, novaGym);
-    renderizarListaAcademias();
-    alert("Academia criada com sucesso!");
-    document.getElementById('novaAcademiaNome').value = "";
+    renderizarListaAcademias(); alert("Criado!");
 }
-
 function renderizarListaAcademias() {
     const div = document.getElementById('listaAcademias'); div.innerHTML = "";
-    listaDeAcademias.forEach(a => {
-        div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`;
-    });
+    listaDeAcademias.forEach(a => { div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`; });
 }
 
-/* ================= PAINEL PROFESSOR (DA ACADEMIA) ================= */
-function abrirPainelProfessor() {
-    mostrarTela('dashProfessor');
-    document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome;
-    renderizarListaAlunosAdmin();
-}
-
+/* ================= PAINEL PROFESSOR ================= */
+function abrirPainelProfessor() { mostrarTela('dashProfessor'); document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; renderizarListaAlunosAdmin(); }
 function renderizarListaAlunosAdmin(filtro = "") {
     const container = document.getElementById('listaAlunosCoach'); container.innerHTML = "";
-    // Filtra apenas alunos desta academia
     const meusAlunos = listaDeAlunos.filter(aluno => aluno.academiaId === usuarioLogado.id);
     document.getElementById('totalAlunos').innerText = meusAlunos.length;
-
     const listaFiltrada = meusAlunos.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase()) || a.telefone.includes(filtro));
     listaFiltrada.forEach(aluno => {
         container.innerHTML += `<div class="student-card"><div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div><div class="student-actions"><button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button></div></div>`;
     });
 }
-
 async function cadastrarAluno() {
     const nome = document.getElementById('novoNome').value;
     const tel = document.getElementById('novoTel').value;
     const dataVenc = document.getElementById('novoVencimento').value;
     if (!nome || !tel) return alert("Preencha nome e telefone.");
     if(listaDeAlunos.some(a => a.telefone === tel)) return alert("Telefone já existe!");
-
     const novoAluno = {
         nome: nome, telefone: tel, vencimento: dataVenc,
         academiaId: usuarioLogado.id, academiaNome: usuarioLogado.nome,
-        pesoInicial: "", pesoAtual: "", historicoPeso: [], registros: {},
+        pesoInicial: "", pesoAtual: "", historicoPeso: [], historicoCargas: {}, registros: {},
         treinos: { A: { exercicios: [] }, B: { exercicios: [] }, C: { exercicios: [] }, D: { exercicios: [] }, E: { exercicios: [] } }
     };
     listaDeAlunos.push(novoAluno);
     await salvarNaColecao("alunos", novoAluno.telefone, novoAluno);
     renderizarListaAlunosAdmin(); toggleFormulario();
-    alert("Aluno cadastrado!");
 }
 
-/* ================= EDITOR DE TREINO (PROFESSOR) ================= */
+/* ================= EDITOR DE TREINO ================= */
 function abrirEditorTreino(tel) {
   alunoEmEdicaoId = tel; document.getElementById('alunoSendoEditado').innerText = listaDeAlunos.find(a => a.telefone === tel).nome;
   const btns = document.getElementById('botoesModulosAdmin'); btns.innerHTML = "";
   MODULOS_DISPONIVEIS.forEach(m => btns.innerHTML += `<button onclick="trocarModuloEdicao('${m}')" id="btnModulo${m}" class="mod-btn">${m}</button>`);
   trocarModuloEdicao('A'); mostrarTela('painelPersonal');
 }
-
 function trocarModuloEdicao(mod) {
   moduloEmEdicao = mod; document.getElementById('moduloAtualNome').innerText = mod;
   document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('btnModulo' + mod).classList.add('active');
   renderizarCheckboxes();
 }
-
 function renderizarCheckboxes() {
   const container = document.getElementById('listaSelecao'); container.innerHTML = "";
   const aluno = listaDeAlunos.find(a => a.telefone === alunoEmEdicaoId);
   const salvos = aluno.treinos[moduloEmEdicao].exercicios || [];
-  const grupos = {};
-  todosExercicios.forEach(ex => { if(!grupos[ex.grupo]) grupos[ex.grupo] = []; grupos[ex.grupo].push(ex); });
-
+  const grupos = {}; todosExercicios.forEach(ex => { if(!grupos[ex.grupo]) grupos[ex.grupo] = []; grupos[ex.grupo].push(ex); });
   Object.keys(grupos).forEach(grupo => {
     container.innerHTML += `<div class="group-header"><span>${obterIcone(grupo)}</span> ${grupo}</div>`;
     grupos[grupo].forEach(ex => {
@@ -265,20 +193,10 @@ function renderizarCheckboxes() {
       const valDesc = salvo && salvo.descanso ? salvo.descanso : "Descanso";
       const valMet = salvo && salvo.metodo ? salvo.metodo : "Normal";
       const valSer = salvo && salvo.series ? salvo.series : "";
-
-      container.innerHTML += `
-        <div class="admin-exercise-row">
-          <div class="admin-row-left"><input type="checkbox" id="chk_${ex.id}" value="${ex.id}" ${isChecked}><label for="chk_${ex.id}" style="color:white; font-size:0.9rem; cursor:pointer;">${ex.nome}</label></div>
-          <div class="admin-row-options">
-            <select id="desc_${ex.id}" class="admin-input-mini w-time"><option value="Descanso" disabled ${valDesc==="Descanso"?"selected":""}>⏱️</option><option value="30s" ${valDesc==="30s"?"selected":""}>30s</option><option value="45s" ${valDesc==="45s"?"selected":""}>45s</option><option value="1min" ${valDesc==="1min"?"selected":""}>1m</option><option value="1:30" ${valDesc==="1:30"?"selected":""}>1:30</option><option value="2min" ${valDesc==="2min"?"selected":""}>2m</option></select>
-            <select id="met_${ex.id}" class="admin-input-mini w-method"><option value="Normal" ${valMet==="Normal"?"selected":""}>Normal</option><option value="Falha" ${valMet==="Falha"?"selected":""}>Falha</option><option value="Drop" ${valMet==="Drop"?"selected":""}>Drop</option><option value="Bi-set" ${valMet==="Bi-set"?"selected":""}>Bi-set</option></select>
-            <input type="text" id="ser_${ex.id}" class="admin-input-mini w-text" placeholder="3x12" value="${valSer}">
-          </div>
-        </div>`;
+      container.innerHTML += `<div class="admin-exercise-row"><div class="admin-row-left"><input type="checkbox" id="chk_${ex.id}" value="${ex.id}" ${isChecked}><label for="chk_${ex.id}" style="color:white; font-size:0.9rem; cursor:pointer;">${ex.nome}</label></div><div class="admin-row-options"><select id="desc_${ex.id}" class="admin-input-mini w-time"><option value="Descanso" disabled ${valDesc==="Descanso"?"selected":""}>⏱️</option><option value="30s" ${valDesc==="30s"?"selected":""}>30s</option><option value="45s" ${valDesc==="45s"?"selected":""}>45s</option><option value="1min" ${valDesc==="1min"?"selected":""}>1m</option><option value="1:30" ${valDesc==="1:30"?"selected":""}>1:30</option><option value="2min" ${valDesc==="2min"?"selected":""}>2m</option></select><select id="met_${ex.id}" class="admin-input-mini w-method"><option value="Normal" ${valMet==="Normal"?"selected":""}>Normal</option><option value="Falha" ${valMet==="Falha"?"selected":""}>Falha</option><option value="Drop" ${valMet==="Drop"?"selected":""}>Drop</option><option value="Bi-set" ${valMet==="Bi-set"?"selected":""}>Bi-set</option></select><input type="text" id="ser_${ex.id}" class="admin-input-mini w-text" placeholder="3x12" value="${valSer}"></div></div>`;
     });
   });
 }
-
 function salvarTreinoPersonal() {
   const checks = document.querySelectorAll('#listaSelecao input:checked'); const novos = [];
   checks.forEach(c => {
@@ -304,7 +222,6 @@ function abrirAppAluno() {
     if(usuarioLogado.spotifyUrl) document.getElementById('spotifyLinkInput').value = usuarioLogado.spotifyUrl;
     mostrarTela('treinos'); document.getElementById('mainNav').style.display = 'flex';
 }
-
 function renderizarCardsTreino() {
     const grid = document.getElementById('containerTreinosAluno'); grid.innerHTML = "";
     MODULOS_DISPONIVEIS.forEach(letra => {
@@ -313,7 +230,6 @@ function renderizarCardsTreino() {
         if(qtd > 0) grid.innerHTML += `<div class="treino-card" onclick="abrirTreino('${letra}')"><div class="icon-box ${cor}">${letra}</div><div class="info"><h3>Treino ${letra}</h3><p>${qtd} exercícios</p></div><span class="material-icons-round">chevron_right</span></div>`;
     });
 }
-
 function abrirTreino(mod) {
     moduloTreinoAtual = mod; const lista = usuarioLogado.treinos[mod].exercicios;
     mostrarTela('detalheTreino'); document.getElementById('tituloTreino').innerText = `Treino ${mod}`;
@@ -321,6 +237,17 @@ function abrirTreino(mod) {
     lista.forEach(ex => {
         if(!usuarioLogado.registros) usuarioLogado.registros = {};
         const pesoSalvo = usuarioLogado.registros[`${mod}_${ex.id}_peso`] || "";
+        
+        // FEATURE: HISTÓRICO DE CARGA NA TELA
+        let textoUltimaCarga = "";
+        if(usuarioLogado.historicoCargas && usuarioLogado.historicoCargas[ex.id]) {
+            const hist = usuarioLogado.historicoCargas[ex.id];
+            if(hist.length > 0) {
+                const ult = hist[hist.length-1].carga;
+                textoUltimaCarga = `<span style="font-size:0.7rem; color:#10b981; margin-left:5px; font-weight:normal;">(Últ: ${ult}kg)</span>`;
+            }
+        }
+
         let numSeries = parseInt(ex.series); if(isNaN(numSeries)) numSeries = 3;
         let bolinhas = '<div class="sets-container">';
         for(let i=1; i<=numSeries; i++) {
@@ -328,11 +255,10 @@ function abrirTreino(mod) {
             bolinhas += `<div class="set-circle ${feito}" onclick="toggleSet('${ex.id}', ${i}, '${ex.descanso}', this)">${i}</div>`;
         }
         bolinhas += '</div>';
-        container.innerHTML += `<div class="exercise-item"><div class="exercise-header"><span class="exercise-name">${ex.nome}</span><button class="btn-video-mini" onclick="abrirVideo('${ex.nome}')"><span class="material-icons-round" style="font-size:14px">play_arrow</span> Vídeo</button></div><div class="exercise-badges"><span class="badge-info badge-series">${ex.series||'3x12'}</span><span class="badge-info badge-rest">⏰ ${ex.descanso||'1min'}</span><span class="badge-info badge-method">${ex.metodo||'Normal'}</span></div><div class="exercise-controls"><div class="input-carga-wrapper"><span class="label">Carga</span><input type="tel" class="input-carga" placeholder="0" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)"></div>${bolinhas}</div></div>`;
+        container.innerHTML += `<div class="exercise-item"><div class="exercise-header"><span class="exercise-name">${ex.nome}</span><button class="btn-video-mini" onclick="abrirVideo('${ex.nome}')"><span class="material-icons-round" style="font-size:14px">play_arrow</span> Vídeo</button></div><div class="exercise-badges"><span class="badge-info badge-series">${ex.series||'3x12'}</span><span class="badge-info badge-rest">⏰ ${ex.descanso||'1min'}</span><span class="badge-info badge-method">${ex.metodo||'Normal'}</span></div><div class="exercise-controls"><div class="input-carga-wrapper"><span class="label">Carga ${textoUltimaCarga}</span><input type="tel" class="input-carga" placeholder="0" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)"></div>${bolinhas}</div></div>`;
     });
     atualizarBarraProgresso();
 }
-
 function toggleSet(exId, idx, descanso, el) {
     if(navigator.vibrate) navigator.vibrate(30);
     el.classList.toggle('done');
@@ -343,9 +269,23 @@ function toggleSet(exId, idx, descanso, el) {
     atualizarBarraProgresso();
 }
 
+// FEATURE: SALVAR CARGA COM HISTÓRICO
 function salvarPeso(exId, val) {
+    if(!val) return;
     if(!usuarioLogado.registros) usuarioLogado.registros = {};
     usuarioLogado.registros[`${moduloTreinoAtual}_${exId}_peso`] = val;
+    
+    // Salva no histórico para gráfico e lembrete
+    if(!usuarioLogado.historicoCargas) usuarioLogado.historicoCargas={};
+    if(!usuarioLogado.historicoCargas[exId]) usuarioLogado.historicoCargas[exId]=[];
+    
+    const hoje = new Date().toLocaleDateString('pt-BR').slice(0,5);
+    const hist = usuarioLogado.historicoCargas[exId];
+    const registroHoje = hist.find(x => x.data === hoje);
+    
+    if(registroHoje) registroHoje.carga = parseFloat(val); 
+    else hist.push({data:hoje, carga:parseFloat(val)});
+    
     salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado);
 }
 
@@ -357,7 +297,7 @@ function atualizarBarraProgresso() {
     document.getElementById('progressoPorcentagem').innerText = `${p}%`;
 }
 
-/* ================= FEATURES EXTRAS (CARDIO, SPOTIFY, TIMER) ================= */
+/* ================= EXTRAS ================= */
 function iniciarTimer(tempoStr) {
     let segs = 60; const t = tempoStr.toLowerCase();
     if(t.includes('min')) segs = parseInt(t) * 60; else if(t.includes('s')) segs = parseInt(t);
@@ -373,12 +313,10 @@ function iniciarTimer(tempoStr) {
 }
 function fecharTimer() { document.getElementById('timerOverlay').classList.add('hidden'); if(timerInterval) clearInterval(timerInterval); }
 function adicionarTempo(s) { fecharTimer(); setTimeout(() => iniciarTimer('15s'), 100); }
-
-// Cardio
 function renderizarCardio() {
     const l = todosExercicios.filter(e => e.grupo === 'Cardio');
     const c = document.getElementById('listaCardioContainer'); c.innerHTML = "";
-    l.forEach(x => { c.innerHTML += `<div class="treino-card" onclick="alert('Inicie o timer acima!')" style="padding:15px"><div class="icon-box blue"><span class="material-icons-round">directions_run</span></div><div class="info"><h3>${x.nome}</h3></div></div>`; });
+    l.forEach(x => { c.innerHTML += `<div class="treino-card" onclick="alert('Use o cronômetro acima!')" style="padding:15px"><div class="icon-box blue"><span class="material-icons-round">directions_run</span></div><div class="info"><h3>${x.nome}</h3></div></div>`; });
 }
 function toggleCardioTimer() {
     const btn = document.getElementById('btnCardioAction'); const disp = document.getElementById('cardioTimerDisplay');
@@ -388,34 +326,19 @@ function toggleCardioTimer() {
     } else { cardioRunning = false; clearInterval(cardioInterval); btn.innerText = "RETOMAR"; btn.style.background = "#10b981"; }
 }
 function resetCardioTimer() { cardioRunning = false; clearInterval(cardioInterval); cardioSeconds=0; document.getElementById('cardioTimerDisplay').innerText="00:00"; document.getElementById('btnCardioAction').innerText="INICIAR"; }
-
-// Spotify & Utils
-function abrirSpotify() {
-    if(usuarioLogado && usuarioLogado.spotifyUrl) document.getElementById('spotifyIframe').src = usuarioLogado.spotifyUrl;
-    document.getElementById('spotifyModal').classList.add('active');
-}
+function abrirSpotify() { if(usuarioLogado && usuarioLogado.spotifyUrl) document.getElementById('spotifyIframe').src = usuarioLogado.spotifyUrl; document.getElementById('spotifyModal').classList.add('active'); }
 function fecharSpotify() { document.getElementById('spotifyModal').classList.remove('active'); }
 function carregarPlaylistUsuario() {
-    const val = document.getElementById('inputPlaylistUrl').value.trim();
-    if(!val) return alert("Cole o link!");
-    let link = val;
-    // Smart Embed converter
-    if(val.includes("open.spotify.com") && !val.includes("/embed/")) {
-        const p = val.split('.com/'); if(p[1]) link = `https://open.spotify.com/embed/$${p[1].split('?')[0]}?utm_source=generator&theme=0`;
-    }
-    document.getElementById('spotifyIframe').src = link;
-    if(usuarioLogado) { usuarioLogado.spotifyUrl = link; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); }
-    alert("Salvo!");
+    const val = document.getElementById('inputPlaylistUrl').value.trim(); if(!val) return alert("Cole o link!");
+    let link = val; if(val.includes("open.spotify.com") && !val.includes("/embed/")) { const p = val.split('.com/'); if(p[1]) link = `https://open.spotify.com/embed/$${p[1].split('?')[0]}?utm_source=generator&theme=0`; }
+    document.getElementById('spotifyIframe').src = link; if(usuarioLogado) { usuarioLogado.spotifyUrl = link; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); } alert("Salvo!");
 }
-
 function mostrarTela(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active');
     const nav = document.getElementById('mainNav');
     if(['login','dashMaster','dashProfessor','painelPersonal'].includes(id)) nav.style.display = 'none';
     else if(usuarioLogado && usuarioLogado.tipo === 'aluno') nav.style.display = 'flex';
-    if(id==='estatisticas') carregarEstatisticas();
-    if(id==='cardio') renderizarCardio();
+    if(id==='estatisticas') carregarEstatisticas(); if(id==='cardio') renderizarCardio();
 }
 function toggleFormulario() { document.getElementById('formCadastroAluno').classList.toggle('hidden'); }
 function filtrarAlunos() { renderizarListaAlunosAdmin(document.getElementById('inputBusca').value); }
@@ -427,6 +350,7 @@ function atualizarDisplayVencimentoPerfil() {
     if(!usuarioLogado.vencimento) { el.innerText="--/--"; st.innerText="N/A"; return; }
     const p = usuarioLogado.vencimento.split('-'); el.innerText = `${p[2]}/${p[1]}/${p[0]}`;
 }
+function salvarPesoCorporal(v) { if(!v) return; if(!usuarioLogado.pesoInicial) { usuarioLogado.pesoInicial=v; document.getElementById('pesoInicialInput').value=v; } usuarioLogado.pesoAtual = v; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); carregarEstatisticas(); }
 function carregarEstatisticas() {
     const ctx = document.getElementById('graficoPesoCanvas');
     if(ctx) {
@@ -434,7 +358,23 @@ function carregarEstatisticas() {
         if(chartPeso) chartPeso.destroy();
         chartPeso = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Peso', data: dados, borderColor: '#10b981', tension:0.4 }] }, options: { scales:{x:{display:false}} } });
     }
+    povoarSelectExercicios();
+}
+function povoarSelectExercicios() {
+    const sel = document.getElementById('selectExercicioGrafico'); if(!sel) return;
+    let ids = Object.keys(usuarioLogado.historicoCargas || {}); sel.innerHTML = "";
+    if(ids.length===0) { sel.innerHTML="<option>Sem dados</option>"; return; }
+    ids.forEach(id => { const nome = todosExercicios.find(e=>e.id==id)?.nome || "Ex "+id; sel.innerHTML+=`<option value="${id}">${nome}</option>`; });
+    atualizarGraficoCarga();
+}
+function atualizarGraficoCarga() {
+    const id = document.getElementById('selectExercicioGrafico').value; if(!id || !usuarioLogado.historicoCargas) return;
+    const hist = usuarioLogado.historicoCargas[id] || [];
+    const labels = hist.map(x=>x.data); const dados = hist.map(x=>x.carga);
+    if(dados.length>0) { document.getElementById('cargaInicialDisplay').innerText = dados[0]+"kg"; document.getElementById('recordeDisplay').innerText = Math.max(...dados)+"kg"; }
+    const ctx = document.getElementById('graficoCargaCanvas');
+    if(chartCarga) chartCarga.destroy();
+    chartCarga = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga', data: dados, borderColor: '#3b82f6', tension:0.3, fill:true, backgroundColor:'rgba(59,130,246,0.1)' }] }, options: { scales:{x:{display:false}} } });
 }
 
-// Torna global
-window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.abrirSpotify=abrirSpotify; window.fecharSpotify=fecharSpotify; window.carregarPlaylistUsuario=carregarPlaylistUsuario; window.salvarPesoCorporal=salvarPesoCorporal;
+window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.abrirSpotify=abrirSpotify; window.fecharSpotify=fecharSpotify; window.carregarPlaylistUsuario=carregarPlaylistUsuario; window.salvarPesoCorporal=salvarPesoCorporal; window.atualizarGraficoCarga = atualizarGraficoCarga;
