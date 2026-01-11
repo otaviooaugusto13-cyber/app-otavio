@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
   <meta name="theme-color" content="#10b981">
-  
   <title>IRON PRO System</title>
-  
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <link rel="manifest" href="manifest.json">
-  
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="apple-touch-icon" href="icon.svg">
 </head>
@@ -21,46 +17,26 @@
 
   <section id="login" class="screen active">
     <div class="login-wrapper" style="justify-content: space-between; padding-top: 60px;">
-      
       <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
         <div class="brand">
-          <div style="
-              width: 90px; 
-              height: 90px; 
-              background: linear-gradient(135deg, #10b981, #059669); 
-              border-radius: 50%; 
-              display: flex; 
-              align-items: center; 
-              justify-content: center; 
-              margin: 0 auto 15px;
-              box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
-              border: 3px solid #020617;">
+          <div style="width: 90px; height: 90px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); border: 3px solid #020617;">
               <span class="material-icons-round" style="font-size: 52px; color: #fff;">offline_bolt</span>
           </div>
-          
           <h1 style="font-family: 'Arial Black', sans-serif; letter-spacing: -1px; text-transform: uppercase; font-size: 3rem; margin-bottom:0;">
             IRON <span style="color: #10b981;">PRO</span>
           </h1>
-          <p style="letter-spacing: 3px; font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; margin-top: 5px; color: #10b981; font-weight: 700;">
-            ALTA PERFORMANCE
-          </p>
+          <p style="letter-spacing: 3px; font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; margin-top: 5px; color: #10b981; font-weight: 700;">ALTA PERFORMANCE</p>
         </div>
-        
         <div class="login-box" style="margin-top: 30px;">
-          <input type="text" id="userEmail" placeholder="Login" autocomplete="off">
+          <input type="text" id="userEmail" placeholder="Login (Telefone ou Academia)" autocomplete="off">
           <input type="password" id="userPass" placeholder="Senha" value="123">
           <button onclick="autenticar()" class="btn-primary" style="background: #10b981; color: #000; font-weight: 800;">ENTRAR NO SISTEMA</button>
         </div>
-        
-        <p class="footer-text" onclick="loginMaster()" style="cursor:pointer; opacity:0.5; font-size:0.75rem; margin-top: 25px; display:flex; align-items:center; gap:5px;">
-          <span class="material-icons-round" style="font-size:14px;">admin_panel_settings</span> Acesso Administrativo
-        </p>
+        <p class="footer-text" onclick="loginMaster()" style="cursor:pointer; opacity:0.5; font-size:0.75rem; margin-top: 25px; display:flex; align-items:center; gap:5px;"><span class="material-icons-round" style="font-size:14px;">admin_panel_settings</span> Acesso Administrativo</p>
       </div>
-
       <div style="text-align: center; margin-bottom: 10px; opacity: 0.4;">
         <p style="font-size: 0.65rem; color: #fff; margin-bottom: 5px;">© 2026 Otávio Augusto • Todos os direitos reservados</p>
-        <p style="font-size: 0.6rem;">Termos de Uso • Privacidade</p>
-        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">Tecnologia IRON PRO</p>
+        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">Tecnologia IRON PRO 2.0</p>
       </div>
     </div>
   </section>
@@ -86,9 +62,18 @@
       <div><h1 style="margin-bottom: 5px;">Painel <span id="nomeAcademiaTitulo" style="color:#10b981">...</span></h1><p>Gestão de Atletas</p></div>
       <button onclick="logout()" class="btn-logout"><span class="material-icons-round">logout</span></button>
     </div>
+
+    <div class="goal-card" style="margin-bottom: 20px; border: 1px solid #334155;">
+      <div class="goal-header"><span class="goal-title">📢 Mural de Avisos</span></div>
+      <div style="padding: 10px;">
+        <textarea id="textoAvisoAcademia" placeholder="Digite um aviso para todos os alunos (Ex: Manutenção na esteira...)" style="width:100%; background:#0f172a; border:none; color:white; padding:10px; border-radius:8px; height:60px; font-family:sans-serif;"></textarea>
+        <button onclick="salvarAvisoAcademia()" class="btn-primary" style="margin-top:10px; font-size:0.8rem; height:35px;">Publicar Aviso</button>
+      </div>
+    </div>
+
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-icon green"><span class="material-icons-round">groups</span></div><div><span class="stat-num" id="totalAlunos">0</span><span class="stat-desc">Alunos</span></div></div>
-      <div class="stat-card"><div class="stat-icon blue"><span class="material-icons-round">fitness_center</span></div><div><span class="stat-num">--</span><span class="stat-desc">Ativos</span></div></div>
+      <div class="stat-card"><div class="stat-icon blue"><span class="material-icons-round">fitness_center</span></div><div><span class="stat-num">ON</span><span class="stat-desc">Sistema</span></div></div>
     </div>
     <div class="admin-controls">
       <div class="search-box"><span class="material-icons-round">search</span><input type="text" id="inputBusca" placeholder="Buscar aluno..." onkeyup="filtrarAlunos()"></div>
@@ -119,24 +104,19 @@
 
   <section id="estatisticas" class="screen">
     <div class="header-student"><h1>Minhas Metas</h1><p>Sincronizado ☁️</p></div>
+    
     <div class="goal-card">
-      <div class="goal-header"><span class="goal-title">⚖️ Evolução</span></div>
-      <div class="chart-container-line" style="position: relative; height: 220px; width:100%;"><canvas id="graficoPesoCanvas"></canvas></div>
-      <div class="weight-inputs-row">
-        <div class="weight-box"><label>Início</label><input type="number" id="pesoInicialInput" placeholder="00.0" readonly style="opacity: 0.7;"></div>
-        <div class="arrow">➔</div>
-        <div class="weight-box active"><label>Atual (kg)</label><input type="number" id="pesoAtualInput" placeholder="00.0" onblur="salvarPesoCorporal(this.value)"></div>
+      <div class="goal-header"><span class="goal-title">📊 Composição Corporal</span></div>
+      <div class="chart-container-line" style="position: relative; height: 220px; width:100%;"><canvas id="graficoComposicaoCanvas"></canvas></div>
+      <div class="stats-row-mini" style="margin-top:10px;">
+        <div class="stat-mini"><span class="stat-label">Peso Atual</span><span class="stat-value" id="statPesoAtual">-- kg</span></div>
+        <div class="stat-mini"><span class="stat-label">% Gordura</span><span class="stat-value" id="statGorduraAtual" style="color:#eab308">--%</span></div>
       </div>
     </div>
+
     <h3 class="section-title-small">Frequência</h3>
     <div class="chart-card"><div class="bar-chart-container" id="graficoSemanal"></div></div>
-    <h3 class="section-title-small" style="margin-top: 30px;">Força</h3>
-    <div class="goal-card">
-      <div class="goal-header" style="border:none; margin-bottom:5px;"><span class="goal-title">📊 Por Exercício</span></div>
-      <select id="selectExercicioGrafico" onchange="atualizarGraficoCarga()" class="input-dark-select"><option value="" disabled selected>Carregando...</option></select>
-      <div class="chart-container-line" style="position: relative; height: 220px; width:100%;"><canvas id="graficoCargaCanvas"></canvas></div>
-      <div class="stats-row-mini"><div class="stat-mini"><span class="stat-label">Início</span><span class="stat-value" id="cargaInicialDisplay">--</span></div><div class="stat-mini"><span class="stat-label">Recorde</span><span class="stat-value" id="recordeDisplay" style="color: #10b981;">--</span></div></div>
-    </div>
+    
     <div style="height: 100px;"></div>
   </section>
 
@@ -157,17 +137,16 @@
 
   <section id="treinos" class="screen">
     <div class="header-student"><div><h1>Olá, <span id="nomeAlunoDisplay">Atleta</span></h1><p>Bora treinar?</p></div><div class="streak-badge">🔥 <span id="streakCount">0</span></div></div>
-    <div class="workout-grid" id="containerTreinosAluno"></div>
-    <div style="height: 80px;"></div>
-  </section>
-
-  <section id="detalheTreino" class="screen">
-    <div class="sticky-header">
-      <button class="btn-back" onclick="voltarTreinos()"><span class="material-icons-round">arrow_back</span> Voltar</button>
-      <h2 id="tituloTreino">Treino A</h2>
+    
+    <div id="boxAvisoAluno" class="goal-card hidden" style="background: linear-gradient(135deg, #334155, #1e293b); border-left: 4px solid #eab308;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+        <span class="material-icons-round" style="color:#eab308;">campaign</span>
+        <h3 style="margin:0; font-size:1rem; color:#eab308;">Aviso da Academia</h3>
+      </div>
+      <p id="textoAvisoAlunoDisplay" style="color:white; font-size:0.9rem; line-height:1.4;">...</p>
     </div>
-    <div class="progress-container"><div class="progress-text"><span>Conclusão</span><span id="progressoPorcentagem">0%</span></div><div class="progress-bar"><div id="barraProgresso" style="width: 0%"></div></div></div>
-    <div id="listaExercicios" class="exercise-list"></div>
+
+    <div class="workout-grid" id="containerTreinosAluno"></div>
     <div style="height: 80px;"></div>
   </section>
 
@@ -190,6 +169,16 @@
     <button onclick="logout()" class="btn-logout-outline">Sair da Conta</button>
   </section>
 
+  <section id="detalheTreino" class="screen">
+    <div class="sticky-header">
+      <button class="btn-back" onclick="voltarTreinos()"><span class="material-icons-round">arrow_back</span> Voltar</button>
+      <h2 id="tituloTreino">Treino A</h2>
+    </div>
+    <div class="progress-container"><div class="progress-text"><span>Conclusão</span><span id="progressoPorcentagem">0%</span></div><div class="progress-bar"><div id="barraProgresso" style="width: 0%"></div></div></div>
+    <div id="listaExercicios" class="exercise-list"></div>
+    <div style="height: 80px;"></div>
+  </section>
+
   <nav class="floating-nav" id="mainNav" style="display: none;">
     <button class="nav-item" onclick="mostrarTela('estatisticas', this)"><span class="material-icons-round">show_chart</span></button>
     <button class="nav-item" onclick="mostrarTela('cardio', this)"><span class="material-icons-round">directions_run</span></button>
@@ -198,36 +187,35 @@
     <button class="nav-item" onclick="mostrarTela('conta', this)"><span class="material-icons-round">person</span></button>
   </nav>
 
-  <div id="videoModal" class="video-modal"><div class="video-box"><div class="video-header"><h3 id="videoTitulo">Exercício</h3><button onclick="fecharVideo()" class="close-btn"><span class="material-icons-round">close</span></button></div><div class="video-placeholder"><span class="material-icons-round">play_circle</span><p>Vídeo Demonstrativo</p></div></div></div>
-  <div id="timerOverlay" class="timer-overlay hidden"><div class="timer-content"><div class="timer-header">Descanso</div><div id="timerDisplay" class="timer-display">00:00</div><div class="timer-controls"><button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button><button onclick="fecharTimer()" class="btn-timer-close">Pular</button></div></div></div>
-
-  <div id="spotifyModal" class="video-modal">
-    <div class="video-box" style="background: #000; padding: 0; overflow: hidden;">
-      <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #121212;">
-        <h3 style="color: white; margin: 0; display:flex; align-items:center; gap:8px; font-size: 1rem;"><span class="material-icons-round" style="color:#1DB954">spotify</span> Meu Som</h3>
-        <button onclick="fecharSpotify()" class="close-btn"><span class="material-icons-round">expand_more</span></button>
+  <div id="modalAvaliacao" class="video-modal">
+    <div class="video-box" style="height:auto; padding:20px;">
+      <div class="video-header"><h3>Nova Avaliação</h3><button onclick="fecharModalAvaliacao()" class="close-btn"><span class="material-icons-round">close</span></button></div>
+      <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;" id="nomeAlunoAvaliacao">Aluno...</p>
+      <div class="form-row" style="flex-direction:column; gap:10px;">
+        <input type="number" id="avalPeso" placeholder="Peso (kg)">
+        <input type="number" id="avalGordura" placeholder="% Gordura">
+        <input type="number" id="avalMusculo" placeholder="% Músculo (Opcional)">
+        <button onclick="salvarAvaliacaoFisica()" class="btn-primary" style="margin-top:10px;">Salvar Medidas</button>
       </div>
-      <div style="padding: 10px; background: #181818; border-bottom: 1px solid #282828;">
-        <div style="display: flex; gap: 8px;">
-          <input type="text" id="inputPlaylistUrl" placeholder="Link da playlist..." style="flex:1; background:#2a2a2a; border:none; padding:8px 12px; border-radius:4px; color:white; font-size:0.8rem; outline:none;">
-          <button onclick="carregarPlaylistUsuario()" style="background:#1DB954; color:white; border:none; padding:0 12px; border-radius:4px; font-weight:700; font-size:0.7rem;">OK</button>
-        </div>
-      </div>
-      <iframe id="spotifyIframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-      <a href="spotify://" class="btn-primary" style="margin:0; border-radius:0; background:#191414; color:#1DB954; font-size:0.75rem; padding:12px; text-decoration:none; display:flex; justify-content:center; border-top:1px solid #282828;">ABRIR APP</a>
     </div>
   </div>
 
+  <div id="videoModal" class="video-modal"><div class="video-box"><div class="video-header"><h3 id="videoTitulo">Exercício</h3><button onclick="fecharVideo()" class="close-btn"><span class="material-icons-round">close</span></button></div><div class="video-placeholder"><span class="material-icons-round">play_circle</span><p>Vídeo Demonstrativo</p></div></div></div>
+  <div id="timerOverlay" class="timer-overlay hidden"><div class="timer-content"><div class="timer-header">Descanso</div><div id="timerDisplay" class="timer-display">00:00</div><div class="timer-controls"><button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button><button onclick="fecharTimer()" class="btn-timer-close">Pular</button></div></div></div>
+
+  <div id="spotifyModal" class="video-modal"><div class="video-box" style="background: #000; padding: 0; overflow: hidden;"><div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #121212;"><h3 style="color: white; margin: 0; display:flex; align-items:center; gap:8px; font-size: 1rem;"><span class="material-icons-round" style="color:#1DB954">spotify</span> Meu Som</h3><button onclick="fecharSpotify()" class="close-btn"><span class="material-icons-round">expand_more</span></button></div><div style="padding: 10px; background: #181818; border-bottom: 1px solid #282828;"><div style="display: flex; gap: 8px;"><input type="text" id="inputPlaylistUrl" placeholder="Link da playlist..." style="flex:1; background:#2a2a2a; border:none; padding:8px 12px; border-radius:4px; color:white; font-size:0.8rem; outline:none;"><button onclick="carregarPlaylistUsuario()" style="background:#1DB954; color:white; border:none; padding:0 12px; border-radius:4px; font-weight:700; font-size:0.7rem;">OK</button></div></div><iframe id="spotifyIframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe><a href="spotify://" class="btn-primary" style="margin:0; border-radius:0; background:#191414; color:#1DB954; font-size:0.75rem; padding:12px; text-decoration:none; display:flex; justify-content:center; border-top:1px solid #282828;">ABRIR APP</a></div></div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     const firebaseConfig = { apiKey: "AIzaSyAWiEakTfoZc4aSPbK09Mwy3XZYA3xgS_s", authDomain: "sportcenterapp-228bd.firebaseapp.com", projectId: "sportcenterapp-228bd", storageBucket: "sportcenterapp-228bd.firebasestorage.app", messagingSenderId: "828039171772", appId: "1:828039171772:web:51191d90d70dccb3ca8ab9" };
-    try { const app=initializeApp(firebaseConfig); const db=getFirestore(app); window.db=db; window.f_collection=collection; window.f_getDocs=getDocs; window.f_doc=doc; window.f_setDoc=setDoc; window.f_deleteDoc=deleteDoc; console.log("🔥 Firebase ON"); } catch(e){console.error(e);}
+    try { const app=initializeApp(firebaseConfig); const db=getFirestore(app); 
+        enableIndexedDbPersistence(db).catch((err)=>{console.log("Offline mode error", err)});
+        window.db=db; window.f_collection=collection; window.f_getDocs=getDocs; window.f_doc=doc; window.f_setDoc=setDoc; window.f_deleteDoc=deleteDoc; console.log("🔥 Firebase ON"); } catch(e){console.error(e);}
   </script>
   <script src="script.js"></script>
 </body>
 </html>
-
 
 
 
