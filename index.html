@@ -36,7 +36,7 @@
       </div>
       <div style="text-align: center; margin-bottom: 10px; opacity: 0.4;">
         <p style="font-size: 0.65rem; color: #fff; margin-bottom: 5px;">© 2026 Otávio Augusto • Todos os direitos reservados</p>
-        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">Tecnologia IRON PRO 2.0</p>
+        <p style="font-size: 0.55rem; margin-top: 5px; color: #10b981;">Tecnologia IRON PRO 2.1</p>
       </div>
     </div>
   </section>
@@ -106,16 +106,26 @@
     <div class="header-student"><h1>Minhas Metas</h1><p>Sincronizado ☁️</p></div>
     
     <div class="goal-card">
-      <div class="goal-header"><span class="goal-title">📊 Composição Corporal</span></div>
-      <div class="chart-container-line" style="position: relative; height: 220px; width:100%;"><canvas id="graficoComposicaoCanvas"></canvas></div>
+      <div class="goal-header"><span class="goal-title">⚖️ Composição Corporal</span></div>
+      <div class="chart-container-line" style="position: relative; height: 200px; width:100%;"><canvas id="graficoComposicaoCanvas"></canvas></div>
       <div class="stats-row-mini" style="margin-top:10px;">
         <div class="stat-mini"><span class="stat-label">Peso Atual</span><span class="stat-value" id="statPesoAtual">-- kg</span></div>
         <div class="stat-mini"><span class="stat-label">% Gordura</span><span class="stat-value" id="statGorduraAtual" style="color:#eab308">--%</span></div>
       </div>
     </div>
 
-    <h3 class="section-title-small">Frequência</h3>
+    <h3 class="section-title-small">Frequência Semanal</h3>
     <div class="chart-card"><div class="bar-chart-container" id="graficoSemanal"></div></div>
+
+    <h3 class="section-title-small" style="margin-top: 30px;">Evolução de Força</h3>
+    <div class="goal-card">
+      <div class="goal-header" style="border:none; margin-bottom:5px;"><span class="goal-title">📊 Carga por Exercício</span></div>
+      <select id="selectExercicioGrafico" onchange="atualizarGraficoCarga()" class="input-dark-select"><option value="" disabled selected>Carregando...</option></select>
+      <div class="chart-container-line" style="position: relative; height: 200px; width:100%;"><canvas id="graficoCargaCanvas"></canvas></div>
+      <div class="stats-row-mini">
+        <div class="stat-mini"><span class="stat-label">Recorde</span><span class="stat-value" id="recordeDisplay" style="color: #10b981;">--</span></div>
+      </div>
+    </div>
     
     <div style="height: 100px;"></div>
   </section>
@@ -210,12 +220,13 @@
     import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     const firebaseConfig = { apiKey: "AIzaSyAWiEakTfoZc4aSPbK09Mwy3XZYA3xgS_s", authDomain: "sportcenterapp-228bd.firebaseapp.com", projectId: "sportcenterapp-228bd", storageBucket: "sportcenterapp-228bd.firebasestorage.app", messagingSenderId: "828039171772", appId: "1:828039171772:web:51191d90d70dccb3ca8ab9" };
     try { const app=initializeApp(firebaseConfig); const db=getFirestore(app); 
-        enableIndexedDbPersistence(db).catch((err)=>{console.log("Offline mode error", err)});
+        enableIndexedDbPersistence(db).catch((err)=>{console.log("Offline error", err)});
         window.db=db; window.f_collection=collection; window.f_getDocs=getDocs; window.f_doc=doc; window.f_setDoc=setDoc; window.f_deleteDoc=deleteDoc; console.log("🔥 Firebase ON"); } catch(e){console.error(e);}
   </script>
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
