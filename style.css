@@ -1104,3 +1104,84 @@ p { color: var(--text-muted); font-size: 0.95rem; }
     justify-content: flex-end; /* Joga pra direita */
   }
 }
+/* ... Mantenha o CSS anterior ... */
+
+/* ITEM DO EDITOR (PROFESSOR) - VERSÃO 'TABLET' */
+.admin-exercise-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Espalha: Nome na esq, Opções na dir */
+  background: rgba(255,255,255,0.03);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.admin-exercise-row:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Lado Esquerdo: Checkbox + Nome */
+.admin-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1; /* Ocupa o espaço disponível */
+}
+
+.admin-row-left input[type="checkbox"] {
+  accent-color: #10b981;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Lado Direito: Os 3 Inputs alinhados */
+.admin-row-right {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Estilo unificado para Selects e Inputs */
+.admin-input-mini {
+  background: #0f172a;
+  color: #fff;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  height: 28px; /* Altura fina */
+  font-size: 0.75rem; /* Letra pequena */
+  padding: 0 4px;
+  outline: none;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Tamanhos específicos */
+.w-time { width: 65px; }   /* Largura do Tempo */
+.w-method { width: 75px; } /* Largura do Método */
+.w-text { width: 60px; background: rgba(0,0,0,0.3); }   /* Largura do "4x10" */
+
+.admin-input-mini:focus {
+  border-color: #10b981;
+}
+
+/* VISUALIZAÇÃO DO ALUNO (Badges) */
+.exercise-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.badge-info {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-series { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+.badge-rest { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+.badge-method { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
