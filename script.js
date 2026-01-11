@@ -139,28 +139,30 @@ function renderizarListaAcademias() {
     listaDeAcademias.forEach(a => { div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`; });
 }
 
-/* ================= PAINEL PROFESSOR (COM MURAL E AVALIAÇÃO) ================= */
+/* ================= PAINEL PROFESSOR ================= */
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
     
-    // Carregar Aviso Salvo
+    // Carregar Aviso Salvo no Input
     if(usuarioLogado.aviso) document.getElementById('textoAvisoAcademia').value = usuarioLogado.aviso;
+    else document.getElementById('textoAvisoAcademia').value = "";
 
     renderizarListaAlunosAdmin(); 
 }
 
-// FEATURE: SALVAR AVISO DO MURAL
+// SALVAR AVISO (COM TRIM PARA EVITAR ESPAÇOS VAZIOS)
 async function salvarAvisoAcademia() {
-    const texto = document.getElementById('textoAvisoAcademia').value;
+    const texto = document.getElementById('textoAvisoAcademia').value.trim();
     usuarioLogado.aviso = texto;
     await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
     
-    // Atualiza na lista local também
+    // Atualiza lista local
     const idx = listaDeAcademias.findIndex(a => a.id === usuarioLogado.id);
     if(idx >= 0) listaDeAcademias[idx].aviso = texto;
     
-    alert("Aviso publicado para todos os alunos!");
+    if(texto === "") alert("Aviso removido!");
+    else alert("Aviso publicado!");
 }
 
 function renderizarListaAlunosAdmin(filtro = "") {
@@ -196,7 +198,7 @@ async function cadastrarAluno() {
     renderizarListaAlunosAdmin(); toggleFormulario();
 }
 
-/* ================= AVALIAÇÃO FÍSICA (PROFESSOR) ================= */
+/* ================= AVALIAÇÃO FÍSICA ================= */
 let alunoSendoAvaliadoId = null;
 function abrirModalAvaliacao(tel) {
     alunoSendoAvaliadoId = tel;
@@ -213,8 +215,7 @@ async function salvarAvaliacaoFisica() {
     const peso = document.getElementById('avalPeso').value;
     const gordura = document.getElementById('avalGordura').value;
     const musculo = document.getElementById('avalMusculo').value;
-    
-    if(!peso || !gordura) return alert("Preencha pelo menos Peso e % Gordura");
+    if(!peso || !gordura) return alert("Preencha Peso e % Gordura");
     
     const aluno = listaDeAlunos.find(a => a.telefone === alunoSendoAvaliadoId);
     if(!aluno.historicoAvaliacoes) aluno.historicoAvaliacoes = [];
@@ -274,16 +275,22 @@ function salvarTreinoPersonal() {
   alert("Salvo!");
 }
 
-/* ================= APP DO ALUNO ================= */
+/* ================= APP DO ALUNO (COM LÓGICA DE AVISO INTELIGENTE) ================= */
 function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
     document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
     
-    // VERIFICA SE TEM AVISO DA ACADEMIA
+    // MURAL INTELIGENTE: Só mostra se tiver texto real
     const academiaDoAluno = listaDeAcademias.find(gym => gym.id === usuarioLogado.academiaId);
-    if(academiaDoAluno && academiaDoAluno.aviso && academiaDoAluno.aviso.length > 0) {
-        document.getElementById('boxAvisoAluno').classList.remove('hidden');
+    const boxAviso = document.getElementById('boxAvisoAluno');
+    
+    if(academiaDoAluno && academiaDoAluno.aviso && academiaDoAluno.aviso.trim() !== "") {
+        // TEM AVISO: MOSTRA
+        boxAviso.classList.remove('hidden');
         document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
+    } else {
+        // NÃO TEM AVISO: ESCONDE
+        boxAviso.classList.add('hidden');
     }
 
     renderizarCardsTreino(); atualizarDisplayVencimentoPerfil();
@@ -309,7 +316,6 @@ function abrirTreino(mod) {
         if(!usuarioLogado.registros) usuarioLogado.registros = {};
         const pesoSalvo = usuarioLogado.registros[`${mod}_${ex.id}_peso`] || "";
         
-        // FEATURE: HISTÓRICO DE CARGA NA TELA
         let textoUltimaCarga = "";
         if(usuarioLogado.historicoCargas && usuarioLogado.historicoCargas[ex.id]) {
             const hist = usuarioLogado.historicoCargas[ex.id];
@@ -418,18 +424,17 @@ function atualizarDisplayVencimentoPerfil() {
 function salvarLinkSpotify(val) { if(usuarioLogado && val) { usuarioLogado.spotifyUrl = val; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); } }
 function salvarPesoCorporal(v) { if(!v) return; if(!usuarioLogado.pesoInicial) { usuarioLogado.pesoInicial=v; document.getElementById('pesoInicialInput').value=v; } usuarioLogado.pesoAtual = v; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); carregarEstatisticas(); }
 
-// FEATURE: GRÁFICO DUPLO (PESO + GORDURA)
+// GRÁFICO DUPLO
 function carregarEstatisticas() {
     const ctx = document.getElementById('graficoComposicaoCanvas');
     if(ctx && usuarioLogado.historicoAvaliacoes) {
         let labels=[], dPeso=[], dGordura=[];
         usuarioLogado.historicoAvaliacoes.forEach(x => {
-            labels.push(x.data.slice(0,5)); // Só dia/mês
+            labels.push(x.data.slice(0,5)); 
             dPeso.push(x.peso);
             dGordura.push(x.gordura);
         });
 
-        // Atualiza números mini
         if(dPeso.length>0) {
             document.getElementById('statPesoAtual').innerText = dPeso[dPeso.length-1] + ' kg';
             document.getElementById('statGorduraAtual').innerText = dGordura[dGordura.length-1] + '%';
