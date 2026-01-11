@@ -1187,3 +1187,111 @@ p { color: var(--text-muted); font-size: 0.95rem; }
 .badge-method { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 
 }
+
+/* ... CSS anterior ... */
+
+/* CONTADOR DE SÉRIES (BOLINHAS) */
+.sets-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  justify-content: flex-end; /* Alinha à direita */
+}
+
+.set-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.set-circle.done {
+  background: #10b981;
+  border-color: #10b981;
+  color: #020617;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  transform: scale(1.1);
+}
+
+/* CRONÔMETRO FLUTUANTE (MODERNO) */
+.timer-overlay {
+  position: fixed;
+  bottom: 80px; /* Fica acima do menu */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+}
+
+.timer-overlay.hidden {
+  display: none;
+}
+
+.timer-content {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid #334155;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 15px 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timer-display {
+  font-family: 'Courier New', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #10b981;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.timer-header {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  position: absolute;
+  top: 5px;
+  left: 20px;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-timer-add {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.btn-timer-close {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+@keyframes slideUp {
+  from { transform: translate(-50%, 20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
