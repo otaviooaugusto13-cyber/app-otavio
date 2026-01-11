@@ -266,6 +266,8 @@ function carregarInterfaceAluno() {
     document.getElementById('telPerfil').innerText = alunoLogado.telefone;
     document.getElementById('pesoInicialInput').value = alunoLogado.pesoInicial || "";
     document.getElementById('pesoAtualInput').value = alunoLogado.pesoAtual || "";
+    // Carrega link spotify salvo
+    if (alunoLogado.spotifyUrl) document.getElementById('spotifyLinkInput').value = alunoLogado.spotifyUrl;
     mostrarTela('treinos');
     document.getElementById('mainNav').style.display = 'flex';
 }
@@ -482,12 +484,16 @@ function carregarPlaylistUsuario() {
     
     if (!input) return alert("Cole um link do Spotify primeiro!");
 
-    // Converte link normal para embed
+    // Converte link normal para embed se for um link direto
     let novoLink = input;
-    if (input.includes("spotify.com") && !input.includes("/embed/")) {
-        const partes = input.split('.com/'); 
+    
+    // Verifica se é um link padrão do Spotify (open.spotify.com) e não é embed ainda
+    if (input.includes("open.spotify.com") && !input.includes("/embed/")) {
+        const partes = input.split('.com/'); // separa depois do .com/
         if (partes[1]) {
+            // Remove parâmetros extras (?si=...)
             const caminhoLimpo = partes[1].split('?')[0]; 
+            // Constrói o link embed correto
             novoLink = `https://open.spotify.com/embed/${caminhoLimpo}?utm_source=generator&theme=0`;
         }
     }
