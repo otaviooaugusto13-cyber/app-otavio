@@ -14,16 +14,34 @@
   <section id="login" class="screen active">
     <div class="login-wrapper">
       <div class="brand">
-        <span class="material-icons-round" style="font-size: 48px; color: #10b981;">fitness_center</span>
-        <h1>Gym Manager</h1>
-        <p>Sistema de Gestão Esportiva</p>
+        <div style="
+            width: 80px; 
+            height: 80px; 
+            background: linear-gradient(135deg, #10b981, #059669); 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0 auto 15px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            border: 2px solid #020617;">
+            <span class="material-icons-round" style="font-size: 48px; color: white;">offline_bolt</span>
+        </div>
+        
+        <h1 style="font-family: 'Arial Black', sans-serif; letter-spacing: -1px; text-transform: uppercase; font-size: 2.5rem;">
+          IRON <span style="color: #10b981;">PRO</span>
+        </h1>
+        <p style="letter-spacing: 2px; font-size: 0.8rem; opacity: 0.7; text-transform: uppercase;">System Experience</p>
       </div>
+      
       <div class="login-box">
-        <input type="text" id="userEmail" placeholder="Login (Telefone ou Nome da Academia)" autocomplete="off">
+        <input type="text" id="userEmail" placeholder="Login (Telefone ou Academia)" autocomplete="off">
         <input type="password" id="userPass" placeholder="Senha" value="123">
-        <button onclick="autenticar()" class="btn-primary">ENTRAR</button>
+        <button onclick="autenticar()" class="btn-primary">ENTRAR NO SISTEMA</button>
       </div>
-      <p class="footer-text">Sou dono do software? <span onclick="loginMaster()" style="color:#10b981; cursor:pointer;">Clique aqui</span></p>
+      <p class="footer-text" onclick="loginMaster()" style="cursor:pointer; opacity:0.5; font-size:0.7rem; margin-top: 30px;">
+        <span class="material-icons-round" style="font-size:12px; vertical-align:middle;">admin_panel_settings</span> Acesso Administrativo
+      </p>
     </div>
   </section>
 
@@ -220,3 +238,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+
