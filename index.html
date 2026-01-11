@@ -214,11 +214,22 @@
     </div>
   </div>
 
+  <div id="timerOverlay" class="timer-overlay hidden">
+    <div class="timer-content">
+      <div class="timer-header">Descanso</div>
+      <div id="timerDisplay" class="timer-display">00:00</div>
+      <div class="timer-controls">
+        <button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button>
+        <button onclick="fecharTimer()" class="btn-timer-close">Pular</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // --- SUA CONFIGURAÇÃO DO FIREBASE (Otavio) ---
+    // --- SUA CONFIGURAÇÃO ---
     const firebaseConfig = {
       apiKey: "AIzaSyAWiEakTfoZc4aSPbK09Mwy3XZYA3xgS_s",
       authDomain: "sportcenterapp-228bd.firebaseapp.com",
@@ -242,7 +253,7 @@
     
     console.log("🔥 Firebase Conectado com Sucesso! (Projeto: sportcenterapp-228bd)");
 
-    // Carrega o script principal APÓS conectar ao banco
+    // Carrega o script principal
     const script = document.createElement('script');
     script.src = "script.js";
     document.body.appendChild(script);
