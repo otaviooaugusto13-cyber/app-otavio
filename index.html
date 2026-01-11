@@ -7,7 +7,6 @@
   <title>Sport Center App</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -29,32 +28,17 @@
 
   <section id="dashProfessor" class="screen">
     <div class="header-top">
-      <div>
-        <h1 style="margin-bottom: 5px;">Painel do Coach</h1>
-        <p>Gestão de Atletas (Online)</p>
-      </div>
+      <div><h1 style="margin-bottom: 5px;">Painel do Coach</h1><p>Gestão de Atletas</p></div>
       <button onclick="logout()" class="btn-logout"><span class="material-icons-round">logout</span></button>
     </div>
-
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon green"><span class="material-icons-round">groups</span></div>
-        <div><span class="stat-num" id="totalAlunos">0</span><span class="stat-desc">Alunos</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon blue"><span class="material-icons-round">fitness_center</span></div>
-        <div><span class="stat-num">--</span><span class="stat-desc">Ativos</span></div>
-      </div>
+      <div class="stat-card"><div class="stat-icon green"><span class="material-icons-round">groups</span></div><div><span class="stat-num" id="totalAlunos">0</span><span class="stat-desc">Alunos</span></div></div>
+      <div class="stat-card"><div class="stat-icon blue"><span class="material-icons-round">fitness_center</span></div><div><span class="stat-num">--</span><span class="stat-desc">Ativos</span></div></div>
     </div>
-
     <div class="admin-controls">
-      <div class="search-box">
-        <span class="material-icons-round">search</span>
-        <input type="text" id="inputBusca" placeholder="Buscar aluno..." onkeyup="filtrarAlunos()">
-      </div>
+      <div class="search-box"><span class="material-icons-round">search</span><input type="text" id="inputBusca" placeholder="Buscar aluno..." onkeyup="filtrarAlunos()"></div>
       <button onclick="toggleFormulario()" class="btn-add-mini"><span class="material-icons-round">person_add</span> Novo</button>
     </div>
-
     <div id="formCadastroAluno" class="form-panel hidden">
       <h4>Cadastrar Novo Atleta</h4>
       <div class="form-row">
@@ -65,7 +49,6 @@
       </div>
       <button onclick="cadastrarAluno()" class="btn-primary" style="margin-top: 10px;">Confirmar Cadastro</button>
     </div>
-
     <h3 class="section-title" style="margin-top: 20px;">Meus Alunos</h3>
     <div id="listaAlunosCoach" class="student-grid"></div>
     <div style="height: 80px;"></div>
@@ -73,80 +56,62 @@
 
   <section id="painelPersonal" class="screen">
     <button class="btn-back" onclick="mostrarTela('dashProfessor')"><span class="material-icons-round">arrow_back</span> Voltar</button>
-    <div class="header-editor">
-      <h2 id="alunoSendoEditado">Aluno: ...</h2>
-      <p>Editando Módulo: <span id="moduloAtualNome" class="highlight">A</span></p>
-    </div>
+    <div class="header-editor"><h2 id="alunoSendoEditado">Aluno: ...</h2><p>Editando Módulo: <span id="moduloAtualNome" class="highlight">A</span></p></div>
     <div class="module-selector" id="botoesModulosAdmin"></div>
     <div id="listaSelecao" class="selection-list"></div>
-    <div class="fixed-bottom-action">
-      <button onclick="salvarTreinoPersonal()" class="btn-primary">Salvar na Nuvem <span class="material-icons-round">cloud_upload</span></button>
-    </div>
+    <div class="fixed-bottom-action"><button onclick="salvarTreinoPersonal()" class="btn-primary">Salvar na Nuvem <span class="material-icons-round">cloud_upload</span></button></div>
   </section>
 
   <section id="estatisticas" class="screen">
-    <div class="header-student">
-      <h1>Minhas Metas</h1>
-      <p>Sincronizado com a nuvem ☁️</p>
-    </div>
-
+    <div class="header-student"><h1>Minhas Metas</h1><p>Sincronizado ☁️</p></div>
     <div class="goal-card">
       <div class="goal-header"><span class="goal-title">⚖️ Evolução Corporal</span></div>
-      <div class="chart-container-line" style="position: relative; height: 220px; width:100%;">
-        <canvas id="graficoPesoCanvas"></canvas>
-      </div>
+      <div class="chart-container-line" style="position: relative; height: 220px; width:100%;"><canvas id="graficoPesoCanvas"></canvas></div>
       <div class="weight-inputs-row">
-        <div class="weight-box">
-          <label>Início</label>
-          <input type="number" id="pesoInicialInput" placeholder="00.0" readonly style="opacity: 0.7;">
-        </div>
+        <div class="weight-box"><label>Início</label><input type="number" id="pesoInicialInput" placeholder="00.0" readonly style="opacity: 0.7;"></div>
         <div class="arrow">➔</div>
-        <div class="weight-box active">
-          <label>Atual (kg)</label>
-          <input type="number" id="pesoAtualInput" placeholder="00.0" onblur="salvarPesoCorporal(this.value)">
-        </div>
+        <div class="weight-box active"><label>Atual (kg)</label><input type="number" id="pesoAtualInput" placeholder="00.0" onblur="salvarPesoCorporal(this.value)"></div>
       </div>
-      <p class="motivation-text" id="textoEvolucaoPeso">Mantenha o foco!</p>
     </div>
-
     <h3 class="section-title-small">Frequência (Dias 100%)</h3>
-    <div class="chart-card">
-      <div class="bar-chart-container" id="graficoSemanal"></div>
-      <p class="chart-legend">Treinos completos na semana</p>
-    </div>
-
-    <h3 class="section-title-small" style="margin-top: 30px;">Análise de Força</h3>
+    <div class="chart-card"><div class="bar-chart-container" id="graficoSemanal"></div></div>
+    <h3 class="section-title-small" style="margin-top: 30px;">Força</h3>
     <div class="goal-card">
-      <div class="goal-header" style="border:none; margin-bottom:5px; padding-bottom:0;">
-        <span class="goal-title">📊 Evolução por Exercício</span>
-      </div>
-      <p style="font-size:0.8rem; color:#94a3b8; margin-bottom:15px;">Selecione para ver o histórico:</p>
-      <select id="selectExercicioGrafico" onchange="atualizarGraficoCarga()" class="input-dark-select">
-        <option value="" disabled selected>Carregando dados...</option>
-      </select>
-      <div class="chart-container-line" style="position: relative; height: 220px; width:100%;">
-        <canvas id="graficoCargaCanvas"></canvas>
-      </div>
+      <div class="goal-header" style="border:none; margin-bottom:5px;"><span class="goal-title">📊 Por Exercício</span></div>
+      <select id="selectExercicioGrafico" onchange="atualizarGraficoCarga()" class="input-dark-select"><option value="" disabled selected>Carregando...</option></select>
+      <div class="chart-container-line" style="position: relative; height: 220px; width:100%;"><canvas id="graficoCargaCanvas"></canvas></div>
       <div class="stats-row-mini">
-        <div class="stat-mini">
-          <span class="stat-label">Carga Inicial</span>
-          <span class="stat-value" id="cargaInicialDisplay">--</span>
-        </div>
-        <div class="stat-mini">
-          <span class="stat-label">Recorde Atual</span>
-          <span class="stat-value" id="recordeDisplay" style="color: #10b981;">--</span>
-        </div>
+        <div class="stat-mini"><span class="stat-label">Início</span><span class="stat-value" id="cargaInicialDisplay">--</span></div>
+        <div class="stat-mini"><span class="stat-label">Recorde</span><span class="stat-value" id="recordeDisplay" style="color: #10b981;">--</span></div>
       </div>
     </div>
     <div style="height: 100px;"></div>
   </section>
 
+  <section id="cardio" class="screen">
+    <div class="header-student">
+      <div><h1>Modo Cardio</h1><p>Aeróbico & Resistência</p></div>
+      <div class="streak-badge">🏃💨</div>
+    </div>
+    
+    <div class="goal-card" style="text-align:center; padding: 30px 20px;">
+        <span class="material-icons-round" style="font-size: 40px; color: #3b82f6; margin-bottom:10px;">timer</span>
+        <h2 id="cardioTimerDisplay" style="font-size: 3rem; margin:0; font-family:'Courier New', monospace;">00:00</h2>
+        <p style="color:#64748b; font-size:0.8rem; margin-top:5px;">Cronômetro Livre</p>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+            <button onclick="toggleCardioTimer()" id="btnCardioAction" class="btn-primary" style="margin:0; width:auto; padding: 10px 30px;">INICIAR</button>
+            <button onclick="resetCardioTimer()" class="btn-logout" style="background:rgba(255,255,255,0.1); color:#fff;">ZERAR</button>
+        </div>
+    </div>
+
+    <h3 class="section-title-small">Equipamentos Disponíveis</h3>
+    <div id="listaCardioContainer" class="workout-grid"></div>
+    <div style="height: 80px;"></div>
+  </section>
+
   <section id="treinos" class="screen">
     <div class="header-student">
-      <div>
-        <h1>Olá, <span id="nomeAlunoDisplay">Atleta</span></h1>
-        <p>Bora completar 100% hoje?</p>
-      </div>
+      <div><h1>Olá, <span id="nomeAlunoDisplay">Atleta</span></h1><p>Bora treinar?</p></div>
       <div class="streak-badge">🔥 <span id="streakCount">0</span></div>
     </div>
     <div class="workout-grid" id="containerTreinosAluno"></div>
@@ -158,45 +123,31 @@
       <button class="btn-back" onclick="voltarTreinos()"><span class="material-icons-round">arrow_back</span> Voltar</button>
       <h2 id="tituloTreino">Treino A</h2>
     </div>
-    <div class="progress-container">
-      <div class="progress-text"><span>Conclusão</span><span id="progressoPorcentagem">0%</span></div>
-      <div class="progress-bar"><div id="barraProgresso" style="width: 0%"></div></div>
-    </div>
+    <div class="progress-container"><div class="progress-text"><span>Conclusão</span><span id="progressoPorcentagem">0%</span></div><div class="progress-bar"><div id="barraProgresso" style="width: 0%"></div></div></div>
     <div id="listaExercicios" class="exercise-list"></div>
     <div style="height: 80px;"></div>
   </section>
 
   <section id="conta" class="screen">
-    <div class="header-student">
-      <h1>Meu Perfil</h1>
-    </div>
+    <div class="header-student"><h1>Meu Perfil</h1></div>
     <div class="profile-card-large">
       <div class="avatar-large"><span class="material-icons-round">person</span></div>
-      <h2 id="nomePerfil">Nome do Aluno</h2>
+      <h2 id="nomePerfil">Aluno</h2>
       <span class="badge-student">Aluno Regular</span>
     </div>
-    <div class="info-group">
-      <label>Status da Assinatura</label>
-      <div id="cardVencimentoPerfil" class="due-date-card">
-        <span class="material-icons-round">event</span>
-        <span>Vencimento: <strong id="vencimentoPerfil">--/--</strong></span>
-        <span id="statusPagamento" class="status-badge">Verificando...</span>
-      </div>
-    </div>
-    <div class="info-group">
-      <label>Telefone (Login)</label>
-      <div class="info-box" id="telPerfil">...</div>
-    </div>
-    <button onclick="logout()" class="btn-logout-outline" style="width:100%; margin-top:20px;">Sair da Conta</button>
+    <div class="info-group"><label>Status</label><div id="cardVencimentoPerfil" class="due-date-card"><span class="material-icons-round">event</span><span>Vencimento: <strong id="vencimentoPerfil">--/--</strong></span><span id="statusPagamento" class="status-badge">...</span></div></div>
+    <div class="info-group"><label>Login</label><div class="info-box" id="telPerfil">...</div></div>
+    <button onclick="logout()" class="btn-logout-outline">Sair da Conta</button>
   </section>
 
   <nav class="floating-nav" id="mainNav" style="display: none;">
+    
     <button class="nav-item" onclick="mostrarTela('estatisticas', this)">
       <span class="material-icons-round">show_chart</span>
     </button>
     
-    <button class="nav-item" onclick="abrirSpotify()">
-      <span class="material-icons-round" style="color: #1DB954;">queue_music</span>
+    <button class="nav-item" onclick="mostrarTela('cardio', this)">
+      <span class="material-icons-round">directions_run</span>
     </button>
 
     <div class="nav-center-wrapper">
@@ -205,75 +156,37 @@
       </button>
     </div>
 
+    <button class="nav-item" onclick="abrirSpotify()">
+      <span class="material-icons-round" style="color: #1DB954;">queue_music</span>
+    </button>
+
     <button class="nav-item" onclick="mostrarTela('conta', this)">
       <span class="material-icons-round">person</span>
     </button>
   </nav>
 
-  <div id="videoModal" class="video-modal">
-    <div class="video-box">
-      <div class="video-header">
-        <h3 id="videoTitulo">Exercício</h3>
-        <button onclick="fecharVideo()" class="close-btn"><span class="material-icons-round">close</span></button>
-      </div>
-      <div class="video-placeholder"><span class="material-icons-round">play_circle</span><p>Vídeo Demonstrativo</p></div>
-    </div>
-  </div>
-
-  <div id="timerOverlay" class="timer-overlay hidden">
-    <div class="timer-content">
-      <div class="timer-header">Descanso</div>
-      <div id="timerDisplay" class="timer-display">00:00</div>
-      <div class="timer-controls">
-        <button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button>
-        <button onclick="fecharTimer()" class="btn-timer-close">Pular</button>
-      </div>
-    </div>
-  </div>
+  <div id="videoModal" class="video-modal"><div class="video-box"><div class="video-header"><h3 id="videoTitulo">Exercício</h3><button onclick="fecharVideo()" class="close-btn"><span class="material-icons-round">close</span></button></div><div class="video-placeholder"><span class="material-icons-round">play_circle</span><p>Vídeo Demonstrativo</p></div></div></div>
+  
+  <div id="timerOverlay" class="timer-overlay hidden"><div class="timer-content"><div class="timer-header">Descanso</div><div id="timerDisplay" class="timer-display">00:00</div><div class="timer-controls"><button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button><button onclick="fecharTimer()" class="btn-timer-close">Pular</button></div></div></div>
 
   <div id="spotifyModal" class="video-modal">
     <div class="video-box" style="background: #000; padding: 0;">
       <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #191414; border-radius: 24px 24px 0 0;">
-        <h3 style="color: white; margin: 0; display:flex; align-items:center; gap:8px;"><span class="material-icons-round" style="color:#1DB954">spotify</span> Minha Playlist</h3>
+        <h3 style="color: white; margin: 0; display:flex; align-items:center; gap:8px;"><span class="material-icons-round" style="color:#1DB954">spotify</span> Playlist</h3>
         <button onclick="fecharSpotify()" class="close-btn"><span class="material-icons-round">expand_more</span></button>
       </div>
-      <iframe style="border-radius: 0 0 24px 24px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX70RN3TfWWJh?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      <iframe style="border-radius: 0 0 24px 24px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // --- SUA CONFIGURAÇÃO ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyAWiEakTfoZc4aSPbK09Mwy3XZYA3xgS_s",
-      authDomain: "sportcenterapp-228bd.firebaseapp.com",
-      projectId: "sportcenterapp-228bd",
-      storageBucket: "sportcenterapp-228bd.firebasestorage.app",
-      messagingSenderId: "828039171772",
-      appId: "1:828039171772:web:51191d90d70dccb3ca8ab9"
-    };
-
-    // Inicia o Firebase
+    const firebaseConfig = { apiKey: "AIzaSyAWiEakTfoZc4aSPbK09Mwy3XZYA3xgS_s", authDomain: "sportcenterapp-228bd.firebaseapp.com", projectId: "sportcenterapp-228bd", storageBucket: "sportcenterapp-228bd.firebasestorage.app", messagingSenderId: "828039171772", appId: "1:828039171772:web:51191d90d70dccb3ca8ab9" };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    // Disponibiliza o Firebase para o script.js
-    window.db = db;
-    window.f_collection = collection;
-    window.f_getDocs = getDocs;
-    window.f_doc = doc;
-    window.f_setDoc = setDoc;
-    window.f_deleteDoc = deleteDoc;
-    
-    console.log("🔥 Firebase Conectado com Sucesso! (Projeto: sportcenterapp-228bd)");
-
-    // Carrega o script principal
-    const script = document.createElement('script');
-    script.src = "script.js";
-    document.body.appendChild(script);
+    window.db = db; window.f_collection = collection; window.f_getDocs = getDocs; window.f_doc = doc; window.f_setDoc = setDoc; window.f_deleteDoc = deleteDoc;
+    const script = document.createElement('script'); script.src = "script.js"; document.body.appendChild(script);
   </script>
-
 </body>
 </html>
