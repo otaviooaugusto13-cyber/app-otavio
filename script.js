@@ -553,3 +553,11 @@ function abrirVideo(t){document.getElementById('videoModal').classList.add('acti
 function fecharVideo(){document.getElementById('videoModal').classList.remove('active');}
 function filtrarAlunos(){renderizarListaAlunosAdmin(document.getElementById('inputBusca').value);}
 function mostrarTela(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); const nav=document.getElementById('mainNav'); if(id.includes('dash')||id==='login')nav.style.display='none'; else if(alunoLogado)nav.style.display='flex';}
+/* ================= SPOTIFY ================= */
+function abrirSpotify() {
+  document.getElementById('spotifyModal').classList.add('active');
+}
+
+function fecharSpotify() {
+  document.getElementById('spotifyModal').classList.remove('active');
+}
