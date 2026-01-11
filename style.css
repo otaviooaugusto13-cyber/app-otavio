@@ -1435,3 +1435,10 @@ p { color: var(--text-muted); font-size: 0.95rem; }
   border-color: #10b981;
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
 }
+/* Efeito de Seleção no Cardio */
+.cardio-active {
+  border: 2px solid #10b981 !important; /* Borda Verde Neon */
+  background: rgba(16, 185, 129, 0.15) !important; /* Fundo levemente verde */
+  transform: scale(1.02); /* Leve zoom */
+  transition: all 0.3s ease;
+}
