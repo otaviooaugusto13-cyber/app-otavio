@@ -951,4 +951,30 @@ p { color: var(--text-muted); font-size: 0.95rem; }
   border: 1px solid rgba(255,255,255,0.05);
 }
 .stat-mini .stat-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
 .stat-mini .stat-value { font-size: 1.1rem; font-weight: 700; color: #fff; }
+
+/* ... Mantenha o CSS anterior ... */
+
+/* CABEÇALHO DE GRUPO MUSCULAR (NOVO) */
+.group-header {
+  background: rgba(255, 255, 255, 0.1); /* Fundo sutil */
+  color: #10b981; /* Verde da marca */
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 15px; /* Espaço do grupo anterior */
+  margin-bottom: 5px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-left: 4px solid #10b981; /* Detalhe visual na esquerda */
+}
+
+/* Pequeno ajuste para o primeiro item não ter margem no topo */
+.group-header:first-child {
+  margin-top: 0;
+}
