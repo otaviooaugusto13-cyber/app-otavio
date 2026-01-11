@@ -978,3 +978,57 @@ p { color: var(--text-muted); font-size: 0.95rem; }
 .group-header:first-child {
   margin-top: 0;
 }
+/* ... Mantenha o CSS anterior ... */
+
+/* NOVOS ESTILOS PARA O EDITOR DO PROFESSOR */
+.admin-exercise-row {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255,255,255,0.03);
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.admin-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.admin-row-options {
+  display: flex;
+  gap: 5px;
+  padding-left: 30px; /* Alinha com o texto acima */
+}
+
+.admin-select {
+  background: #0f172a;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  flex: 1; /* Ocupa espaço igual */
+}
+
+/* ESTILOS PARA O ALUNO VER OS DETALHES */
+.exercise-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.badge-info {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-rest { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.badge-method { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+.badge-method.falha { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
