@@ -276,6 +276,10 @@ function renderizarCardsTreinoAluno() {
     });
 }
 
+// ... (resto do código igual)
+
+/* ================= ÁREA DO ALUNO (ATUALIZADA) ================= */
+
 function abrirTreino(modulo) {
   moduloTreinoAtual = modulo;
   const listaEx = alunoLogado.treinos[modulo].exercicios;
@@ -285,49 +289,65 @@ function abrirTreino(modulo) {
   container.innerHTML = "";
 
   listaEx.forEach(ex => {
+    // Garante estrutura de registros
     if(!alunoLogado.registros) alunoLogado.registros = {};
     const keyPeso = `${modulo}_${ex.id}_peso`;
     const pesoSalvo = alunoLogado.registros[keyPeso] || "";
     
-    // BADGES
-    const badgeSeries = ex.series ? `<span class="badge-info badge-series">📋 ${ex.series}</span>` : "";
+    // BADGES (Etiquetas)
+    // Se não tiver série definida, assume 3
+    let serieTexto = ex.series ? ex.series : "3 Séries";
+    const badgeSeries = `<span class="badge-info badge-series">${serieTexto}</span>`;
     const badgeDescanso = ex.descanso ? `<span class="badge-info badge-rest">⏰ ${ex.descanso}</span>` : "";
-    const badgeMetodo = ex.metodo && ex.metodo !== "Normal" ? `<span class="badge-info badge-method">${ex.metodo}</span>` : "";
+    const classeFalha = ex.metodo === "Falha" ? "falha" : "";
+    const badgeMetodo = ex.metodo && ex.metodo !== "Normal" ? `<span class="badge-info badge-method ${classeFalha}">${ex.metodo}</span>` : "";
 
-    // SÉRIES INTERATIVAS (BOLINHAS)
-    // Tenta pegar o primeiro numero da string (ex: "4x12" -> 4). Se falhar, usa 3.
+    // GERAÇÃO DAS BOLINHAS (Séries)
     let numSeries = parseInt(ex.series); 
-    if (isNaN(numSeries) || numSeries < 1) numSeries = 3;
+    if (isNaN(numSeries) || numSeries < 1) numSeries = 3; // Padrão 3
     
     let bolinhasHTML = '<div class="sets-container">';
     for(let i=1; i<=numSeries; i++) {
         const setKey = `${modulo}_${ex.id}_set_${i}`;
         const isDone = alunoLogado.registros[setKey] ? "done" : "";
-        // Ao clicar: marca feito E inicia cronômetro
+        // Cria a bolinha clicável
         bolinhasHTML += `<div class="set-circle ${isDone}" onclick="toggleSet('${ex.id}', ${i}, '${ex.descanso || '1min'}', this)">${i}</div>`;
     }
     bolinhasHTML += '</div>';
 
+    // HTML DO CARTÃO (Com o botão de vídeo de volta!)
     container.innerHTML += `
       <div class="exercise-item">
+        
         <div class="exercise-header">
             <span class="exercise-name">${ex.nome}</span>
-            <div class="exercise-badges">${badgeSeries} ${badgeDescanso} ${badgeMetodo}</div>
+            <button class="btn-video-mini" onclick="abrirVideo('${ex.nome}')">
+                <span class="material-icons-round" style="font-size:14px">play_arrow</span> Vídeo
+            </button>
+        </div>
+
+        <div class="exercise-badges">
+            ${badgeDescanso}
+            ${badgeMetodo}
         </div>
         
-        <div class="exercise-controls" style="flex-direction:column; align-items:flex-start;">
-          <div style="display:flex; width:100%; justify-content:space-between; align-items:center;">
-             <div class="input-carga-wrapper">
-                <div class="weight-history"><span class="label">Carga</span></div>
-                <input type="tel" class="input-carga" placeholder="kg" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)">
-             </div>
-             ${bolinhasHTML} </div>
+        <div class="exercise-controls">
+          
+          <div class="input-carga-wrapper">
+             <span class="label">Carga (kg)</span>
+             <input type="tel" class="input-carga" placeholder="0" value="${pesoSalvo}" onblur="salvarPeso('${ex.id}', this.value)">
+          </div>
+
+          ${bolinhasHTML}
+          
         </div>
       </div>
     `;
   });
   atualizarBarraProgresso();
 }
+
+// ... (Mantenha o resto das funções: toggleSet, timer, etc.)
 
 /* ================= LÓGICA DO CRONÔMETRO ================= */
 function toggleSet(exId, setIndex, descanso, elemento) {
@@ -559,3 +579,4 @@ function abrirVideo(t){document.getElementById('videoModal').classList.add('acti
 function fecharVideo(){document.getElementById('videoModal').classList.remove('active');}
 function filtrarAlunos(){renderizarListaAlunosAdmin(document.getElementById('inputBusca').value);}
 function mostrarTela(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); const nav=document.getElementById('mainNav'); if(id.includes('dash')||id==='login')nav.style.display='none'; else if(alunoLogado)nav.style.display='flex';}
+
