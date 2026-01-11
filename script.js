@@ -129,7 +129,7 @@ async function criarAcademia() {
     const senha = document.getElementById('novaAcademiaPass').value;
     if(!nome || !login || !senha) return alert("Preencha tudo!");
     if(listaDeAcademias.some(a => a.login === login)) return alert("Login já existe!");
-    const novaGym = { id: 'gym_' + Date.now(), nome, login, senha, aviso: "" };
+    const novaGym = { id: 'gym_' + Date.now(), nome, login, senha, aviso: "", avisoAtivo: false };
     listaDeAcademias.push(novaGym);
     await salvarNaColecao("academias", novaGym.id, novaGym);
     renderizarListaAcademias(); alert("Criado!");
@@ -139,28 +139,39 @@ function renderizarListaAcademias() {
     listaDeAcademias.forEach(a => { div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`; });
 }
 
-/* ================= PAINEL PROFESSOR (COM MURAL INTELIGENTE) ================= */
+/* ================= PAINEL PROFESSOR (COM MURAL LIGA/DESLIGA) ================= */
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
     
-    // Carregar Aviso Salvo no Input
+    // Carregar Aviso e Estado do Checkbox
     if(usuarioLogado.aviso) document.getElementById('textoAvisoAcademia').value = usuarioLogado.aviso;
     else document.getElementById('textoAvisoAcademia').value = "";
+    
+    document.getElementById('chkAvisoAtivo').checked = usuarioLogado.avisoAtivo === true;
 
     renderizarListaAlunosAdmin(); 
 }
 
-// SALVAR AVISO (INTELIGENTE: LIMPA SE ESTIVER VAZIO)
+// SALVAR AVISO (SALVA O ESTADO DO CHECKBOX)
 async function salvarAvisoAcademia() {
     const texto = document.getElementById('textoAvisoAcademia').value.trim();
-    usuarioLogado.aviso = texto;
-    await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
-    const idx = listaDeAcademias.findIndex(a => a.id === usuarioLogado.id);
-    if(idx >= 0) listaDeAcademias[idx].aviso = texto;
+    const ativo = document.getElementById('chkAvisoAtivo').checked;
     
-    if(texto === "") alert("Aviso removido! O mural sumiu para os alunos.");
-    else alert("Aviso publicado!");
+    usuarioLogado.aviso = texto;
+    usuarioLogado.avisoAtivo = ativo;
+    
+    await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
+    
+    // Atualiza Memória Local
+    const idx = listaDeAcademias.findIndex(a => a.id === usuarioLogado.id);
+    if(idx >= 0) {
+        listaDeAcademias[idx].aviso = texto;
+        listaDeAcademias[idx].avisoAtivo = ativo;
+    }
+    
+    if(!ativo) alert("Aviso salvo, mas oculto para os alunos.");
+    else alert("Aviso publicado e visível!");
 }
 
 function renderizarListaAlunosAdmin(filtro = "") {
@@ -263,22 +274,21 @@ function salvarTreinoPersonal() {
   alert("Salvo!");
 }
 
-/* ================= APP DO ALUNO (COM LÓGICA DE AVISO INTELIGENTE) ================= */
+/* ================= APP DO ALUNO (COM LÓGICA DE AVISO ON/OFF) ================= */
 function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
     document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
     
-    // MURAL INTELIGENTE: Só mostra se tiver texto real
+    // MURAL INTELIGENTE: Verifica se o Professor ATIVOU (avisoAtivo)
     const academiaDoAluno = listaDeAcademias.find(gym => gym.id === usuarioLogado.academiaId);
     const boxAviso = document.getElementById('boxAvisoAluno');
     
-    // VERIFICA SE TEM TEXTO (E NÃO É SÓ ESPAÇO VAZIO)
-    if(academiaDoAluno && academiaDoAluno.aviso && academiaDoAluno.aviso.trim().length > 0) {
-        // TEM AVISO: MOSTRA
+    // SÓ MOSTRA SE 'avisoAtivo' FOR VERDADEIRO
+    if(academiaDoAluno && academiaDoAluno.avisoAtivo === true && academiaDoAluno.aviso) {
         boxAviso.classList.remove('hidden');
         document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
     } else {
-        // NÃO TEM AVISO: ESCONDE TOTALMENTE
+        // SE ESTIVER DESATIVADO (OU SEM TEXTO), ESCONDE
         boxAviso.classList.add('hidden');
     }
 
