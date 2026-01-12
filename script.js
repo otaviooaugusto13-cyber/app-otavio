@@ -79,6 +79,17 @@ async function salvarNaColecao(colecao, id, dados) {
     catch (e) { console.error(e); }
 }
 
+async function deletarDocumento(colecao, id) {
+    if (!window.db) return;
+    if(confirm("Tem certeza que deseja EXCLUIR este registro? Essa ação não pode ser desfeita.")) {
+        try { 
+            await window.f_deleteDoc(window.f_doc(window.db, colecao, id));
+            alert("Excluído com sucesso!");
+            location.reload(); // Recarrega para atualizar tudo limpo
+        } catch (e) { console.error(e); alert("Erro ao excluir."); }
+    }
+}
+
 /* ================= LOGIN ================= */
 function autenticar() {
   const login = document.getElementById('userEmail').value.trim();
@@ -119,7 +130,7 @@ function verificarSessao() {
 function logout() { localStorage.removeItem("usuarioLogado"); window.location.reload(); }
 function loginMaster() { document.getElementById('userEmail').value = "master"; }
 
-/* ================= PAINEL MASTER ================= */
+/* ================= PAINEL MASTER (COM EXCLUSÃO) ================= */
 function abrirPainelMaster() { mostrarTela('dashMaster'); renderizarListaAcademias(); }
 async function criarAcademia() {
     const nome = document.getElementById('novaAcademiaNome').value;
@@ -134,10 +145,16 @@ async function criarAcademia() {
 }
 function renderizarListaAcademias() {
     const div = document.getElementById('listaAcademias'); div.innerHTML = "";
-    listaDeAcademias.forEach(a => { div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div></div>`; });
+    listaDeAcademias.forEach(a => { 
+        div.innerHTML += `
+        <div class="student-card">
+            <div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div>
+            <button class="btn-icon" style="background:#ef4444;" onclick="deletarDocumento('academias', '${a.id}')"><span class="material-icons-round">delete</span></button>
+        </div>`; 
+    });
 }
 
-/* ================= PAINEL PROFESSOR ================= */
+/* ================= PAINEL PROFESSOR (COM FILTROS E EXCLUSÃO) ================= */
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
@@ -165,19 +182,73 @@ async function salvarAvisoAcademia() {
     else alert("Aviso publicado!");
 }
 
-function renderizarListaAlunosAdmin(filtro = "") {
+// HELPER: DIAS DESDE O ÚLTIMO TREINO
+function calcularDiasSemTreino(historicoFogo) {
+    if (!historicoFogo || historicoFogo.length === 0) return 999; // Nunca treinou
+    const ultimo = historicoFogo[historicoFogo.length - 1]; // "DD/MM/AAAA"
+    const partes = ultimo.split('/');
+    const dataUltimo = new Date(partes[2], partes[1] - 1, partes[0]);
+    const hoje = new Date();
+    const diff = Math.floor((hoje - dataUltimo) / (1000 * 60 * 60 * 24));
+    return diff;
+}
+
+// HELPER: STATUS FINANCEIRO (CARÊNCIA)
+function verificarStatusFinanceiro(vencimento) {
+    if (!vencimento) return { status: "Indefinido", cor: "#94a3b8" };
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const partes = vencimento.split('-'); // YYYY-MM-DD
+    const dataVenc = new Date(partes[0], partes[1]-1, partes[2]);
+    const diffDias = Math.floor((hoje - dataVenc) / (1000 * 60 * 60 * 24));
+
+    if (diffDias <= 0) return { status: "Em dia", cor: "#00E676" }; // Não venceu ainda
+    if (diffDias <= 5) return { status: "Carência", cor: "#facc15" }; // 1 a 5 dias atrasado
+    return { status: "Vencido", cor: "#ef4444" }; // > 5 dias
+}
+
+function renderizarListaAlunosAdmin() {
+    const filtroTexto = document.getElementById('inputBusca').value.toLowerCase();
+    const filtroTipo = document.getElementById('filtroAlunosSelect').value; // 'todos', 'ativos', 'ausentes', 'vencidos'
+    
     const container = document.getElementById('listaAlunosCoach'); container.innerHTML = "";
+    
     const meusAlunos = listaDeAlunos.filter(aluno => aluno.academiaId === usuarioLogado.id);
     document.getElementById('totalAlunos').innerText = meusAlunos.length;
-    const listaFiltrada = meusAlunos.filter(a => a.nome.toLowerCase().includes(filtro.toLowerCase()) || a.telefone.includes(filtro));
+
+    const listaFiltrada = meusAlunos.filter(aluno => {
+        // Filtro de Texto
+        if (!aluno.nome.toLowerCase().includes(filtroTexto) && !aluno.telefone.includes(filtroTexto)) return false;
+
+        // Filtro Lógico
+        const diasSemTreino = calcularDiasSemTreino(aluno.historicoFogo);
+        const fin = verificarStatusFinanceiro(aluno.vencimento);
+
+        if (filtroTipo === 'ativos' && diasSemTreino > 7) return false;
+        if (filtroTipo === 'ausentes' && diasSemTreino <= 7) return false;
+        if (filtroTipo === 'vencidos' && fin.status !== "Vencido") return false;
+
+        return true;
+    });
+
     listaFiltrada.forEach(aluno => {
+        const dias = calcularDiasSemTreino(aluno.historicoFogo);
+        const textoTreino = dias === 999 ? "Nunca treinou" : (dias === 0 ? "Treinou hoje" : `Há ${dias} dias`);
+        const fin = verificarStatusFinanceiro(aluno.vencimento);
+
         container.innerHTML += `
         <div class="student-card">
-            <div class="student-info"><h3>${aluno.nome}</h3><p>${aluno.telefone}</p></div>
+            <div class="student-info">
+                <h3>${aluno.nome} 
+                    <span style="font-size:0.6rem; background:${fin.cor}; color:black; padding:2px 6px; border-radius:4px; margin-left:5px;">${fin.status}</span>
+                </h3>
+                <p style="font-size:0.8rem; color:#94a3b8;">Login: ${aluno.telefone}</p>
+                <p style="font-size:0.75rem; color:#cbd5e1;">🏋️ ${textoTreino}</p>
+            </div>
             <div class="student-actions">
                 <button class="btn-icon" style="background: #334155;" onclick="imprimirTreino('${aluno.telefone}')" title="Imprimir PDF"><span class="material-icons-round" style="color:white">print</span></button>
                 <button class="btn-icon" style="background: #334155;" onclick="abrirModalAvaliacao('${aluno.telefone}')" title="Avaliação Física"><span class="material-icons-round" style="color:#eab308">straighten</span></button>
                 <button class="btn-icon btn-edit" onclick="abrirEditorTreino('${aluno.telefone}')"><span class="material-icons-round">edit_note</span></button>
+                <button class="btn-icon" style="background:#ef4444;" onclick="deletarDocumento('alunos', '${aluno.telefone}')" title="Excluir Aluno"><span class="material-icons-round">delete</span></button>
             </div>
         </div>`;
     });
@@ -203,7 +274,7 @@ function imprimirTreino(tel) {
     </head>
     <body>
         <h1>${aluno.nome}</h1>
-        <div class="meta-info">Academia: ${aluno.academiaNome} | Vencimento: ${aluno.vencimento.split('-').reverse().join('/')}</div>
+        <div class="meta-info">Academia: ${aluno.academiaNome} | Vencimento: ${aluno.vencimento ? aluno.vencimento.split('-').reverse().join('/') : '--/--'}</div>
     `;
 
     MODULOS_DISPONIVEIS.forEach(mod => {
@@ -323,9 +394,8 @@ function salvarTreinoPersonal() {
 /* ================= APP DO ALUNO ================= */
 function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
-    document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#10b981">${nome}</span>`;
+    document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#00E676">${nome}</span>`;
     
-    // MURAL
     const academiaDoAluno = listaDeAcademias.find(gym => gym.id === usuarioLogado.academiaId);
     const boxAviso = document.getElementById('boxAvisoAluno');
     if(academiaDoAluno && academiaDoAluno.avisoAtivo === true && academiaDoAluno.aviso) {
@@ -338,7 +408,7 @@ function abrirAppAluno() {
     document.getElementById('nomePerfil').innerText = usuarioLogado.nome;
     document.getElementById('academiaAlunoBadge').innerText = usuarioLogado.academiaNome || "Academia";
     document.getElementById('telPerfil').innerText = usuarioLogado.telefone;
-    
+    if(usuarioLogado.spotifyUrl) document.getElementById('spotifyLinkInput').value = usuarioLogado.spotifyUrl;
     atualizarResumoCardio();
     mostrarTela('treinos'); document.getElementById('mainNav').style.display = 'flex';
 }
@@ -360,7 +430,7 @@ function abrirTreino(mod) {
         let textoUltimaCarga = "";
         if(usuarioLogado.historicoCargas && usuarioLogado.historicoCargas[ex.id]) {
             const hist = usuarioLogado.historicoCargas[ex.id];
-            if(hist.length > 0) { const ult = hist[hist.length-1].carga; textoUltimaCarga = `<span style="font-size:0.7rem; color:#10b981; margin-left:5px; font-weight:normal;">(Últ: ${ult}kg)</span>`; }
+            if(hist.length > 0) { const ult = hist[hist.length-1].carga; textoUltimaCarga = `<span style="font-size:0.7rem; color:#00E676; margin-left:5px; font-weight:normal;">(Últ: ${ult}kg)</span>`; }
         }
         let numSeries = parseInt(ex.series); if(isNaN(numSeries)) numSeries = 3;
         let bolinhas = '<div class="sets-container">';
@@ -436,9 +506,7 @@ function selecionarCardio(nome, elemento) {
     document.getElementById('labelEquipamentoCardio').innerText = "Treinando: " + nome;
     document.getElementById('btnCardioAction').style.opacity = "1";
     document.getElementById('btnCardioAction').style.pointerEvents = "auto";
-    
-    resetCardioTimer(); 
-    toggleCardioTimer(); 
+    resetCardioTimer(); toggleCardioTimer(); 
 }
 
 function toggleCardioTimer() {
@@ -446,7 +514,7 @@ function toggleCardioTimer() {
     if(!cardioRunning) {
         cardioRunning = true; btn.innerText = "PAUSAR"; btn.style.background = "#eab308";
         cardioInterval = setInterval(() => { cardioSeconds++; const m = Math.floor(cardioSeconds/60).toString().padStart(2,'0'); const s = (cardioSeconds%60).toString().padStart(2,'0'); disp.innerText = `${m}:${s}`; }, 1000);
-    } else { cardioRunning = false; clearInterval(cardioInterval); btn.innerText = "RETOMAR"; btn.style.background = "#10b981"; }
+    } else { cardioRunning = false; clearInterval(cardioInterval); btn.innerText = "RETOMAR"; btn.style.background = "#00E676"; }
 }
 
 function finalizarCardio() {
@@ -459,15 +527,14 @@ function finalizarCardio() {
     usuarioLogado.historicoCardio.push(registro);
     salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado);
     alert(`Treino finalizado! 🔥 ${kcal} kcal queimadas.`);
-    resetCardioTimer();
-    atualizarResumoCardio();
+    resetCardioTimer(); atualizarResumoCardio();
 }
 
 function resetCardioTimer() { 
     cardioRunning = false; clearInterval(cardioInterval); cardioSeconds=0; 
     document.getElementById('cardioTimerDisplay').innerText="00:00"; 
     document.getElementById('btnCardioAction').innerText="INICIAR"; 
-    document.getElementById('btnCardioAction').style.background = "#10b981";
+    document.getElementById('btnCardioAction').style.background = "#00E676";
 }
 
 function atualizarResumoCardio() {
@@ -534,12 +601,14 @@ function mostrarTela(id) {
     if(id==='estatisticas') carregarEstatisticas(); if(id==='cardio') renderizarCardio();
 }
 function toggleFormulario() { document.getElementById('formCadastroAluno').classList.toggle('hidden'); }
-function filtrarAlunos() { renderizarListaAlunosAdmin(document.getElementById('inputBusca').value); }
+function filtrarAlunos() { renderizarListaAlunosAdmin(); }
 function obterIcone(g){const m={'Perna':'🦵','Peito':'🏋️','Costas':'🦍','Ombro':'🥥','Bíceps':'💪','Tríceps':'💪','Abs':'🔥','Cardio':'🏃'};return m[g]||'📋';}
 function atualizarDisplayVencimentoPerfil() {
     const el = document.getElementById('vencimentoPerfil'); const st = document.getElementById('statusPagamento');
-    if(!usuarioLogado.vencimento) { el.innerText="--/--"; st.innerText="N/A"; return; }
+    const fin = verificarStatusFinanceiro(usuarioLogado.vencimento);
+    if(!usuarioLogado.vencimento) { el.innerText="--/--"; st.innerText="Indefinido"; st.style.background="#334155"; return; }
     const p = usuarioLogado.vencimento.split('-'); el.innerText = `${p[2]}/${p[1]}/${p[0]}`;
+    st.innerText = fin.status; st.style.background = fin.cor; st.style.color = "black";
 }
 
-window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.salvarPesoCorporal=salvarPeso; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica; window.atualizarGraficoCarga=atualizarGraficoCarga; window.selecionarCardio=selecionarCardio; window.finalizarCardio=finalizarCardio; window.imprimirTreino=imprimirTreino; window.abrirDicasNutri=abrirDicasNutri; window.fecharNutri=fecharNutri;
+window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.salvarPesoCorporal=salvarPeso; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica; window.atualizarGraficoCarga=atualizarGraficoCarga; window.selecionarCardio=selecionarCardio; window.finalizarCardio=finalizarCardio; window.imprimirTreino=imprimirTreino; window.abrirDicasNutri=abrirDicasNutri; window.fecharNutri=fecharNutri; window.deletarDocumento=deletarDocumento;
