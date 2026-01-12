@@ -1610,3 +1610,39 @@ body {
 .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
 .screen.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* ================= CORREÇÃO MOBILE (POLIMENTO) ================= */
+@media (max-width: 768px) {
+  
+  /* Ajusta o espaçamento interno do card no celular */
+  .exercise-select-card {
+    padding: 12px;
+  }
+
+  /* Muda a organização dos inputs de "Linha" para "Grade" */
+  .card-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Cria duas colunas de tamanho igual */
+    gap: 8px; /* Espacinho entre os botões */
+    margin-top: 10px;
+  }
+
+  /* Faz o input de texto (Séries 3x12) ocupar a linha de baixo inteira */
+  .card-options input[type="text"] {
+    grid-column: span 2; /* Manda ele ocupar as 2 colunas */
+    width: 100%; /* Garante que preencha tudo */
+    text-align: center;
+    background: rgba(0, 230, 118, 0.05); /* Um fundinho verde bem leve para destacar */
+    border-color: rgba(0, 230, 118, 0.3);
+  }
+
+  /* Aumenta um pouco a altura dos botões para facilitar o toque no celular */
+  .input-pill {
+    height: 45px;
+    font-size: 14px; /* Tamanho bom para ler */
+  }
+  
+  /* Ajuste no checkbox para ele não ficar colado na borda */
+  .card-top {
+    margin-bottom: 5px;
+  }
+}
