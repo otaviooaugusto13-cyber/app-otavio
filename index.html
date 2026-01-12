@@ -34,7 +34,7 @@
       </div>
       <div style="text-align: center; margin-bottom: 10px; opacity: 0.4;">
         <p style="font-size: 0.65rem; color: #fff; margin-bottom: 5px;">© 2026 Otávio Augusto • Todos os direitos reservados</p>
-        <p style="font-size: 0.55rem; margin-top: 5px; color: #00E676;">Tecnologia TAPAGO 3.0</p>
+        <p style="font-size: 0.55rem; margin-top: 5px; color: #00E676;">Tecnologia TAPAGO 3.1</p>
       </div>
     </div>
   </section>
@@ -85,12 +85,15 @@
         <span class="material-icons-round">search</span>
         <input type="text" id="inputBusca" placeholder="Buscar aluno..." onkeyup="filtrarAlunos()">
       </div>
-      <select id="filtroAlunosSelect" onchange="filtrarAlunos()" style="flex: 1; min-width: 120px; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 12px; padding: 0 10px; outline: none; height: 50px;">
+      
+      <select id="filtroAlunosSelect" onchange="filtrarAlunos()" style="flex: 1; min-width: 140px; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 12px; padding: 0 10px; outline: none; height: 50px;">
         <option value="todos">Todos</option>
         <option value="ativos">✅ Ativos</option>
         <option value="ausentes">💤 Ausentes (+7d)</option>
         <option value="vencidos">💲 Vencidos</option>
+        <option value="treino_vencido">🔄 Treino Antigo</option>
       </select>
+
       <button onclick="toggleFormulario()" class="btn-add-mini" style="height: 50px; width: 50px; display: flex; justify-content: center; align-items: center;"><span class="material-icons-round">person_add</span></button>
     </div>
 
