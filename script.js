@@ -338,7 +338,7 @@ function abrirAppAluno() {
     document.getElementById('nomePerfil').innerText = usuarioLogado.nome;
     document.getElementById('academiaAlunoBadge').innerText = usuarioLogado.academiaNome || "Academia";
     document.getElementById('telPerfil').innerText = usuarioLogado.telefone;
-    if(usuarioLogado.spotifyUrl) document.getElementById('spotifyLinkInput').value = usuarioLogado.spotifyUrl;
+    
     atualizarResumoCardio();
     mostrarTela('treinos'); document.getElementById('mainNav').style.display = 'flex';
 }
@@ -483,6 +483,31 @@ function atualizarResumoCardio() {
     document.getElementById('cardioSemanaMin').innerText = minSemana + " min";
 }
 
+/* ================= NUTRIÇÃO INTELIGENTE (TAPAGO) ================= */
+const dicasNutri = [
+    { tag: "Café da Manhã", titulo: "Ovos Mexidos Cremosos", desc: "3 ovos mexidos com uma colher de requeijão light, acompanhados de 1 fatia de pão integral tostado e uma porção de mamão.", beneficio: "Rico em proteínas de alto valor biológico e fibras para dar saciedade a manhã toda.", img: "https://images.unsplash.com/photo-1525351484163-7529414395d8?auto=format&fit=crop&w=800&q=80" },
+    { tag: "Almoço", titulo: "Frango Grelhado & Batata Doce", desc: "150g de peito de frango grelhado com limão, 100g de batata doce assada (ou purê) e brócolis no vapor à vontade.", beneficio: "O clássico 'maromba' funciona! Carboidrato complexo para energia e proteína magra para o músculo.", img: "https://images.unsplash.com/photo-1588710929943-5290f9cb79b6?auto=format&fit=crop&w=800&q=80" },
+    { tag: "Pré-Treino", titulo: "Banana com Aveia e Mel", desc: "1 banana prata amassada, 2 colheres de aveia em flocos e um fio de mel. Consumir 40min antes do treino.", beneficio: "Energia rápida e sustentada para você não ter queda de rendimento durante o exercício.", img: "https://images.unsplash.com/photo-1585655433290-7957386c99c9?auto=format&fit=crop&w=800&q=80" },
+    { tag: "Jantar Leve", titulo: "Omelete de Forno Colorido", desc: "Omelete feito com 2 ovos, espinafre, tomate cereja e queijo cottage. Pode ser feito na frigideira ou airfryer.", beneficio: "Leve para a digestão noturna, mas rico em nutrientes para a recuperação muscular enquanto dorme.", img: "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=800&q=80" },
+    { tag: "Lanche da Tarde", titulo: "Iogurte Proteico", desc: "1 pote de iogurte natural desnatado misturado com 1 scoop de Whey Protein (sabor baunilha ou morango) e chia.", beneficio: "Mata a vontade de doce e ajuda a bater a meta de proteínas do dia sem pesar no estômago.", img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=80" },
+    { tag: "Almoço Low Carb", titulo: "Patinho Moído com Abóbora", desc: "150g de carne moída (patinho) refogada com cebola e alho, acompanhada de purê de abóbora cabotiá.", beneficio: "Baixa caloria e alto volume. Você come bastante e se sente cheio sem estourar as calorias.", img: "https://images.unsplash.com/photo-1628268909376-e8c44bb3153f?auto=format&fit=crop&w=800&q=80" },
+    { tag: "Pós-Treino", titulo: "Shake Recuperador", desc: "Batido de Whey Protein, 200ml de água de coco gelada e 1 maçã pequena.", beneficio: "Repõe os eletrólitos perdidos no suor e inicia a reconstrução muscular imediatamente.", img: "https://images.unsplash.com/photo-1549488344-c70e3cb20448?auto=format&fit=crop&w=800&q=80" }
+];
+
+function abrirDicasNutri() {
+    const hoje = new Date().getDate();
+    const index = hoje % dicasNutri.length;
+    const dica = dicasNutri[index];
+    document.getElementById('nutriTag').innerText = dica.tag;
+    document.getElementById('nutriTitulo').innerText = dica.titulo;
+    document.getElementById('nutriDescricao').innerText = dica.desc;
+    document.getElementById('nutriBeneficio').innerText = dica.beneficio;
+    const header = document.querySelector('#nutriModal .video-box > div:first-child');
+    if(header) header.style.backgroundImage = `url('${dica.img}')`;
+    document.getElementById('nutriModal').classList.add('active');
+}
+function fecharNutri() { document.getElementById('nutriModal').classList.remove('active'); }
+
 /* ================= EXTRAS ================= */
 function iniciarTimer(tempoStr) {
     let segs = 60; const t = tempoStr.toLowerCase();
@@ -499,13 +524,8 @@ function iniciarTimer(tempoStr) {
 }
 function fecharTimer() { document.getElementById('timerOverlay').classList.add('hidden'); if(timerInterval) clearInterval(timerInterval); }
 function adicionarTempo(s) { fecharTimer(); setTimeout(() => iniciarTimer('15s'), 100); }
-function abrirSpotify() { if(usuarioLogado && usuarioLogado.spotifyUrl) document.getElementById('spotifyIframe').src = usuarioLogado.spotifyUrl; document.getElementById('spotifyModal').classList.add('active'); }
-function fecharSpotify() { document.getElementById('spotifyModal').classList.remove('active'); }
-function carregarPlaylistUsuario() {
-    const val = document.getElementById('inputPlaylistUrl').value.trim(); if(!val) return alert("Cole o link!");
-    let link = val; if(val.includes("open.spotify.com") && !val.includes("/embed/")) { const p = val.split('.com/'); if(p[1]) link = `https://open.spotify.com/embed/$${p[1].split('?')[0]}?utm_source=generator&theme=0`; }
-    document.getElementById('spotifyIframe').src = link; if(usuarioLogado) { usuarioLogado.spotifyUrl = link; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); } alert("Salvo!");
-}
+function abrirVideo(t) { document.getElementById('videoModal').classList.add('active'); document.getElementById('videoTitulo').innerText=t; }
+function fecharVideo() { document.getElementById('videoModal').classList.remove('active'); }
 function mostrarTela(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active');
     const nav = document.getElementById('mainNav');
@@ -516,14 +536,10 @@ function mostrarTela(id) {
 function toggleFormulario() { document.getElementById('formCadastroAluno').classList.toggle('hidden'); }
 function filtrarAlunos() { renderizarListaAlunosAdmin(document.getElementById('inputBusca').value); }
 function obterIcone(g){const m={'Perna':'🦵','Peito':'🏋️','Costas':'🦍','Ombro':'🥥','Bíceps':'💪','Tríceps':'💪','Abs':'🔥','Cardio':'🏃'};return m[g]||'📋';}
-function abrirVideo(t) { document.getElementById('videoModal').classList.add('active'); document.getElementById('videoTitulo').innerText=t; }
-function fecharVideo() { document.getElementById('videoModal').classList.remove('active'); }
 function atualizarDisplayVencimentoPerfil() {
     const el = document.getElementById('vencimentoPerfil'); const st = document.getElementById('statusPagamento');
     if(!usuarioLogado.vencimento) { el.innerText="--/--"; st.innerText="N/A"; return; }
     const p = usuarioLogado.vencimento.split('-'); el.innerText = `${p[2]}/${p[1]}/${p[0]}`;
 }
-function salvarLinkSpotify(val) { if(usuarioLogado && val) { usuarioLogado.spotifyUrl = val; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); } }
-function salvarPesoCorporal(v) { if(!v) return; if(!usuarioLogado.pesoInicial) { usuarioLogado.pesoInicial=v; document.getElementById('pesoInicialInput').value=v; } usuarioLogado.pesoAtual = v; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); carregarEstatisticas(); }
 
-window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.abrirSpotify=abrirSpotify; window.fecharSpotify=fecharSpotify; window.carregarPlaylistUsuario=carregarPlaylistUsuario; window.salvarLinkSpotify=salvarLinkSpotify; window.salvarPesoCorporal=salvarPesoCorporal; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica; window.atualizarGraficoCarga=atualizarGraficoCarga; window.selecionarCardio=selecionarCardio; window.finalizarCardio=finalizarCardio; window.imprimirTreino=imprimirTreino;
+window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.salvarPesoCorporal=salvarPeso; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica; window.atualizarGraficoCarga=atualizarGraficoCarga; window.selecionarCardio=selecionarCardio; window.finalizarCardio=finalizarCardio; window.imprimirTreino=imprimirTreino; window.abrirDicasNutri=abrirDicasNutri; window.fecharNutri=fecharNutri;
