@@ -43,15 +43,64 @@ const todosExercicios = [
   { id: 94, nome: "Esteira", grupo: "Cardio" }, { id: 95, nome: "Bike Ergométrica", grupo: "Cardio" }, { id: 96, nome: "Elíptico", grupo: "Cardio" }
 ];
 
-/* ================= NUTRIÇÃO (SUBSTITUI SPOTIFY) ================= */
+/* ================= DICAS DE NUTRIÇÃO (PREMIUM) ================= */
 const dicasNutri = [
-    { tag: "Café da Manhã", titulo: "Ovos Mexidos Cremosos", desc: "3 ovos mexidos com uma colher de requeijão light, pão integral e mamão.", beneficio: "Proteína e fibras para saciedade.", img: "https://images.unsplash.com/photo-1525351484163-7529414395d8?auto=format&fit=crop&w=800&q=80" },
-    { tag: "Almoço", titulo: "Frango Grelhado & Batata Doce", desc: "150g de frango, 100g de batata doce e brócolis.", beneficio: "Energia e construção muscular.", img: "https://images.unsplash.com/photo-1588710929943-5290f9cb79b6?auto=format&fit=crop&w=800&q=80" },
-    { tag: "Pré-Treino", titulo: "Banana com Aveia e Mel", desc: "1 banana amassada, aveia e mel 40min antes.", beneficio: "Energia rápida para o treino.", img: "https://images.unsplash.com/photo-1585655433290-7957386c99c9?auto=format&fit=crop&w=800&q=80" },
-    { tag: "Jantar Leve", titulo: "Omelete de Forno", desc: "Omelete com espinafre e tomate cereja.", beneficio: "Leve e proteico para a noite.", img: "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=800&q=80" },
-    { tag: "Lanche", titulo: "Iogurte Proteico", desc: "Iogurte desnatado com Whey e chia.", beneficio: "Mata a vontade de doce.", img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=80" },
-    { tag: "Almoço Low Carb", titulo: "Patinho com Abóbora", desc: "Carne moída com purê de abóbora.", beneficio: "Volume alto e poucas calorias.", img: "https://images.unsplash.com/photo-1628268909376-e8c44bb3153f?auto=format&fit=crop&w=800&q=80" },
-    { tag: "Pós-Treino", titulo: "Shake Recuperador", desc: "Whey, água de coco e maçã.", beneficio: "Reposição rápida.", img: "https://images.unsplash.com/photo-1549488344-c70e3cb20448?auto=format&fit=crop&w=800&q=80" }
+    { 
+        tag: "Café da Manhã", 
+        titulo: "Ovos Mexidos Cremosos", 
+        desc: "Uma combinação clássica e poderosa. Prepare 3 ovos inteiros mexidos em fogo baixo para garantir cremosidade (adicione uma colher de requeijão light se quiser). Acompanhe com 1 fatia de pão integral tostado e uma porção de mamão papaia.", 
+        beneficio: "Começar o dia com proteína de alto valor biológico controla a fome e evita picos de insulina. O mamão auxilia na digestão para você treinar leve.", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414395d8?auto=format&fit=crop&w=800&q=80",
+        cal: "320", prot: "22g", gord: "15g"
+    },
+    { 
+        tag: "Almoço", 
+        titulo: "Frango Grelhado & Batata Doce", 
+        desc: "O combustível do atleta. 150g de peito de frango grelhado com limão e ervas finas + 100g de batata doce assada (ou purê rústico). Adicione brócolis no vapor à vontade para dar volume ao prato.", 
+        beneficio: "Carboidrato de baixo índice glicêmico (energia constante) combinado com proteína magra para recuperação muscular imediata.", 
+        img: "https://images.unsplash.com/photo-1588710929943-5290f9cb79b6?auto=format&fit=crop&w=800&q=80",
+        cal: "410", prot: "35g", gord: "5g"
+    },
+    { 
+        tag: "Pré-Treino", 
+        titulo: "Banana com Aveia e Mel", 
+        desc: "Simples, barato e eficiente. Amasse 1 banana prata média, misture com 2 colheres de aveia em flocos finos e finalize com um fio de mel. Consumir cerca de 40 a 60 minutos antes do treino.", 
+        beneficio: "Fornece glicogênio muscular rápido para você ter força máxima e não sentir fadiga no meio da série.", 
+        img: "https://images.unsplash.com/photo-1585655433290-7957386c99c9?auto=format&fit=crop&w=800&q=80",
+        cal: "250", prot: "4g", gord: "2g"
+    },
+    { 
+        tag: "Jantar Leve", 
+        titulo: "Omelete de Forno Colorido", 
+        desc: "Bata 2 ovos com espinafre picado, tomate cereja e cubos de queijo branco. Pode ser feito na frigideira antiaderente ou na Airfryer por 10 minutos. Tempere com orégano.", 
+        beneficio: "Refeição leve para não atrapalhar o sono (que é onde o músculo cresce), mas rica em nutrientes para a recuperação noturna.", 
+        img: "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=800&q=80",
+        cal: "280", prot: "18g", gord: "18g"
+    },
+    { 
+        tag: "Lanche da Tarde", 
+        titulo: "Bowl de Iogurte Proteico", 
+        desc: "Misture 1 pote de iogurte natural desnatado com 1 scoop de Whey Protein (sabor de sua preferência). Adicione sementes de chia ou linhaça para dar crocância.", 
+        beneficio: "Excelente estratégia para matar a vontade de comer doce à tarde, garantindo saciedade e batendo a meta de proteínas.", 
+        img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=800&q=80",
+        cal: "210", prot: "28g", gord: "3g"
+    },
+    { 
+        tag: "Almoço Low Carb", 
+        titulo: "Patinho Moído com Abóbora", 
+        desc: "150g de carne moída (patinho) bem refogada com cebola, alho e cheiro verde. Acompanha purê de abóbora cabotiá (sem leite, só amassada).", 
+        beneficio: "Alto volume de comida com baixa caloria. Ideal para dias de descanso ou para quem está em fase de secar gordura.", 
+        img: "https://images.unsplash.com/photo-1628268909376-e8c44bb3153f?auto=format&fit=crop&w=800&q=80",
+        cal: "350", prot: "32g", gord: "12g"
+    },
+    { 
+        tag: "Pós-Treino", 
+        titulo: "Shake Recuperador Rápido", 
+        desc: "Bata no liquidificador: 1 dose de Whey Protein, 200ml de água de coco gelada e 1 maçã pequena com casca. Beba imediatamente após o treino.", 
+        beneficio: "A água de coco repõe os eletrólitos perdidos no suor, enquanto o Whey e a maçã iniciam a reconstrução das fibras musculares.", 
+        img: "https://images.unsplash.com/photo-1549488344-c70e3cb20448?auto=format&fit=crop&w=800&q=80",
+        cal: "230", prot: "24g", gord: "1g"
+    }
 ];
 
 /* ================= ESTADO GLOBAL ================= */
@@ -67,7 +116,7 @@ let chartComposicao = null; let chartCarga = null; let timerInterval = null;
 let cardioInterval = null; let cardioSeconds = 0; let cardioRunning = false;
 let cardioEquipamentoAtual = "";
 
-/* ================= INICIALIZAÇÃO E FIREBASE ================= */
+/* ================= INICIALIZAÇÃO ================= */
 setTimeout(() => { carregarDadosDaNuvem(); }, 1500);
 
 async function carregarDadosDaNuvem() {
@@ -79,7 +128,7 @@ async function carregarDadosDaNuvem() {
         const snapAlunos = await window.f_getDocs(window.f_collection(window.db, "alunos"));
         listaDeAlunos = []; snapAlunos.forEach(doc => listaDeAlunos.push(doc.data()));
         
-        console.log("Dados carregados.");
+        console.log("Dados carregados (Online/Cache).");
         verificarSessao();
     } catch (e) { console.error("Erro dados:", e); }
 }
@@ -157,7 +206,11 @@ async function criarAcademia() {
 function renderizarListaAcademias() {
     const div = document.getElementById('listaAcademias'); div.innerHTML = "";
     listaDeAcademias.forEach(a => { 
-        div.innerHTML += `<div class="student-card"><div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div><button class="btn-icon" style="background:#ef4444;" onclick="deletarDocumento('academias', '${a.id}')"><span class="material-icons-round">delete</span></button></div>`; 
+        div.innerHTML += `
+        <div class="student-card">
+            <div class="student-info"><h3>${a.nome}</h3><p>Login: ${a.login}</p></div>
+            <button class="btn-icon" style="background:#ef4444;" onclick="deletarDocumento('academias', '${a.id}')"><span class="material-icons-round">delete</span></button>
+        </div>`; 
     });
 }
 
@@ -165,24 +218,31 @@ function renderizarListaAcademias() {
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
+    
     if(usuarioLogado.aviso) document.getElementById('textoAvisoAcademia').value = usuarioLogado.aviso;
     else document.getElementById('textoAvisoAcademia').value = "";
     document.getElementById('chkAvisoAtivo').checked = (usuarioLogado.avisoAtivo === true);
+
     renderizarListaAlunosAdmin(); 
 }
 
 async function salvarAvisoAcademia() {
     const texto = document.getElementById('textoAvisoAcademia').value.trim();
     const ativo = document.getElementById('chkAvisoAtivo').checked;
+    
     usuarioLogado.aviso = texto;
     usuarioLogado.avisoAtivo = ativo;
+    
     await salvarNaColecao("academias", usuarioLogado.id, usuarioLogado);
+    
     const idx = listaDeAcademias.findIndex(a => a.id === usuarioLogado.id);
     if(idx >= 0) { listaDeAcademias[idx].aviso = texto; listaDeAcademias[idx].avisoAtivo = ativo; }
-    if(!ativo) alert("Aviso salvo (Oculto)."); else alert("Aviso publicado!");
+    
+    if(!ativo) alert("Aviso salvo (Oculto).");
+    else alert("Aviso publicado!");
 }
 
-// HELPERS DE DATA E STATUS
+// HELPERS
 function calcularDiasSemTreino(historicoFogo) {
     if (!historicoFogo || historicoFogo.length === 0) return 999; 
     const ultimo = historicoFogo[historicoFogo.length - 1]; 
@@ -213,13 +273,14 @@ function verificarVencimentoTreino(dataTroca) {
 function renderizarListaAlunosAdmin() {
     const filtroTexto = document.getElementById('inputBusca').value.toLowerCase();
     const filtroTipo = document.getElementById('filtroAlunosSelect').value; 
-    const container = document.getElementById('listaAlunosCoach'); container.innerHTML = "";
     
+    const container = document.getElementById('listaAlunosCoach'); container.innerHTML = "";
     const meusAlunos = listaDeAlunos.filter(aluno => aluno.academiaId === usuarioLogado.id);
     document.getElementById('totalAlunos').innerText = meusAlunos.length;
 
     const listaFiltrada = meusAlunos.filter(aluno => {
         if (!aluno.nome.toLowerCase().includes(filtroTexto) && !aluno.telefone.includes(filtroTexto)) return false;
+
         const diasSemTreino = calcularDiasSemTreino(aluno.historicoFogo);
         const fin = verificarStatusFinanceiro(aluno.vencimento);
         const diasTreinoVelho = verificarVencimentoTreino(aluno.dataTrocaTreino);
@@ -228,6 +289,7 @@ function renderizarListaAlunosAdmin() {
         if (filtroTipo === 'ausentes' && diasSemTreino <= 7) return false;
         if (filtroTipo === 'vencidos' && fin.status !== "Vencido") return false;
         if (filtroTipo === 'treino_vencido' && diasTreinoVelho <= 90) return false;
+
         return true;
     });
 
@@ -241,7 +303,10 @@ function renderizarListaAlunosAdmin() {
         container.innerHTML += `
         <div class="student-card">
             <div class="student-info">
-                <h3>${aluno.nome} <span style="font-size:0.6rem; background:${fin.cor}; color:black; padding:2px 6px; border-radius:4px;">${fin.status}</span> ${badgeTreino}</h3>
+                <h3>${aluno.nome} 
+                    <span style="font-size:0.6rem; background:${fin.cor}; color:black; padding:2px 6px; border-radius:4px;">${fin.status}</span>
+                    ${badgeTreino}
+                </h3>
                 <p style="font-size:0.8rem; color:#94a3b8;">${aluno.telefone} • Treino: ${textoTreino}</p>
             </div>
             <div class="student-actions">
@@ -276,6 +341,7 @@ async function cadastrarAluno() {
     const dataVenc = document.getElementById('novoVencimento').value;
     if (!nome || !tel) return alert("Preencha os dados.");
     if(listaDeAlunos.some(a => a.telefone === tel)) return alert("Telefone já existe!");
+    
     const novoAluno = {
         nome: nome, telefone: tel, vencimento: dataVenc,
         academiaId: usuarioLogado.id, academiaNome: usuarioLogado.nome,
@@ -288,7 +354,7 @@ async function cadastrarAluno() {
     renderizarListaAlunosAdmin(); toggleFormulario();
 }
 
-/* ================= EDITOR DE TREINO (NOVO DESIGN) ================= */
+/* ================= EDITOR DE TREINO (CARDS PREMIUM) ================= */
 function abrirEditorTreino(tel) {
   alunoEmEdicaoId = tel; document.getElementById('alunoSendoEditado').innerText = listaDeAlunos.find(a => a.telefone === tel).nome;
   const btns = document.getElementById('botoesModulosAdmin'); btns.innerHTML = "";
@@ -306,6 +372,7 @@ function renderizarCheckboxes() {
   const aluno = listaDeAlunos.find(a => a.telefone === alunoEmEdicaoId);
   const salvos = aluno.treinos[moduloEmEdicao].exercicios || [];
   const grupos = {}; todosExercicios.forEach(ex => { if(!grupos[ex.grupo]) grupos[ex.grupo] = []; grupos[ex.grupo].push(ex); });
+  
   Object.keys(grupos).forEach(grupo => {
     container.innerHTML += `<div class="group-header">${obterIcone(grupo)} ${grupo}</div>`;
     grupos[grupo].forEach(ex => {
@@ -371,21 +438,24 @@ function salvarTreinoPersonal() {
   alert("Treino Salvo com Sucesso! 🚀");
 }
 
-/* ================= APP DO ALUNO E OUTROS ================= */
-// (Mantive todas as funções do aluno e nutrição que já estavam perfeitas)
+/* ================= APP DO ALUNO ================= */
 function abrirAppAluno() {
     const nome = usuarioLogado.nome.split(' ')[0];
     document.querySelector('.header-student h1').innerHTML = `Olá, <span style="color:#00E676">${nome}</span>`;
+    
     const academiaDoAluno = listaDeAcademias.find(gym => gym.id === usuarioLogado.academiaId);
     const boxAviso = document.getElementById('boxAvisoAluno');
-    if(academiaDoAluno && academiaDoAluno.avisoAtivo && academiaDoAluno.aviso) {
-        boxAviso.classList.remove('hidden'); document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
+    if(academiaDoAluno && academiaDoAluno.avisoAtivo === true && academiaDoAluno.aviso) {
+        boxAviso.classList.remove('hidden');
+        document.getElementById('textoAvisoAlunoDisplay').innerText = academiaDoAluno.aviso;
     } else { boxAviso.classList.add('hidden'); }
-    atualizarDisplayFogo(); renderizarCardsTreino(); atualizarDisplayVencimentoPerfil(); atualizarResumoCardio();
+
+    atualizarDisplayFogo();
+    renderizarCardsTreino(); atualizarDisplayVencimentoPerfil();
     document.getElementById('nomePerfil').innerText = usuarioLogado.nome;
     document.getElementById('academiaAlunoBadge').innerText = usuarioLogado.academiaNome || "Academia";
     document.getElementById('telPerfil').innerText = usuarioLogado.telefone;
-    if(usuarioLogado.spotifyUrl) document.getElementById('spotifyLinkInput').value = usuarioLogado.spotifyUrl;
+    atualizarResumoCardio();
     mostrarTela('treinos'); document.getElementById('mainNav').style.display = 'flex';
 }
 function renderizarCardsTreino() {
@@ -509,6 +579,14 @@ function abrirDicasNutri() {
     const index = hoje % dicasNutri.length;
     const dica = dicasNutri[index];
     document.getElementById('nutriTag').innerText = dica.tag; document.getElementById('nutriTitulo').innerText = dica.titulo; document.getElementById('nutriDescricao').innerText = dica.desc; document.getElementById('nutriBeneficio').innerText = dica.beneficio;
+    
+    // ATUALIZAÇÃO: Preenche os Macros (Cal, Prot, Gord)
+    if(dica.cal) {
+        document.getElementById('nutriCal').innerText = dica.cal + " kcal";
+        document.getElementById('nutriProt').innerText = dica.prot + " Prot";
+        document.getElementById('nutriGord').innerText = dica.gord + " Gord";
+    }
+
     const header = document.querySelector('#nutriModal .video-box > div:first-child');
     if(header) header.style.backgroundImage = `url('${dica.img}')`;
     document.getElementById('nutriModal').classList.add('active');
@@ -548,7 +626,6 @@ function atualizarDisplayVencimentoPerfil() {
     const p = usuarioLogado.vencimento.split('-'); el.innerText = `${p[2]}/${p[1]}/${p[0]}`;
     st.innerText = fin.status; st.style.background = fin.cor; st.style.color = "black";
 }
-function salvarLinkSpotify(val) { if(usuarioLogado && val) { usuarioLogado.spotifyUrl = val; salvarNaColecao("alunos", usuarioLogado.telefone, usuarioLogado); } }
 function abrirModalAvaliacao(tel) { alunoSendoAvaliadoId = tel; const aluno = listaDeAlunos.find(a => a.telefone === tel); document.getElementById('nomeAlunoAvaliacao').innerText = aluno.nome; document.getElementById('modalAvaliacao').classList.add('active'); document.getElementById('avalPeso').value = ""; document.getElementById('avalGordura').value = ""; document.getElementById('avalMusculo').value = ""; }
 function fecharModalAvaliacao() { document.getElementById('modalAvaliacao').classList.remove('active'); }
 async function salvarAvaliacaoFisica() {
@@ -599,4 +676,4 @@ function atualizarGraficoCarga() {
     chartCarga = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga', data: dados, borderColor: '#3b82f6', tension:0.3, fill:true, backgroundColor:'rgba(59,130,246,0.1)' }] }, options: { responsive:true, maintainAspectRatio:false, scales:{x:{display:false}} } });
 }
 
-window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.salvarLinkSpotify=salvarLinkSpotify; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica; window.atualizarGraficoCarga=atualizarGraficoCarga; window.selecionarCardio=selecionarCardio; window.finalizarCardio=finalizarCardio; window.imprimirTreino=imprimirTreino; window.abrirDicasNutri=abrirDicasNutri; window.fecharNutri=fecharNutri; window.deletarDocumento=deletarDocumento; window.renderizarCheckboxes = renderizarCheckboxes; window.toggleCardSelection = toggleCardSelection; window.toggleCardVisual = toggleCardVisual;
+window.autenticar = autenticar; window.loginMaster = loginMaster; window.criarAcademia = criarAcademia; window.toggleFormulario = toggleFormulario; window.cadastrarAluno = cadastrarAluno; window.abrirEditorTreino = abrirEditorTreino; window.salvarTreinoPersonal = salvarTreinoPersonal; window.trocarModuloEdicao = trocarModuloEdicao; window.abrirTreino = abrirTreino; window.toggleSet = toggleSet; window.salvarPeso = salvarPeso; window.voltarTreinos = () => mostrarTela('treinos'); window.abrirVideo = abrirVideo; window.fecharVideo = fecharVideo; window.filtrarAlunos = filtrarAlunos; window.mostrarTela = mostrarTela; window.logout = logout; window.adicionarTempo=adicionarTempo; window.fecharTimer=fecharTimer; window.toggleCardioTimer=toggleCardioTimer; window.resetCardioTimer=resetCardioTimer; window.salvarAvisoAcademia=salvarAvisoAcademia; window.abrirModalAvaliacao=abrirModalAvaliacao; window.fecharModalAvaliacao=fecharModalAvaliacao; window.salvarAvaliacaoFisica=salvarAvaliacaoFisica; window.atualizarGraficoCarga=atualizarGraficoCarga; window.selecionarCardio=selecionarCardio; window.finalizarCardio=finalizarCardio; window.imprimirTreino=imprimirTreino; window.abrirDicasNutri=abrirDicasNutri; window.fecharNutri=fecharNutri; window.deletarDocumento=deletarDocumento; window.renderizarCheckboxes = renderizarCheckboxes; window.toggleCardSelection = toggleCardSelection; window.toggleCardVisual = toggleCardVisual;
