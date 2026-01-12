@@ -18,32 +18,13 @@
   <section id="login" class="screen active">
     <div class="login-wrapper" style="justify-content: space-between; padding-top: 60px;">
       <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-        
         <div class="brand">
-          <div style="
-            width: 90px; 
-            height: 90px; 
-            background-color: #00E676; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            margin: 0 auto 15px;
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2), 0 0 20px rgba(0, 230, 118, 0.6);
-          ">
-            <svg viewBox="0 0 24 24" style="width: 45px; height: 45px; fill: none; stroke: white; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round;">
-               <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
+          <div style="width: 90px; height: 90px; background-color: #00E676; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2), 0 0 20px rgba(0, 230, 118, 0.6);">
+            <svg viewBox="0 0 24 24" style="width: 45px; height: 45px; fill: none; stroke: white; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round;"><polyline points="20 6 9 17 4 12"></polyline></svg>
           </div>
-          
-          <h1 style="font-family: 'Inter', sans-serif; letter-spacing: 1px; text-transform: uppercase; font-size: 3rem; margin-bottom:0; font-weight: 800;">
-            TAPAGO
-          </h1>
-          <p style="letter-spacing: 3px; font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; margin-top: 5px; color: #00E676; font-weight: 700;">
-            TREINO CONCLUÍDO
-          </p>
+          <h1 style="font-family: 'Inter', sans-serif; letter-spacing: 1px; text-transform: uppercase; font-size: 3rem; margin-bottom:0; font-weight: 800;">TAPAGO</h1>
+          <p style="letter-spacing: 3px; font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; margin-top: 5px; color: #00E676; font-weight: 700;">GESTÃO INTELIGENTE</p>
         </div>
-
         <div class="login-box" style="margin-top: 30px;">
           <input type="text" id="userEmail" placeholder="Login (Telefone ou Academia)" autocomplete="off">
           <input type="password" id="userPass" placeholder="Senha" value="123">
@@ -53,7 +34,7 @@
       </div>
       <div style="text-align: center; margin-bottom: 10px; opacity: 0.4;">
         <p style="font-size: 0.65rem; color: #fff; margin-bottom: 5px;">© 2026 Otávio Augusto • Todos os direitos reservados</p>
-        <p style="font-size: 0.55rem; margin-top: 5px; color: #00E676;">Tecnologia TAPAGO 2.9</p>
+        <p style="font-size: 0.55rem; margin-top: 5px; color: #00E676;">Tecnologia TAPAGO 3.0</p>
       </div>
     </div>
   </section>
@@ -98,10 +79,21 @@
       <div class="stat-card"><div class="stat-icon green" style="background: rgba(0, 230, 118, 0.2); color: #00E676;"><span class="material-icons-round">groups</span></div><div><span class="stat-num" id="totalAlunos">0</span><span class="stat-desc">Alunos</span></div></div>
       <div class="stat-card"><div class="stat-icon blue"><span class="material-icons-round">fitness_center</span></div><div><span class="stat-num">ON</span><span class="stat-desc">Sistema</span></div></div>
     </div>
-    <div class="admin-controls">
-      <div class="search-box"><span class="material-icons-round">search</span><input type="text" id="inputBusca" placeholder="Buscar aluno..." onkeyup="filtrarAlunos()"></div>
-      <button onclick="toggleFormulario()" class="btn-add-mini"><span class="material-icons-round">person_add</span> Novo</button>
+
+    <div class="admin-controls" style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <div class="search-box" style="flex: 2; min-width: 200px;">
+        <span class="material-icons-round">search</span>
+        <input type="text" id="inputBusca" placeholder="Buscar aluno..." onkeyup="filtrarAlunos()">
+      </div>
+      <select id="filtroAlunosSelect" onchange="filtrarAlunos()" style="flex: 1; min-width: 120px; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 12px; padding: 0 10px; outline: none; height: 50px;">
+        <option value="todos">Todos</option>
+        <option value="ativos">✅ Ativos</option>
+        <option value="ausentes">💤 Ausentes (+7d)</option>
+        <option value="vencidos">💲 Vencidos</option>
+      </select>
+      <button onclick="toggleFormulario()" class="btn-add-mini" style="height: 50px; width: 50px; display: flex; justify-content: center; align-items: center;"><span class="material-icons-round">person_add</span></button>
     </div>
+
     <div id="formCadastroAluno" class="form-panel hidden">
       <h4>Novo Atleta</h4>
       <div class="form-row">
@@ -112,6 +104,7 @@
       </div>
       <button onclick="cadastrarAluno()" class="btn-primary" style="margin-top: 10px; background: #00E676; color:black;">Cadastrar</button>
     </div>
+    
     <h3 class="section-title" style="margin-top: 20px;">Meus Alunos</h3>
     <div id="listaAlunosCoach" class="student-grid"></div>
     <div style="height: 80px;"></div>
@@ -172,7 +165,6 @@
 
   <section id="treinos" class="screen">
     <div class="header-student"><div><h1>Olá, <span id="nomeAlunoDisplay">Atleta</span></h1><p>Bora treinar?</p></div><div class="streak-badge">🔥 <span id="streakCount">0</span></div></div>
-    
     <div id="boxAvisoAluno" class="goal-card hidden" style="background: linear-gradient(135deg, #334155, #1e293b); border-left: 4px solid #00E676; margin-bottom: 15px;">
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
         <span class="material-icons-round" style="color:#00E676;">campaign</span>
@@ -180,7 +172,6 @@
       </div>
       <p id="textoAvisoAlunoDisplay" style="color:white; font-size:0.9rem; line-height:1.4;">...</p>
     </div>
-
     <div class="workout-grid" id="containerTreinosAluno"></div>
     <div style="height: 80px;"></div>
   </section>
@@ -191,6 +182,13 @@
       <div class="avatar-large"><span class="material-icons-round">person</span></div>
       <h2 id="nomePerfil">Aluno</h2>
       <span class="badge-student" id="academiaAlunoBadge">Academia</span>
+    </div>
+    <div class="info-group">
+      <label>Playlist Spotify</label>
+      <div class="search-box" style="border:1px solid #00E676; background: rgba(0, 230, 118, 0.1);">
+        <span class="material-icons-round" style="color:#00E676">link</span>
+        <input type="text" id="spotifyLinkInput" placeholder="Cole o link da playlist..." onblur="salvarLinkSpotify(this.value)" style="font-size:0.8rem;">
+      </div>
     </div>
     <div class="info-group"><label>Status</label><div id="cardVencimentoPerfil" class="due-date-card"><span class="material-icons-round">event</span><span>Vencimento: <strong id="vencimentoPerfil">--/--</strong></span><span id="statusPagamento" class="status-badge">...</span></div></div>
     <div class="info-group"><label>Login</label><div class="info-box" id="telPerfil">...</div></div>
@@ -216,34 +214,22 @@
   </nav>
 
   <div id="modalAvaliacao" class="video-modal"><div class="video-box" style="height:auto; padding:20px;"><div class="video-header"><h3>Nova Avaliação</h3><button onclick="fecharModalAvaliacao()" class="close-btn"><span class="material-icons-round">close</span></button></div><p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;" id="nomeAlunoAvaliacao">Aluno...</p><div class="form-row" style="flex-direction:column; gap:10px;"><input type="number" id="avalPeso" placeholder="Peso (kg)"><input type="number" id="avalGordura" placeholder="% Gordura"><input type="number" id="avalMusculo" placeholder="% Músculo (Opcional)"><button onclick="salvarAvaliacaoFisica()" class="btn-primary" style="margin-top:10px; background: #00E676; color:black;">Salvar Medidas</button></div></div></div>
-  
   <div id="videoModal" class="video-modal"><div class="video-box"><div class="video-header"><h3 id="videoTitulo">Exercício</h3><button onclick="fecharVideo()" class="close-btn"><span class="material-icons-round">close</span></button></div><div class="video-placeholder"><span class="material-icons-round">play_circle</span><p>Vídeo Demonstrativo</p></div></div></div>
   <div id="timerOverlay" class="timer-overlay hidden"><div class="timer-content"><div class="timer-header">Descanso</div><div id="timerDisplay" class="timer-display">00:00</div><div class="timer-controls"><button onclick="adicionarTempo(15)" class="btn-timer-add">+15s</button><button onclick="fecharTimer()" class="btn-timer-close">Pular</button></div></div></div>
   
   <div id="nutriModal" class="video-modal">
     <div class="video-box" style="padding: 0; background: #0f172a; overflow: hidden;">
-      
       <div style="height: 150px; background: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80') center/cover; position: relative;">
         <div style="position: absolute; inset: 0; background: linear-gradient(to top, #0f172a, transparent);"></div>
         <button onclick="fecharNutri()" class="close-btn" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5);"><span class="material-icons-round">close</span></button>
         <h3 style="position: absolute; bottom: 15px; left: 20px; margin: 0; font-size: 1.5rem; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Nutri Dica 🥗</h3>
       </div>
-
       <div style="padding: 25px;">
         <span id="nutriTag" style="background: #00E676; color: black; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;">Almoço</span>
-        
         <h2 id="nutriTitulo" style="color: white; margin: 15px 0 10px; font-size: 1.4rem;">Carregando...</h2>
-        
-        <p id="nutriDescricao" style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
-          Selecione o dia para ver a sugestão.
-        </p>
-
-        <div style="background: #1e293b; padding: 15px; border-radius: 12px; border-left: 4px solid #00E676;">
-          <p style="color: white; font-size: 0.8rem; margin: 0;"><strong>💡 Por que comer isso?</strong></p>
-          <p id="nutriBeneficio" style="color: #cbd5e1; font-size: 0.8rem; margin-top: 5px;">Explicação do benefício...</p>
-        </div>
+        <p id="nutriDescricao" style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">Selecione o dia para ver a sugestão.</p>
+        <div style="background: #1e293b; padding: 15px; border-radius: 12px; border-left: 4px solid #00E676;"><p style="color: white; font-size: 0.8rem; margin: 0;"><strong>💡 Por que comer isso?</strong></p><p id="nutriBeneficio" style="color: #cbd5e1; font-size: 0.8rem; margin-top: 5px;">Explicação...</p></div>
       </div>
-
     </div>
   </div>
 
