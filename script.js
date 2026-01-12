@@ -85,7 +85,7 @@ async function deletarDocumento(colecao, id) {
         try { 
             await window.f_deleteDoc(window.f_doc(window.db, colecao, id));
             alert("Excluído com sucesso!");
-            location.reload(); // Recarrega para atualizar tudo limpo
+            location.reload(); 
         } catch (e) { console.error(e); alert("Erro ao excluir."); }
     }
 }
@@ -130,7 +130,7 @@ function verificarSessao() {
 function logout() { localStorage.removeItem("usuarioLogado"); window.location.reload(); }
 function loginMaster() { document.getElementById('userEmail').value = "master"; }
 
-/* ================= PAINEL MASTER (COM EXCLUSÃO) ================= */
+/* ================= PAINEL MASTER ================= */
 function abrirPainelMaster() { mostrarTela('dashMaster'); renderizarListaAcademias(); }
 async function criarAcademia() {
     const nome = document.getElementById('novaAcademiaNome').value;
@@ -154,7 +154,7 @@ function renderizarListaAcademias() {
     });
 }
 
-/* ================= PAINEL PROFESSOR (COM FILTROS E EXCLUSÃO) ================= */
+/* ================= PAINEL PROFESSOR ================= */
 function abrirPainelProfessor() { 
     mostrarTela('dashProfessor'); 
     document.getElementById('nomeAcademiaTitulo').innerText = usuarioLogado.nome; 
@@ -182,10 +182,10 @@ async function salvarAvisoAcademia() {
     else alert("Aviso publicado!");
 }
 
-// HELPER: DIAS DESDE O ÚLTIMO TREINO
+// HELPER: DIAS SEM TREINO
 function calcularDiasSemTreino(historicoFogo) {
-    if (!historicoFogo || historicoFogo.length === 0) return 999; // Nunca treinou
-    const ultimo = historicoFogo[historicoFogo.length - 1]; // "DD/MM/AAAA"
+    if (!historicoFogo || historicoFogo.length === 0) return 999; 
+    const ultimo = historicoFogo[historicoFogo.length - 1]; 
     const partes = ultimo.split('/');
     const dataUltimo = new Date(partes[2], partes[1] - 1, partes[0]);
     const hoje = new Date();
@@ -193,39 +193,47 @@ function calcularDiasSemTreino(historicoFogo) {
     return diff;
 }
 
-// HELPER: STATUS FINANCEIRO (CARÊNCIA)
+// HELPER: FINANCEIRO
 function verificarStatusFinanceiro(vencimento) {
     if (!vencimento) return { status: "Indefinido", cor: "#94a3b8" };
     const hoje = new Date(); hoje.setHours(0,0,0,0);
-    const partes = vencimento.split('-'); // YYYY-MM-DD
+    const partes = vencimento.split('-'); 
     const dataVenc = new Date(partes[0], partes[1]-1, partes[2]);
     const diffDias = Math.floor((hoje - dataVenc) / (1000 * 60 * 60 * 24));
+    if (diffDias <= 0) return { status: "Em dia", cor: "#00E676" }; 
+    if (diffDias <= 5) return { status: "Carência", cor: "#facc15" }; 
+    return { status: "Vencido", cor: "#ef4444" }; 
+}
 
-    if (diffDias <= 0) return { status: "Em dia", cor: "#00E676" }; // Não venceu ainda
-    if (diffDias <= 5) return { status: "Carência", cor: "#facc15" }; // 1 a 5 dias atrasado
-    return { status: "Vencido", cor: "#ef4444" }; // > 5 dias
+// HELPER: VENCIMENTO DE TREINO (3 MESES)
+function verificarVencimentoTreino(dataTroca) {
+    if (!dataTroca) return 999; // Se não tem data, assume que é velho
+    const partes = dataTroca.split('/'); // DD/MM/YYYY
+    const dataUltimaTroca = new Date(partes[2], partes[1]-1, partes[0]);
+    const hoje = new Date();
+    const diffDias = Math.floor((hoje - dataUltimaTroca) / (1000 * 60 * 60 * 24));
+    return diffDias; // Retorna quantos dias faz que trocou
 }
 
 function renderizarListaAlunosAdmin() {
     const filtroTexto = document.getElementById('inputBusca').value.toLowerCase();
-    const filtroTipo = document.getElementById('filtroAlunosSelect').value; // 'todos', 'ativos', 'ausentes', 'vencidos'
+    const filtroTipo = document.getElementById('filtroAlunosSelect').value; 
     
     const container = document.getElementById('listaAlunosCoach'); container.innerHTML = "";
-    
     const meusAlunos = listaDeAlunos.filter(aluno => aluno.academiaId === usuarioLogado.id);
     document.getElementById('totalAlunos').innerText = meusAlunos.length;
 
     const listaFiltrada = meusAlunos.filter(aluno => {
-        // Filtro de Texto
         if (!aluno.nome.toLowerCase().includes(filtroTexto) && !aluno.telefone.includes(filtroTexto)) return false;
 
-        // Filtro Lógico
         const diasSemTreino = calcularDiasSemTreino(aluno.historicoFogo);
         const fin = verificarStatusFinanceiro(aluno.vencimento);
+        const diasTreinoVelho = verificarVencimentoTreino(aluno.dataTrocaTreino);
 
         if (filtroTipo === 'ativos' && diasSemTreino > 7) return false;
         if (filtroTipo === 'ausentes' && diasSemTreino <= 7) return false;
         if (filtroTipo === 'vencidos' && fin.status !== "Vencido") return false;
+        if (filtroTipo === 'treino_vencido' && diasTreinoVelho <= 90) return false; // Só mostra se > 90 dias
 
         return true;
     });
@@ -234,12 +242,18 @@ function renderizarListaAlunosAdmin() {
         const dias = calcularDiasSemTreino(aluno.historicoFogo);
         const textoTreino = dias === 999 ? "Nunca treinou" : (dias === 0 ? "Treinou hoje" : `Há ${dias} dias`);
         const fin = verificarStatusFinanceiro(aluno.vencimento);
+        
+        // Alerta de Treino Antigo
+        const diasTroca = verificarVencimentoTreino(aluno.dataTrocaTreino);
+        let badgeTreino = "";
+        if(diasTroca > 90) badgeTreino = `<span style="font-size:0.6rem; background:#f97316; color:white; padding:2px 6px; border-radius:4px; margin-left:5px;">🔄 Treino Antigo</span>`;
 
         container.innerHTML += `
         <div class="student-card">
             <div class="student-info">
                 <h3>${aluno.nome} 
                     <span style="font-size:0.6rem; background:${fin.cor}; color:black; padding:2px 6px; border-radius:4px; margin-left:5px;">${fin.status}</span>
+                    ${badgeTreino}
                 </h3>
                 <p style="font-size:0.8rem; color:#94a3b8;">Login: ${aluno.telefone}</p>
                 <p style="font-size:0.75rem; color:#cbd5e1;">🏋️ ${textoTreino}</p>
@@ -311,10 +325,12 @@ async function cadastrarAluno() {
     const dataVenc = document.getElementById('novoVencimento').value;
     if (!nome || !tel) return alert("Preencha nome e telefone.");
     if(listaDeAlunos.some(a => a.telefone === tel)) return alert("Telefone já existe!");
+    
     const novoAluno = {
         nome: nome, telefone: tel, vencimento: dataVenc,
         academiaId: usuarioLogado.id, academiaNome: usuarioLogado.nome,
         pesoInicial: "", historicoFogo: [], historicoAvaliacoes: [], historicoCardio: [], historicoCargas: {}, registros: {},
+        dataTrocaTreino: new Date().toLocaleDateString('pt-BR'), // DATA INICIAL
         treinos: { A: { exercicios: [] }, B: { exercicios: [] }, C: { exercicios: [] }, D: { exercicios: [] }, E: { exercicios: [] } }
     };
     listaDeAlunos.push(novoAluno);
@@ -387,8 +403,12 @@ function salvarTreinoPersonal() {
   });
   const idx = listaDeAlunos.findIndex(a => a.telefone === alunoEmEdicaoId);
   listaDeAlunos[idx].treinos[moduloEmEdicao].exercicios = novos;
+  
+  // ATUALIZA A DATA DE TROCA DE TREINO
+  listaDeAlunos[idx].dataTrocaTreino = new Date().toLocaleDateString('pt-BR');
+  
   salvarNaColecao("alunos", listaDeAlunos[idx].telefone, listaDeAlunos[idx]);
-  alert("Salvo!");
+  alert("Treino Salvo e Data Atualizada! 🔄");
 }
 
 /* ================= APP DO ALUNO ================= */
